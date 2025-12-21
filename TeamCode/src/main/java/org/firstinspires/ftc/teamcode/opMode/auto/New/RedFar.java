@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.opMode.auto.New;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
@@ -13,6 +14,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.RoadRunner.MecanumDrive;
 import org.firstinspires.ftc.teamcode.subsystem.Intake;
 import org.firstinspires.ftc.teamcode.subsystem.New.CustomAdaptiveIntake;
@@ -34,6 +36,8 @@ public class RedFar extends LinearOpMode {
 
     Shooter2 shooter;
     CustomAdaptiveIntake customAdaptiveIntake;
+
+    Telemetry telemetry;
 
 
 
@@ -67,7 +71,7 @@ public class RedFar extends LinearOpMode {
         shooter = new Shooter2(hardwareMap, telemetry);
         turret = new Turret(hardwareMap, telemetry);
         customAdaptiveIntake = new CustomAdaptiveIntake(hardwareMap, telemetry);
-
+        telemetry = new MultipleTelemetry(FtcDashboard.getInstance().getTelemetry());
 
 
         build_paths();

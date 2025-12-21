@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.subsystem.New;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.controller.PIDFController;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
@@ -10,6 +12,7 @@ import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.subsystem.Subsystem;
+import org.firstinspires.ftc.teamcode.utils.PerTelem;
 
 @Config
 public class Shooter2 implements Subsystem {
@@ -32,10 +35,13 @@ public class Shooter2 implements Subsystem {
     public static double RPM_TOLERANCE = 50;
     public static double MAX_RPM = 5400;
 
+    Telemetry telemetry;
+
     private DcMotorEx shooterMotor;
     private DcMotorEx counterRoller;
     private Servo blocker;
-    private Telemetry telemetry;
+
+    private MultipleTelemetry multipleTelemetry;
 
     private double targetRPM = 0;
     private double crTargetRPM = 0;
@@ -68,7 +74,8 @@ public class Shooter2 implements Subsystem {
         shooterMotor = hardwareMap.get(DcMotorEx.class, "outtake");
         counterRoller = hardwareMap.get(DcMotorEx.class, "counterRoller");
         blocker = hardwareMap.get(Servo.class, "blocker");
-        this.telemetry = telemetry;
+        this.telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+
     }
 
     @Override

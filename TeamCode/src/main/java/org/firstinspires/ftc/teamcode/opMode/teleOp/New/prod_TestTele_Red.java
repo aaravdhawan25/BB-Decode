@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.opMode.teleOp.New;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
@@ -36,6 +38,7 @@ public class prod_TestTele_Red extends LinearOpMode {
         turret.init();
         customAdaptiveIntake.init();
         shooter.init();
+        telemetry = new MultipleTelemetry(FtcDashboard.getInstance().getTelemetry());
 
 
         while (!opModeIsActive()) {

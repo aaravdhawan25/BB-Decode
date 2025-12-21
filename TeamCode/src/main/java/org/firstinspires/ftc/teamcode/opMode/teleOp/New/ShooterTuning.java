@@ -1,8 +1,11 @@
 package org.firstinspires.ftc.teamcode.opMode.teleOp.New;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.subsystem.New.Shooter2;
 
 @TeleOp(name="Shooter Tuning", group = " Tuning")
@@ -11,11 +14,14 @@ public class ShooterTuning extends OpMode {
 
     private double manualShooterRPM = 0;
     private double manualCRRPM = 0;
+
+    Telemetry telemetry;
     private boolean manualMode = false;
 
     @Override
     public void init() {
         shooter = new Shooter2(hardwareMap, telemetry);
+        telemetry = new MultipleTelemetry(FtcDashboard.getInstance().getTelemetry());
         shooter.init();
 
         telemetry.addData("Status", "Ready - Use FTC Dashboard to tune PID");

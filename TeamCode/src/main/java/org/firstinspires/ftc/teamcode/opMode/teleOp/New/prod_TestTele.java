@@ -1,11 +1,14 @@
 package org.firstinspires.ftc.teamcode.opMode.teleOp.New;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.RoadRunner.MecanumDrive;
 import org.firstinspires.ftc.teamcode.subsystem.Drivetrain;
 import org.firstinspires.ftc.teamcode.subsystem.New.CustomAdaptiveIntake;
@@ -25,6 +28,8 @@ public class prod_TestTele extends LinearOpMode {
     CustomAdaptiveIntake customAdaptiveIntake;
     Shooter2 shooter;
 
+    Telemetry telemetry;
+
     MecanumDrive drive;
 
     @Override
@@ -38,6 +43,7 @@ public class prod_TestTele extends LinearOpMode {
         turret.init();
         customAdaptiveIntake.init();
         shooter.init();
+        telemetry = new MultipleTelemetry(FtcDashboard.getInstance().getTelemetry());
 
 
 
