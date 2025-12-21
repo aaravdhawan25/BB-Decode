@@ -139,7 +139,7 @@ public class Shooter2 implements Subsystem {
                 targetRPM = 0;
                 crTargetRPM = 0;
                 blockerClose();
-                resetPID();
+//                resetPID();
                 break;
 
             case SPINNING_UP_CLOSE:
