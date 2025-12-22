@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.subsystem.Subsystem;
+import org.firstinspires.ftc.teamcode.utils.PerTelem;
 
 @Config
 public class Turret implements Subsystem {
@@ -105,10 +106,13 @@ public class Turret implements Subsystem {
         Vector2d goalPos = new Vector2d(GOAL_X, GOAL_Y);
         currentDistanceToGoal = calculateDistanceToGoal(turretPos, goalPos);
 
-        if (isAligning) {
+        if (isAligning()) {
             double turretAngle = calculateTurretAngle(turretPos, robotHeading, goalPos);
             setTurretPosition(turretAngle);
             currentTurretAngle = turretAngle;
+        }
+        if (!isAligning()){
+            returnTurretHome();
         }
 
         telemetry.addData("Goal Position", "X: %.2f, Y: %.2f", GOAL_X, GOAL_Y);
@@ -117,6 +121,8 @@ public class Turret implements Subsystem {
         telemetry.addData("Turret Aligning", isAligning);
     }
 
+
+
     @Override
     public void updateCtrls(Gamepad gp1, Gamepad gp2) {
         if (gp1.leftBumperWasPressed()) {
@@ -124,7 +130,6 @@ public class Turret implements Subsystem {
         }
         if (gp1.leftBumperWasReleased()){
             isAligning = false;
-            returnTurretHome();
         }
     }
 
