@@ -121,7 +121,7 @@ public class Turret implements Subsystem {
     public void updateCtrls(Gamepad gp1, Gamepad gp2) {
         if (gp1.leftBumperWasPressed()) {
             isAligning = true;
-        } 
+        }
         if (gp1.leftBumperWasReleased()){
             isAligning = false;
             returnTurretHome();
