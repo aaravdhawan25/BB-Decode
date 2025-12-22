@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.subsystem.New;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -17,7 +19,7 @@ public class CustomAdaptiveIntake implements Subsystem {
     public CustomAdaptiveIntake (HardwareMap hardwareMap, Telemetry telemetry){
         intake = hardwareMap.get(DcMotor.class, "intake");
         intakePiv = hardwareMap.get(Servo.class, "intakePiv");
-        this.telemetry = telemetry;
+        this.telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
     }
 
 

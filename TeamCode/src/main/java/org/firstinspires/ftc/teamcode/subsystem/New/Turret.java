@@ -19,13 +19,13 @@ public class Turret implements Subsystem {
 
     private Telemetry telemetry;
 
-    public static double GOAL_X = -60;
-    public static double GOAL_Y = -60;
+    public static double GOAL_X = -70;
+    public static double GOAL_Y = -70;
 
     private static final double SERVO_HOME_POS = 0.5;
 
     // Current state
-    private Vector2d robotPos = new Vector2d(0, 0);
+    public Vector2d robotPos = new Vector2d(0, 0);
     private double robotHeading = 0;
     public boolean isAligning = false;
     private double currentTurretAngle = 0;
