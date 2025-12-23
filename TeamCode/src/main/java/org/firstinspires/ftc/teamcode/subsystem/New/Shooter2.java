@@ -35,6 +35,12 @@ public class Shooter2 implements Subsystem {
     public static double RPM_TOLERANCE = 50;
     public static double MAX_RPM = 5400;
 
+
+    public static double RPM_BASE = 2500;
+    public static double RPM_PER_INCH = 10.0;
+
+    private double distanceToGoal = 0;
+
     Telemetry telemetry;
 
     private DcMotorEx shooterMotor;
@@ -59,18 +65,24 @@ public class Shooter2 implements Subsystem {
 
     private ShooterState state = ShooterState.IDLE;
 
+    Turret turret;
+
     public enum ShooterState {
         IDLE,
         SPINNING_UP_CLOSE,
         SPINNING_UP_FAR,
         READY_CLOSE,
         READY_FAR,
+
+        SPINNING_UP_AUTO,
+        READY_AUTO,
         STOPPING
     }
 
     public Shooter2(HardwareMap hardwareMap, Telemetry telemetry) {
         pidfController = new PIDFController(KP,KI,KD,KF);
         CRpidfController = new PIDFController(CR_KP, CR_KI,CR_KD, CR_KF);
+        turret = new Turret(hardwareMap, telemetry);
         shooterMotor = hardwareMap.get(DcMotorEx.class, "outtake");
         counterRoller = hardwareMap.get(DcMotorEx.class, "counterRoller");
         blocker = hardwareMap.get(Servo.class, "blocker");
@@ -135,6 +147,26 @@ public class Shooter2 implements Subsystem {
                 Math.abs(crTargetRPM - crRPM) < RPM_TOLERANCE;
     }
 
+    public void setDistanceToGoal(double distance) {
+        this.distanceToGoal = distance;
+    }
+
+    public double getDistanceToGoal() {
+        return distanceToGoal;
+    }
+
+    public double calculateShooterRPM(double distance) {
+        return RPM_BASE + (RPM_PER_INCH * distance);
+    }
+
+    public double calculateCounterRollerRPM(double distance) {
+        return RPM_BASE + (RPM_PER_INCH * distance);
+    }
+
+    public void spinUpAuto() {
+        setState(ShooterState.SPINNING_UP_AUTO);
+    }
+
     @Override
     public void update() {
         long currentTime = System.nanoTime();
@@ -178,6 +210,24 @@ public class Shooter2 implements Subsystem {
             case READY_FAR:
                 targetRPM = FAR_SHOOTER_RPM;
                 crTargetRPM = FAR_CR_RPM;
+                blockerOpen();
+                break;
+
+            case SPINNING_UP_AUTO:
+                double distance = getDistanceToGoal();
+                targetRPM = calculateShooterRPM(distance);
+                crTargetRPM = calculateCounterRollerRPM(distance);
+                blockerClose();
+
+                if (atTargetSpeed()) {
+                    setState(ShooterState.READY_AUTO);
+                }
+                break;
+
+            case READY_AUTO:
+                distance = getDistanceToGoal();
+                targetRPM = calculateShooterRPM(distance);
+                crTargetRPM = calculateCounterRollerRPM(distance);
                 blockerOpen();
                 break;
 
@@ -245,7 +295,15 @@ public class Shooter2 implements Subsystem {
         if (gp2.yWasPressed()) {
             spinUpFar();
         }
+
         if (gp2.yWasReleased()){
+            stop();
+        }
+
+        if (gp2.aWasPressed()){
+            spinUpAuto();
+        }
+        if (gp2.aWasReleased()){
             stop();
         }
 

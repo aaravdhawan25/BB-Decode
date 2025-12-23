@@ -12,6 +12,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.subsystem.Subsystem;
 import org.firstinspires.ftc.teamcode.utils.PerTelem;
+import org.opencv.core.Mat;
 
 @Config
 public class Turret implements Subsystem {
@@ -57,10 +58,13 @@ public class Turret implements Subsystem {
         this.robotPos = pos;
         this.robotHeading = headingDeg;
 
+         double robotHeadingRad = Math.toRadians(headingDeg);
+
         turretPos = new Vector2d(
-                robotPos.x - turretOffsetInchesx * Math.cos(robotHeading),
-                robotPos.y - turretOffsetInchesy * Math.sin(robotHeading)
+                robotPos.x - turretOffsetInchesx * Math.cos(robotHeadingRad),
+                robotPos.y - turretOffsetInchesy * Math.sin(robotHeadingRad)
         );
+
     }
 
 

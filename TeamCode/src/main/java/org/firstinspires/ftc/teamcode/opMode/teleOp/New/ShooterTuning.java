@@ -2,38 +2,61 @@ package org.firstinspires.ftc.teamcode.opMode.teleOp.New;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.RoadRunner.MecanumDrive;
 import org.firstinspires.ftc.teamcode.subsystem.New.Shooter2;
+import org.firstinspires.ftc.teamcode.subsystem.New.Turret;
 
 @TeleOp(name="Shooter Tuning", group = " Tuning")
 public class ShooterTuning extends OpMode {
     public Shooter2 shooter;
+
+    public Turret turret;
 
     private double manualShooterRPM = 0;
     private double manualCRRPM = 0;
 
     Telemetry telemetry;
     private boolean manualMode = false;
+    private static final Pose2d START_POSE = new Pose2d(-36, -60, Math.toRadians(90));
+
+    MecanumDrive follower;
 
     @Override
     public void init() {
         shooter = new Shooter2(hardwareMap, telemetry);
         telemetry = new MultipleTelemetry(FtcDashboard.getInstance().getTelemetry());
+        turret = new Turret(hardwareMap, telemetry);
+        follower = new MecanumDrive(hardwareMap, START_POSE);
         shooter.init();
+        turret.init();
 
         telemetry.addData("Status", "Ready - Use FTC Dashboard to tune PID");
         telemetry.addData("Manual Mode", "Dpad Up/Down for Shooter, Left/Right for CR");
         telemetry.update();
+        turret.returnTurretHome();
+        turret.updatePose(START_POSE.position, Math.toDegrees(START_POSE.heading.toDouble()));
     }
 
     @Override
     public void loop() {
+
+        follower.updatePoseEstimate();
+
+        // Get current pose from Road Runner
+        Pose2d currentPose = follower.localizer.getPose();
+        Vector2d currentPos = currentPose.position;
+        double currentHeading = Math.toDegrees(currentPose.heading.toDouble());
         handleManualControls();
 
         shooter.update();
+        turret.update();
+        turret.updatePose(currentPos, currentHeading);
 
         telemetry.addData("=== CONTROLS ===", "");
         telemetry.addData("A", "Close Preset");
@@ -41,6 +64,8 @@ public class ShooterTuning extends OpMode {
         telemetry.addData("X", "Manual Mode Toggle");
         telemetry.addData("B", "Stop");
         telemetry.addData("", "");
+
+        shooter.setDistanceToGoal(turret.getDistanceToGoal());
 
         if (manualMode) {
             telemetry.addData("=== MANUAL MODE ===", "ACTIVE");
