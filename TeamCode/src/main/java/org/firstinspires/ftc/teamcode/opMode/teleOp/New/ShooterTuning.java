@@ -62,7 +62,6 @@ public class ShooterTuning extends OpMode {
         telemetry.addData("A", "Close Preset");
         telemetry.addData("Y", "Far Preset");
         telemetry.addData("X", "Manual Mode Toggle");
-        telemetry.addData("B", "Stop");
         telemetry.addData("", "");
 
         shooter.setDistanceToGoal(turret.getDistanceToGoal());
