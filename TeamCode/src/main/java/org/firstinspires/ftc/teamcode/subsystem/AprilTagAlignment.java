@@ -24,7 +24,7 @@ public class AprilTagAlignment implements Subsystem {
     private VisionPortal visionPortal;
 
     public static double kP = -0.03;
-    public static int targetTagID = 20;
+    public int targetTagID = 20
     public static double angleTolerance = 0.01;
     public static double maxPower = 1;
 
@@ -33,6 +33,15 @@ public class AprilTagAlignment implements Subsystem {
     private boolean isAligned = false;
 
     Telemetry telemetry;
+    
+//    public void isRed(boolean red){
+//        this.red = red;
+
+//        if (red){
+//            targetTagID = 24;
+//        } else {
+//            targetTagID = 20
+//        }
 
     public AprilTagAlignment(HardwareMap hardwareMap, Telemetry telemetry) {
         this.telemetry = telemetry;
