@@ -23,8 +23,10 @@ public class AprilTagAlignment implements Subsystem {
     private AprilTagProcessor aprilTag;
     private VisionPortal visionPortal;
 
+    public static boolean red;
+
     public static double kP = -0.03;
-    public int targetTagID = 20
+    public int targetTagID;
     public static double angleTolerance = 0.01;
     public static double maxPower = 1;
 
@@ -33,18 +35,22 @@ public class AprilTagAlignment implements Subsystem {
     private boolean isAligned = false;
 
     Telemetry telemetry;
+
+
     
-//    public void isRed(boolean red){
-//        this.red = red;
 
-//        if (red){
-//            targetTagID = 24;
-//        } else {
-//            targetTagID = 20
-//        }
 
-    public AprilTagAlignment(HardwareMap hardwareMap, Telemetry telemetry) {
+    public AprilTagAlignment(HardwareMap hardwareMap, Telemetry telemetry, String color) {
         this.telemetry = telemetry;
+
+        red = color.equals("RED");
+
+        if (red){
+            targetTagID = 24;
+        } else {
+            targetTagID = 20;
+        }
+
 
         // Initialize motors
         leftFront = hardwareMap.get(DcMotor.class, "LFM");
@@ -65,6 +71,8 @@ public class AprilTagAlignment implements Subsystem {
                 aprilTag
         );
     }
+
+
 
     @Override
     public void init() {

@@ -24,7 +24,7 @@ public class AprilTagAlignmentTele extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        alignment = new AprilTagAlignment(hardwareMap, telemetry);
+        alignment = new AprilTagAlignment(hardwareMap, telemetry, "RED");
         alignment.init();
         frontLeftDrive = hardwareMap.get(DcMotor.class, "LFM");
         backLeftDrive = hardwareMap.get(DcMotor.class, "LBM");

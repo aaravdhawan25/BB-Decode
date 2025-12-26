@@ -1,25 +1,18 @@
 package org.firstinspires.ftc.teamcode.opMode.teleOp;
 
-import android.text.TextUtils;
-
-import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.Vision.AprilTag;
 import org.firstinspires.ftc.teamcode.subsystem.AprilTagAlignment;
 
-@TeleOp (name="TeleOP Blue", group = "COMP")
+@TeleOp (name="TeleOp Red", group = "COMP")
 public class
-MecanumTeleOp extends LinearOpMode {
+MecanumTeleOP_RED extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor frontLeftDrive;
     private DcMotor backLeftDrive;
@@ -48,7 +41,7 @@ MecanumTeleOp extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        alignment = new AprilTagAlignment(hardwareMap, telemetry, "BLUE");
+        alignment = new AprilTagAlignment(hardwareMap, telemetry, "RED");
         alignment.init();
 
         // Initialize the hardware variables. Note that the strings used here must correspond
