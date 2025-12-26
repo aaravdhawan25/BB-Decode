@@ -17,7 +17,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Vision.AprilTag;
 import org.firstinspires.ftc.teamcode.subsystem.AprilTagAlignment;
 
-@TeleOp (name="TeleOP Blue", group = "COMP")
+@TeleOp (name="TeleOp Blue", group = "COMP")
 public class
 MecanumTeleOp extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
