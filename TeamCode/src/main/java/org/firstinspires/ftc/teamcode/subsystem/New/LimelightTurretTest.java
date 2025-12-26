@@ -113,8 +113,8 @@ public class LimelightTurretTest implements Subsystem {
             return;
         }
 
-        double x = targetTag.getTargetXDegreesNoCrosshair();
-        double y = targetTag.getTargetYDegreesNoCrosshair();
+        double x = targetTag.getTargetXDegrees();
+        double y = targetTag.getTargetYDegrees();
         double angleToTag = Math.atan2(x, y);
         double angleDegrees = Math.toDegrees(angleToTag);
 
