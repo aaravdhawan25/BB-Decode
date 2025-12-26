@@ -21,7 +21,6 @@ MecanumTeleOP_RED extends LinearOpMode {
     private DcMotor intakeMotor;
     private DcMotorEx outtake;
 
-    //private AprilTag aprilTag;
 
     private Servo kicker;
     private CRServo transfer;
@@ -44,8 +43,6 @@ MecanumTeleOP_RED extends LinearOpMode {
         alignment = new AprilTagAlignment(hardwareMap, telemetry, "RED");
         alignment.init();
 
-        // Initialize the hardware variables. Note that the strings used here must correspond
-        // to the names assigned during the robot configuration step on the DS or RC devices.
         frontLeftDrive = hardwareMap.get(DcMotor.class, "LFM");
         backLeftDrive = hardwareMap.get(DcMotor.class, "LBM");
         frontRightDrive = hardwareMap.get(DcMotor.class, "RFM");
@@ -66,7 +63,6 @@ MecanumTeleOP_RED extends LinearOpMode {
         backRightDrive.setDirection(DcMotor.Direction.FORWARD);
 
 
-        // Wait for the game to start (driver presses START)
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
