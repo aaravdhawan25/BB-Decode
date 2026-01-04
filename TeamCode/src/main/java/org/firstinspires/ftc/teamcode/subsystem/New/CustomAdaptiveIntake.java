@@ -11,7 +11,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.subsystem.Subsystem;
 
 public class CustomAdaptiveIntake implements Subsystem {
-    public DcMotor intake;
+    public DcMotor intake, transfer;
     Telemetry telemetry;
     public double intakePower;
 
@@ -19,6 +19,7 @@ public class CustomAdaptiveIntake implements Subsystem {
     public CustomAdaptiveIntake (HardwareMap hardwareMap, Telemetry telemetry){
         intake = hardwareMap.get(DcMotor.class, "intake");
         intakePiv = hardwareMap.get(Servo.class, "intakePiv");
+        transfer = hardwareMap.get(DcMotor.class, "transfer");
         this.telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
     }
 
@@ -27,6 +28,7 @@ public class CustomAdaptiveIntake implements Subsystem {
     public void init() {
         telemetry.addData("Intake","Initialized");
         telemetry.addData("PivServo", "Initialized");
+        telemetry.addData("Transfer", "Initialized");
         telemetry.update();
 
     }
@@ -37,18 +39,22 @@ public class CustomAdaptiveIntake implements Subsystem {
     }
     public void autoIntake(){
         intake.setPower(1);
+        transfer.setPower(1);
     }
 
     public void autoIntakeOff(){
         intake.setPower(0);
+        transfer.setPower(0);
     }
 
     public void pivSendBalls(){
-        intakePiv.setPosition(0); // changePos based on irl
+        intakePiv.setPosition(0);// changePos based on irl
         intake.setPower(0.8);
+        transfer.setPower(1);
     }
     public void pivIntake(){
         intakePiv.setPosition(2);// changePos based on irl
+        transfer.setPower(0);
     }
 
     @Override
