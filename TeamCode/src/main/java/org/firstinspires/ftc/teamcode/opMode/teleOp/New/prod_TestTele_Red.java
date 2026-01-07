@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.subsystem.New.CustomAdaptiveIntake;
 import org.firstinspires.ftc.teamcode.subsystem.New.Shooter2;
 import org.firstinspires.ftc.teamcode.subsystem.New.Turret;
 
-@TeleOp(name = "TurretTeleBlue", group = "Blue")
+@TeleOp(name = "TurretTeleRed", group = "Blue")
 @Disabled
 public class prod_TestTele_Red extends LinearOpMode {
 

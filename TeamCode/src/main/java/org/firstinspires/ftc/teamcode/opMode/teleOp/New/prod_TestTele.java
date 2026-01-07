@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.subsystem.New.CustomAdaptiveIntake;
 import org.firstinspires.ftc.teamcode.subsystem.New.Shooter2;
 import org.firstinspires.ftc.teamcode.subsystem.New.Turret;
 
-@TeleOp(name = "TurretTeleBlue", group = "Blue")
+@TeleOp(name = "COMP Teleop", group = "a")
 @Disabled
 public class prod_TestTele extends LinearOpMode {
 
@@ -24,23 +24,20 @@ public class prod_TestTele extends LinearOpMode {
 
 
     Drivetrain drivetrain;
-    Turret turret;
     CustomAdaptiveIntake customAdaptiveIntake;
     Shooter2 shooter;
 
     Telemetry telemetry;
 
-    MecanumDrive drive;
+    MecanumDrive follower;
 
     @Override
     public void runOpMode() throws InterruptedException {
         drivetrain = new Drivetrain(hardwareMap,telemetry);
-        turret = new Turret(hardwareMap, telemetry);
         customAdaptiveIntake = new CustomAdaptiveIntake(hardwareMap, telemetry);
         shooter = new Shooter2(hardwareMap, telemetry);
-        drive = new MecanumDrive(hardwareMap, START_POSE);
+        follower = new MecanumDrive(hardwareMap, START_POSE);
         drivetrain.init();
-        turret.init();
         customAdaptiveIntake.init();
         shooter.init();
         telemetry = new MultipleTelemetry(FtcDashboard.getInstance().getTelemetry());
@@ -48,30 +45,21 @@ public class prod_TestTele extends LinearOpMode {
 
 
         while (!opModeIsActive()) {
-            turret.updatePose(START_POSE.position, Math.toDegrees(START_POSE.heading.toDouble()));
-            turret.returnTurretHome();
+            telemetry.addData("Status", "Waiting for Start");
         }
 
         waitForStart();
 
         while (opModeIsActive()){
 
-            drive.updatePoseEstimate();
 
-            // Get current pose from Road Runner
-            Pose2d currentPose = drive.localizer.getPose();
-            Vector2d currentPos = currentPose.position;
-            double currentHeading = Math.toDegrees(currentPose.heading.toDouble());
 
-            turret.updatePose(currentPos, currentHeading);
-            turret.update();
             drivetrain.update();
             customAdaptiveIntake.update();
             shooter.update();
 
 
             drivetrain.updateCtrls(gamepad1, gamepad2);
-            turret.updateCtrls(gamepad1, gamepad2);
             customAdaptiveIntake.updateCtrls(gamepad1, gamepad2);
             shooter.updateCtrls(gamepad1, gamepad2);
 

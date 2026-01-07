@@ -41,6 +41,10 @@ public class Shooter2 implements Subsystem {
 
     private double distanceToGoal = 0;
 
+    public static double BlockerOpen = 0;
+
+    public static double BlockerClosed = 0;
+
     Telemetry telemetry;
 
     private DcMotorEx shooterMotor;

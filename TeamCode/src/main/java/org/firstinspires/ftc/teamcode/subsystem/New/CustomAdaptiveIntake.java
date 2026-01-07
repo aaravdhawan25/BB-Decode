@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.botconstants;
 import org.firstinspires.ftc.teamcode.subsystem.Subsystem;
 
 public class CustomAdaptiveIntake implements Subsystem {
@@ -16,9 +17,24 @@ public class CustomAdaptiveIntake implements Subsystem {
     public double intakePower;
 
     Servo intakePiv;
+
+    public static double intakeUp = 0;
+    public static double intakeDown = 0;
+    public static double intakeOff = 0;
+
+    public static double intakeIntake = 0.7;
+
+    public static double intakeTransfer = 0.5;
+
+    public static double transferPowerON = 1;
+    public static double transferPowerOFF = 0;
+
+    botconstants botconstants;
+
+
     public CustomAdaptiveIntake (HardwareMap hardwareMap, Telemetry telemetry){
         intake = hardwareMap.get(DcMotor.class, "intake");
-        intakePiv = hardwareMap.get(Servo.class, "intakePiv");
+        intakePiv = hardwareMap.get(Servo.class, "pivServo");
         transfer = hardwareMap.get(DcMotor.class, "transfer");
         this.telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
     }
@@ -33,43 +49,44 @@ public class CustomAdaptiveIntake implements Subsystem {
 
     }
 
-    public void intakeIn(double power) {
 
-        intakePower = power;
-    }
     public void autoIntake(){
-        intake.setPower(1);
-        transfer.setPower(1);
+        intake.setPower(intakeIntake);
+        transfer.setPower(transferPowerON);
     }
 
     public void autoIntakeOff(){
-        intake.setPower(0);
-        transfer.setPower(0);
+        intake.setPower(intakeOff);
+        transfer.setPower(transferPowerOFF);
     }
 
     public void pivSendBalls(){
-        intakePiv.setPosition(0);// changePos based on irl
-        intake.setPower(0.8);
-        transfer.setPower(1);
+        intakePiv.setPosition(intakeDown);// changePos based on irl
+        intake.setPower(intakeTransfer);
+        transfer.setPower(transferPowerON);
     }
     public void pivIntake(){
-        intakePiv.setPosition(2);// changePos based on irl
-        transfer.setPower(0);
+        intakePiv.setPosition(intakeUp);// changePos based on irl
+        transfer.setPower(transferPowerOFF);
     }
 
     @Override
-    public void update() {
-        intake.setPower(intakePower);
-    }
+    public void update(){}
 
     @Override
     public void updateCtrls(Gamepad gp1, Gamepad gp2) {
-        intakePower = gp1.right_trigger;
         if (gp2.aWasPressed()){
             pivSendBalls();
         }
         if (gp2.bWasPressed()){
             pivIntake();
+        }
+
+        if (gp1.rightBumperWasPressed()){
+            autoIntake();
+        }
+        if (gp1.rightBumperWasReleased()){
+            autoIntakeOff();
         }
 
     }
