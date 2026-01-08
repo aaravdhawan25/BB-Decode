@@ -149,8 +149,7 @@ public class RedFar extends LinearOpMode {
 
             case INTAKE1:
                 currentAction = intake1.run(packet);
-                customAdaptiveIntake.pivIntake();
-                customAdaptiveIntake.autoIntake();
+                customAdaptiveIntake.Intake();
 
                 if (!currentAction) {
                     state = AutoStates.SHOOT1;
@@ -159,15 +158,15 @@ public class RedFar extends LinearOpMode {
                 break;
             case SHOOT1:
                 currentAction = shoot1.run(packet);
-                customAdaptiveIntake.autoIntakeOff();
+                customAdaptiveIntake.IntakeIdle();
                 if (time.seconds() >= 1.4){
                     shooter.spinUpClose();
                 }
                 if (time.seconds() >= 3){
-                    customAdaptiveIntake.pivSendBalls();
+                    customAdaptiveIntake.Transfer();
                 }
                 if (time.seconds() >= 3.7){
-                    customAdaptiveIntake.autoIntakeOff();
+                    customAdaptiveIntake.IntakeIdle();
                 }
 
                 if (!currentAction) {
@@ -179,8 +178,7 @@ public class RedFar extends LinearOpMode {
             case INTAKE2:
                 currentAction = intake2.run(packet);
                 shooter.stop();
-                customAdaptiveIntake.pivIntake();
-                customAdaptiveIntake.autoIntake();
+                customAdaptiveIntake.Intake();
 
                 if (!currentAction) {
                     state = AutoStates.SHOOT2;
@@ -190,13 +188,13 @@ public class RedFar extends LinearOpMode {
 
             case SHOOT2:
                 currentAction = shoot2.run(packet);
-                customAdaptiveIntake.autoIntakeOff();
+                customAdaptiveIntake.IntakeIdle();
                 if (time.seconds() >= 1.84){
                     shooter.spinUpClose();
                 }
 
                 if (time.seconds() >= 3){
-                    customAdaptiveIntake.pivSendBalls();
+                    customAdaptiveIntake.Transfer();
                 }
 
                 if (!currentAction) {
@@ -209,8 +207,7 @@ public class RedFar extends LinearOpMode {
             case INTAKE3:
                 currentAction = intake3.run(packet);
                 shooter.stop();
-                customAdaptiveIntake.pivIntake();
-                customAdaptiveIntake.autoIntake();
+                customAdaptiveIntake.Intake();
 
                 if (!currentAction){
                     state = AutoStates.SHOOT3;
@@ -225,7 +222,7 @@ public class RedFar extends LinearOpMode {
                     shooter.spinUpClose();
                 }
                 if (time.seconds() >= 3.5){
-                    customAdaptiveIntake.pivSendBalls();
+                    customAdaptiveIntake.Transfer();
                 }
 
                 if (!currentAction) {
@@ -237,7 +234,7 @@ public class RedFar extends LinearOpMode {
             case PARK:
                 currentAction = park.run(packet);
                 shooter.stop();
-                customAdaptiveIntake.pivIntake();
+                customAdaptiveIntake.IntakeIdle();
 
                 if (!currentAction){
                     state = AutoStates.END;
