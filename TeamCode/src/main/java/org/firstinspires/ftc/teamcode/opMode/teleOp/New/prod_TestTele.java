@@ -46,6 +46,7 @@ public class prod_TestTele extends LinearOpMode {
 
         while (!opModeIsActive()) {
             telemetry.addData("Status", "Waiting for Start");
+            telemetry.update();
             runtime.reset();
 
         }
@@ -72,7 +73,7 @@ public class prod_TestTele extends LinearOpMode {
             }
 
             telemetry.addData("Time Period", isEndgame ? "TeleOp" : "Go Park");
-            
+
             telemetry.update();
         }
     }
