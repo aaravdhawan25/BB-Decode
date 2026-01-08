@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.subsystem.New;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
@@ -10,7 +11,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.botconstants;
 import org.firstinspires.ftc.teamcode.subsystem.Subsystem;
-
+@Config
 public class CustomAdaptiveIntake implements Subsystem {
     public DcMotor intake, transfer;
     Telemetry telemetry;
@@ -33,10 +34,10 @@ public class CustomAdaptiveIntake implements Subsystem {
 
 
     public CustomAdaptiveIntake (HardwareMap hardwareMap, Telemetry telemetry){
+        this.telemetry = telemetry;
         intake = hardwareMap.get(DcMotor.class, "intake");
         intakePiv = hardwareMap.get(Servo.class, "pivServo");
         transfer = hardwareMap.get(DcMotor.class, "transfer");
-        this.telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
     }
 
 
@@ -71,12 +72,18 @@ public class CustomAdaptiveIntake implements Subsystem {
     }
 
     @Override
-    public void update(){}
+    public void update(){
+
+    }
 
     @Override
     public void updateCtrls(Gamepad gp1, Gamepad gp2) {
         if (gp2.aWasPressed()){
             pivSendBalls();
+        }
+
+        if (gp2.aWasReleased()){
+            pivIntake();
         }
         if (gp2.bWasPressed()){
             pivIntake();

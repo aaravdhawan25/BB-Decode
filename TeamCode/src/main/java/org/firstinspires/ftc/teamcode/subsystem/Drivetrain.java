@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -20,16 +21,16 @@ public class Drivetrain implements Subsystem {
 
     public boolean bumpToggle = false;
     public Drivetrain(HardwareMap map, Telemetry telemetry) {
-        this.telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+        this.telemetry = telemetry;
         lfMotor = map.get(DcMotor.class, "LFM");
         lbMotor = map.get(DcMotor.class, "LBM");
         rfMotor = map.get(DcMotor.class, "RFM");
         rbMotor = map.get(DcMotor.class, "RBM");
 
-        lfMotor.setDirection(DcMotor.Direction.REVERSE);
-        lbMotor.setDirection(DcMotor.Direction.REVERSE);
+        lfMotor.setDirection(DcMotor.Direction.FORWARD);
+        lbMotor.setDirection(DcMotor.Direction.FORWARD);
         rfMotor.setDirection(DcMotor.Direction.REVERSE);
-        rbMotor.setDirection(DcMotor.Direction.FORWARD);
+        rbMotor.setDirection(DcMotor.Direction.REVERSE);
 
         lfMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         lbMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);

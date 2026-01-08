@@ -239,9 +239,8 @@ public final class MecanumDrive {
         rightBack = hardwareMap.get(DcMotorEx.class, "RBM");
         rightFront = hardwareMap.get(DcMotorEx.class, "RFM");
 
-        leftFront.setDirection(DcMotorEx.Direction.REVERSE);
-        leftBack.setDirection(DcMotorEx.Direction.REVERSE);
         rightFront.setDirection(DcMotorEx.Direction.REVERSE);
+        rightBack.setDirection(DcMotorEx.Direction.REVERSE);
 
         leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);

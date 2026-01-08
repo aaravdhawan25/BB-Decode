@@ -41,8 +41,7 @@ public class Turret implements Subsystem {
 
 
     public Turret(HardwareMap map, Telemetry telemetry) {
-        this.telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-
+        this.telemetry = telemetry;
         turretServo1 = map.get(Servo.class, "turretservo1");
         turretServo2 = map.get(Servo.class, "turretservo2");
     }

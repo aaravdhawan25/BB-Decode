@@ -16,7 +16,6 @@ import org.firstinspires.ftc.teamcode.subsystem.New.Shooter2;
 import org.firstinspires.ftc.teamcode.subsystem.New.Turret;
 
 @TeleOp(name = "COMP Teleop", group = "a")
-@Disabled
 public class prod_TestTele extends LinearOpMode {
 
     private static final Pose2d START_POSE = new Pose2d(-36, -60, Math.toRadians(90));
@@ -27,12 +26,11 @@ public class prod_TestTele extends LinearOpMode {
     CustomAdaptiveIntake customAdaptiveIntake;
     Shooter2 shooter;
 
-    Telemetry telemetry;
-
     MecanumDrive follower;
 
     @Override
     public void runOpMode() throws InterruptedException {
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         drivetrain = new Drivetrain(hardwareMap,telemetry);
         customAdaptiveIntake = new CustomAdaptiveIntake(hardwareMap, telemetry);
         shooter = new Shooter2(hardwareMap, telemetry);
@@ -40,8 +38,6 @@ public class prod_TestTele extends LinearOpMode {
         drivetrain.init();
         customAdaptiveIntake.init();
         shooter.init();
-        telemetry = new MultipleTelemetry(FtcDashboard.getInstance().getTelemetry());
-
 
 
         while (!opModeIsActive()) {
