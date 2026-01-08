@@ -30,6 +30,16 @@ public class CustomAdaptiveIntake implements Subsystem {
     public static double transferPowerON = 1;
     public static double transferPowerOFF = 0;
 
+    boolean isIntaking = false;
+    boolean isTransfer = false;
+    private IntakeStates state = IntakeStates.IDLE;
+
+    public enum IntakeStates{
+        INTAKING,
+        TRANSFER,
+        IDLE
+    }
+
     botconstants botconstants;
 
 
@@ -71,29 +81,63 @@ public class CustomAdaptiveIntake implements Subsystem {
         transfer.setPower(transferPowerOFF);
     }
 
+    public void setState(CustomAdaptiveIntake.IntakeStates newState) {
+        this.state = newState;
+    }
+
+    public void IntakeIdle(){
+        setState(IntakeStates.IDLE);
+
+    }
+
+    public void Intake(){
+        setState(IntakeStates.INTAKING);
+
+    }
+
+    public void Transfer(){
+        setState(IntakeStates.TRANSFER);
+
+    }
+
     @Override
     public void update(){
+        switch (state){
+            case IDLE:
+                intakePiv.setPosition(intakeUp);
+                transfer.setPower(transferPowerOFF);
+                intake.setPower(intakeOff);
+                break;
+
+            case INTAKING:
+                intakePiv.setPosition(intakeUp);
+                intake.setPower(intakeIntake);
+                transfer.setPower(transferPowerON);
+                break;
+            case TRANSFER:
+                intakePiv.setPosition(intakeDown);
+                intake.setPower(intakeTransfer);
+                transfer.setPower(transferPowerON);
+        }
 
     }
 
     @Override
     public void updateCtrls(Gamepad gp1, Gamepad gp2) {
         if (gp2.aWasPressed()){
-            pivSendBalls();
+            Transfer();
         }
 
         if (gp2.aWasReleased()){
-            pivIntake();
-        }
-        if (gp2.bWasPressed()){
-            pivIntake();
+            IntakeIdle();
         }
 
+
         if (gp1.rightBumperWasPressed()){
-            autoIntake();
+            Intake();
         }
         if (gp1.rightBumperWasReleased()){
-            autoIntakeOff();
+            IntakeIdle();
         }
 
     }
