@@ -35,7 +35,6 @@ public class BlueFar extends LinearOpMode {
     Shooter2 shooter;
     CustomAdaptiveIntake customAdaptiveIntake;
 
-    Turret turret;
 
     Telemetry telemetry;
     Action intake1, shoot1, intake2, shoot2, intake3, shoot3, park;
@@ -62,14 +61,12 @@ public class BlueFar extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         follower = new MecanumDrive(hardwareMap, START_POSE);
         shooter = new Shooter2(hardwareMap, telemetry);
-        turret = new Turret(hardwareMap, telemetry);
         customAdaptiveIntake = new CustomAdaptiveIntake(hardwareMap, telemetry);
         telemetry = new MultipleTelemetry(FtcDashboard.getInstance().getTelemetry());
         build_paths();
 
         while (!opModeIsActive()) {
-            turret.updatePose(START_POSE.position,Math.toDegrees(START_POSE.heading.toDouble()));
-            turret.returnTurretHome();
+
         }
 
 
@@ -83,7 +80,6 @@ public class BlueFar extends LinearOpMode {
             follower.updatePoseEstimate();
             Pose2d currentPose = follower.localizer.getPose();
 
-            turret.updatePose(currentPose.position, Math.toDegrees(currentPose.heading.toDouble()));
 
             update();
 
@@ -150,7 +146,6 @@ public class BlueFar extends LinearOpMode {
             case INTAKE1:
                 currentAction = intake1.run(packet);
                 customAdaptiveIntake.Intake();
-                turret.setAligning(false);
 
                 if (!currentAction) {
                     state = AutoStates.SHOOT1;
@@ -161,7 +156,6 @@ public class BlueFar extends LinearOpMode {
                 currentAction = shoot1.run(packet);
                 customAdaptiveIntake.IntakeIdle();
                 if (time.seconds() >= 1.4){
-                    turret.setAligning(true);
                     shooter.spinUpClose();
                 }
                 if (time.seconds() >= 3){
@@ -181,7 +175,6 @@ public class BlueFar extends LinearOpMode {
                 currentAction = intake2.run(packet);
                 shooter.stop();
                 customAdaptiveIntake.Intake();
-                turret.setAligning(false);
 
                 if (!currentAction) {
                     state = AutoStates.SHOOT2;
@@ -193,7 +186,6 @@ public class BlueFar extends LinearOpMode {
                 currentAction = shoot2.run(packet);
                 customAdaptiveIntake.IntakeIdle();
                 if (time.seconds() >= 1.84){
-                    turret.setAligning(true);
                     shooter.spinUpClose();
                 }
 
@@ -212,7 +204,6 @@ public class BlueFar extends LinearOpMode {
                 currentAction = intake3.run(packet);
                 shooter.stop();
                 customAdaptiveIntake.Intake();
-                turret.setAligning(false);
 
                 if (!currentAction){
                     state = AutoStates.SHOOT3;
@@ -225,7 +216,6 @@ public class BlueFar extends LinearOpMode {
                 currentAction = shoot3.run(packet);
                 customAdaptiveIntake.IntakeIdle();
                 if (time.seconds() >= 2.12){
-                    turret.setAligning(true);
                     shooter.spinUpClose();
                 }
                 if (time.seconds() >= 3.5){
@@ -241,7 +231,6 @@ public class BlueFar extends LinearOpMode {
             case PARK:
                 currentAction = park.run(packet);
                 shooter.stop();
-                turret.setAligning(false);
                 customAdaptiveIntake.IntakeIdle();
 
                 if (!currentAction){
