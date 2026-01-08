@@ -284,10 +284,10 @@ public class Shooter2 implements Subsystem {
         double currentRPMCR = getCounterRollerRPM();
         double error = crTargetRPM + currentRPMCR;
         CRpidfController.setPIDF(CR_KP,CR_KI,CR_KD, CR_KF);
-        double power = CRpidfController.calculate(-currentRPMCR, crTargetRPM);
-        power = Range.clip(power, 0, 1);
+        double CRpower = CRpidfController.calculate(-currentRPMCR, crTargetRPM);
+        CRpower = Range.clip(CRpower, 0, 1);
 
-        counterRoller.setPower(power);
+        counterRoller.setPower(CRpower);
     }
 
     @Override
