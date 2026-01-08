@@ -118,7 +118,10 @@ public class CustomAdaptiveIntake implements Subsystem {
                 intakePiv.setPosition(intakeDown);
                 intake.setPower(intakeTransfer);
                 transfer.setPower(transferPowerON);
+                break;
         }
+
+        telemetry.addData("Intake State", state);
 
     }
 
