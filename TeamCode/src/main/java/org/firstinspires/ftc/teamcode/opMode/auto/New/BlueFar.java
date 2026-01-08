@@ -149,8 +149,7 @@ public class BlueFar extends LinearOpMode {
 
             case INTAKE1:
                 currentAction = intake1.run(packet);
-                customAdaptiveIntake.pivIntake();
-                customAdaptiveIntake.autoIntake();
+                customAdaptiveIntake.Intake();
                 turret.setAligning(false);
 
                 if (!currentAction) {
@@ -160,16 +159,16 @@ public class BlueFar extends LinearOpMode {
                 break;
             case SHOOT1:
                 currentAction = shoot1.run(packet);
-                customAdaptiveIntake.autoIntakeOff();
+                customAdaptiveIntake.IntakeIdle();
                 if (time.seconds() >= 1.4){
                     turret.setAligning(true);
                     shooter.spinUpClose();
                 }
                 if (time.seconds() >= 3){
-                    customAdaptiveIntake.pivSendBalls();
+                    customAdaptiveIntake.Transfer();
                 }
                 if (time.seconds() >= 3.7){
-                    customAdaptiveIntake.autoIntakeOff();
+                    customAdaptiveIntake.IntakeIdle();
                 }
 
                 if (!currentAction) {
@@ -181,8 +180,7 @@ public class BlueFar extends LinearOpMode {
             case INTAKE2:
                 currentAction = intake2.run(packet);
                 shooter.stop();
-                customAdaptiveIntake.pivIntake();
-                customAdaptiveIntake.autoIntake();
+                customAdaptiveIntake.Intake();
                 turret.setAligning(false);
 
                 if (!currentAction) {
@@ -193,14 +191,14 @@ public class BlueFar extends LinearOpMode {
 
             case SHOOT2:
                 currentAction = shoot2.run(packet);
-                customAdaptiveIntake.autoIntakeOff();
+                customAdaptiveIntake.IntakeIdle();
                 if (time.seconds() >= 1.84){
                     turret.setAligning(true);
                     shooter.spinUpClose();
                 }
 
                 if (time.seconds() >= 3){
-                    customAdaptiveIntake.pivSendBalls();
+                    customAdaptiveIntake.Transfer();
                 }
 
                 if (!currentAction) {
@@ -213,8 +211,7 @@ public class BlueFar extends LinearOpMode {
             case INTAKE3:
                 currentAction = intake3.run(packet);
                 shooter.stop();
-                customAdaptiveIntake.pivIntake();
-                customAdaptiveIntake.autoIntake();
+                customAdaptiveIntake.Intake();
                 turret.setAligning(false);
 
                 if (!currentAction){
@@ -226,12 +223,13 @@ public class BlueFar extends LinearOpMode {
 
             case SHOOT3:
                 currentAction = shoot3.run(packet);
+                customAdaptiveIntake.IntakeIdle();
                 if (time.seconds() >= 2.12){
                     turret.setAligning(true);
                     shooter.spinUpClose();
                 }
                 if (time.seconds() >= 3.5){
-                    customAdaptiveIntake.pivSendBalls();
+                    customAdaptiveIntake.Transfer();
                 }
 
                 if (!currentAction) {
@@ -244,7 +242,7 @@ public class BlueFar extends LinearOpMode {
                 currentAction = park.run(packet);
                 shooter.stop();
                 turret.setAligning(false);
-                customAdaptiveIntake.pivIntake();
+                customAdaptiveIntake.IntakeIdle();
 
                 if (!currentAction){
                     state = AutoStates.END;

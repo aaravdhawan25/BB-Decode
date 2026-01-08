@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.config.Config;
 @Config
 public class botconstants {
 
+
     public static double IntakePivUp = 0;
     public static double IntakePivDown = 0;
 

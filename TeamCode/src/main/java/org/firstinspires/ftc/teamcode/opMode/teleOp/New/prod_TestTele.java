@@ -7,6 +7,7 @@ import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.RoadRunner.MecanumDrive;
@@ -26,7 +27,10 @@ public class prod_TestTele extends LinearOpMode {
     CustomAdaptiveIntake customAdaptiveIntake;
     Shooter2 shooter;
 
+    boolean isEndgame = false;
+
     MecanumDrive follower;
+    ElapsedTime runtime = new ElapsedTime();
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -42,11 +46,14 @@ public class prod_TestTele extends LinearOpMode {
 
         while (!opModeIsActive()) {
             telemetry.addData("Status", "Waiting for Start");
+            runtime.reset();
+
         }
 
         waitForStart();
 
         while (opModeIsActive()){
+            runtime.startTime();
 
 
 
@@ -59,7 +66,13 @@ public class prod_TestTele extends LinearOpMode {
             customAdaptiveIntake.updateCtrls(gamepad1, gamepad2);
             shooter.updateCtrls(gamepad1, gamepad2);
 
+            if (runtime.seconds() >= 140){
+                gamepad1.rumble(200);
+                isEndgame = true;
+            }
 
+            telemetry.addData("Time Period", isEndgame ? "TeleOp" : "Go Park");
+            
             telemetry.update();
         }
     }
