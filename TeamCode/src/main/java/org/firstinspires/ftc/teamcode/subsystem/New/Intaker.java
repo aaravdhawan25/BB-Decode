@@ -1,8 +1,6 @@
 package org.firstinspires.ftc.teamcode.subsystem.New;
 
-import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -12,7 +10,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.botconstants;
 import org.firstinspires.ftc.teamcode.subsystem.Subsystem;
 @Config
-public class CustomAdaptiveIntake implements Subsystem {
+public class Intaker implements Subsystem {
     public DcMotor intake, transfer;
     Telemetry telemetry;
     public double intakePower;
@@ -43,7 +41,7 @@ public class CustomAdaptiveIntake implements Subsystem {
     botconstants botconstants;
 
 
-    public CustomAdaptiveIntake (HardwareMap hardwareMap, Telemetry telemetry){
+    public Intaker(HardwareMap hardwareMap, Telemetry telemetry){
         this.telemetry = telemetry;
         intake = hardwareMap.get(DcMotor.class, "intake");
         intakePiv = hardwareMap.get(Servo.class, "pivServo");
@@ -81,7 +79,7 @@ public class CustomAdaptiveIntake implements Subsystem {
         transfer.setPower(transferPowerOFF);
     }
 
-    public void setState(CustomAdaptiveIntake.IntakeStates newState) {
+    public void setState(Intaker.IntakeStates newState) {
         this.state = newState;
     }
 

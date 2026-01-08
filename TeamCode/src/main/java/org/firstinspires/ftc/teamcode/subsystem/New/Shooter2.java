@@ -1,11 +1,9 @@
 package org.firstinspires.ftc.teamcode.subsystem.New;
 
-import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.controller.PIDFController;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -13,7 +11,6 @@ import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.subsystem.Subsystem;
-import org.firstinspires.ftc.teamcode.utils.PerTelem;
 
 @Config
 public class Shooter2 implements Subsystem {
@@ -51,7 +48,7 @@ public class Shooter2 implements Subsystem {
     private DcMotorEx shooterMotor;
     private DcMotorEx counterRoller;
 
-    CustomAdaptiveIntake intake;
+    Intaker intake;
     private Servo blocker;
 
     private MultipleTelemetry multipleTelemetry;

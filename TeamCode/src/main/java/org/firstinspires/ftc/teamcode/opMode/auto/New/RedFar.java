@@ -15,7 +15,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.RoadRunner.MecanumDrive;
-import org.firstinspires.ftc.teamcode.subsystem.New.CustomAdaptiveIntake;
+import org.firstinspires.ftc.teamcode.subsystem.New.Intaker;
 import org.firstinspires.ftc.teamcode.subsystem.New.Shooter2;
 
 
@@ -27,7 +27,7 @@ public class RedFar extends LinearOpMode {
     MecanumDrive follower;
 
     Shooter2 shooter;
-    CustomAdaptiveIntake customAdaptiveIntake;
+    Intaker intaker;
 
     Telemetry telemetry;
 
@@ -60,7 +60,7 @@ public class RedFar extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         follower = new MecanumDrive(hardwareMap, START_POSE);
         shooter = new Shooter2(hardwareMap, telemetry);
-        customAdaptiveIntake = new CustomAdaptiveIntake(hardwareMap, telemetry);
+        intaker = new Intaker(hardwareMap, telemetry);
         telemetry = new MultipleTelemetry(FtcDashboard.getInstance().getTelemetry());
 
 
@@ -149,7 +149,7 @@ public class RedFar extends LinearOpMode {
 
             case INTAKE1:
                 currentAction = intake1.run(packet);
-                customAdaptiveIntake.Intake();
+                intaker.Intake();
 
                 if (!currentAction) {
                     state = AutoStates.SHOOT1;
@@ -158,15 +158,15 @@ public class RedFar extends LinearOpMode {
                 break;
             case SHOOT1:
                 currentAction = shoot1.run(packet);
-                customAdaptiveIntake.IntakeIdle();
+                intaker.IntakeIdle();
                 if (time.seconds() >= 1.4){
                     shooter.spinUpClose();
                 }
                 if (time.seconds() >= 3){
-                    customAdaptiveIntake.Transfer();
+                    intaker.Transfer();
                 }
                 if (time.seconds() >= 3.7){
-                    customAdaptiveIntake.IntakeIdle();
+                    intaker.IntakeIdle();
                 }
 
                 if (!currentAction) {
@@ -178,7 +178,7 @@ public class RedFar extends LinearOpMode {
             case INTAKE2:
                 currentAction = intake2.run(packet);
                 shooter.stop();
-                customAdaptiveIntake.Intake();
+                intaker.Intake();
 
                 if (!currentAction) {
                     state = AutoStates.SHOOT2;
@@ -188,13 +188,13 @@ public class RedFar extends LinearOpMode {
 
             case SHOOT2:
                 currentAction = shoot2.run(packet);
-                customAdaptiveIntake.IntakeIdle();
+                intaker.IntakeIdle();
                 if (time.seconds() >= 1.84){
                     shooter.spinUpClose();
                 }
 
                 if (time.seconds() >= 3){
-                    customAdaptiveIntake.Transfer();
+                    intaker.Transfer();
                 }
 
                 if (!currentAction) {
@@ -207,7 +207,7 @@ public class RedFar extends LinearOpMode {
             case INTAKE3:
                 currentAction = intake3.run(packet);
                 shooter.stop();
-                customAdaptiveIntake.Intake();
+                intaker.Intake();
 
                 if (!currentAction){
                     state = AutoStates.SHOOT3;
@@ -222,7 +222,7 @@ public class RedFar extends LinearOpMode {
                     shooter.spinUpClose();
                 }
                 if (time.seconds() >= 3.5){
-                    customAdaptiveIntake.Transfer();
+                    intaker.Transfer();
                 }
 
                 if (!currentAction) {
@@ -234,7 +234,7 @@ public class RedFar extends LinearOpMode {
             case PARK:
                 currentAction = park.run(packet);
                 shooter.stop();
-                customAdaptiveIntake.IntakeIdle();
+                intaker.IntakeIdle();
 
                 if (!currentAction){
                     state = AutoStates.END;

@@ -10,20 +10,12 @@ import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.RoadRunner.MecanumDrive;
-import org.firstinspires.ftc.teamcode.subsystem.Intake;
-import org.firstinspires.ftc.teamcode.subsystem.New.CustomAdaptiveIntake;
-import org.firstinspires.ftc.teamcode.subsystem.New.Shooter;
+import org.firstinspires.ftc.teamcode.subsystem.New.Intaker;
 import org.firstinspires.ftc.teamcode.subsystem.New.Shooter2;
-import org.firstinspires.ftc.teamcode.subsystem.New.Turret;
-import org.firstinspires.ftc.teamcode.subsystem.Outtake;
-import org.firstinspires.ftc.teamcode.subsystem.Kicker;
-import org.firstinspires.ftc.teamcode.subsystem.Transfer;
-import org.firstinspires.ftc.teamcode.utils.PerTelem;
 
 @Config
 @Autonomous(name = "BlueFar", group = "Autonomous")
@@ -33,7 +25,7 @@ public class BlueFar extends LinearOpMode {
     MecanumDrive follower;
 
     Shooter2 shooter;
-    CustomAdaptiveIntake customAdaptiveIntake;
+    Intaker intaker;
 
 
     Telemetry telemetry;
@@ -61,7 +53,7 @@ public class BlueFar extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         follower = new MecanumDrive(hardwareMap, START_POSE);
         shooter = new Shooter2(hardwareMap, telemetry);
-        customAdaptiveIntake = new CustomAdaptiveIntake(hardwareMap, telemetry);
+        intaker = new Intaker(hardwareMap, telemetry);
         telemetry = new MultipleTelemetry(FtcDashboard.getInstance().getTelemetry());
         build_paths();
 
@@ -145,7 +137,7 @@ public class BlueFar extends LinearOpMode {
 
             case INTAKE1:
                 currentAction = intake1.run(packet);
-                customAdaptiveIntake.Intake();
+                intaker.Intake();
 
                 if (!currentAction) {
                     state = AutoStates.SHOOT1;
@@ -154,15 +146,15 @@ public class BlueFar extends LinearOpMode {
                 break;
             case SHOOT1:
                 currentAction = shoot1.run(packet);
-                customAdaptiveIntake.IntakeIdle();
+                intaker.IntakeIdle();
                 if (time.seconds() >= 1.4){
                     shooter.spinUpClose();
                 }
                 if (time.seconds() >= 3){
-                    customAdaptiveIntake.Transfer();
+                    intaker.Transfer();
                 }
                 if (time.seconds() >= 3.7){
-                    customAdaptiveIntake.IntakeIdle();
+                    intaker.IntakeIdle();
                 }
 
                 if (!currentAction) {
@@ -174,7 +166,7 @@ public class BlueFar extends LinearOpMode {
             case INTAKE2:
                 currentAction = intake2.run(packet);
                 shooter.stop();
-                customAdaptiveIntake.Intake();
+                intaker.Intake();
 
                 if (!currentAction) {
                     state = AutoStates.SHOOT2;
@@ -184,13 +176,13 @@ public class BlueFar extends LinearOpMode {
 
             case SHOOT2:
                 currentAction = shoot2.run(packet);
-                customAdaptiveIntake.IntakeIdle();
+                intaker.IntakeIdle();
                 if (time.seconds() >= 1.84){
                     shooter.spinUpClose();
                 }
 
                 if (time.seconds() >= 3){
-                    customAdaptiveIntake.Transfer();
+                    intaker.Transfer();
                 }
 
                 if (!currentAction) {
@@ -203,7 +195,7 @@ public class BlueFar extends LinearOpMode {
             case INTAKE3:
                 currentAction = intake3.run(packet);
                 shooter.stop();
-                customAdaptiveIntake.Intake();
+                intaker.Intake();
 
                 if (!currentAction){
                     state = AutoStates.SHOOT3;
@@ -214,12 +206,12 @@ public class BlueFar extends LinearOpMode {
 
             case SHOOT3:
                 currentAction = shoot3.run(packet);
-                customAdaptiveIntake.IntakeIdle();
+                intaker.IntakeIdle();
                 if (time.seconds() >= 2.12){
                     shooter.spinUpClose();
                 }
                 if (time.seconds() >= 3.5){
-                    customAdaptiveIntake.Transfer();
+                    intaker.Transfer();
                 }
 
                 if (!currentAction) {
@@ -231,7 +223,7 @@ public class BlueFar extends LinearOpMode {
             case PARK:
                 currentAction = park.run(packet);
                 shooter.stop();
-                customAdaptiveIntake.IntakeIdle();
+                intaker.IntakeIdle();
 
                 if (!currentAction){
                     state = AutoStates.END;
