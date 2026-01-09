@@ -231,7 +231,6 @@ public class BlueFar extends LinearOpMode {
                 }
 
             case END:
-                // do nothing
                 break;
 
         }

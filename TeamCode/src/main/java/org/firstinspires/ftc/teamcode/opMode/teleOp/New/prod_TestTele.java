@@ -64,8 +64,14 @@ public class prod_TestTele extends LinearOpMode {
             shooter.updateCtrls(gamepad1, gamepad2);
 
             if (runtime.seconds() >= 140){
-                gamepad1.rumble(200);
                 isEndgame = true;
+            }
+
+            if (runtime.seconds() >= 140 && runtime.seconds() <= 140.5){
+                gamepad1.rumble(200);
+
+            } else {
+                gamepad1.stopRumble();
             }
 
             telemetry.addData("Time Period", isEndgame ? "TeleOp" : "Go Park");

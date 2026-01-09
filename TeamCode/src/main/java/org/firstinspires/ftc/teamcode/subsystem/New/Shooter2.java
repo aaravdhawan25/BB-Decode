@@ -158,6 +158,19 @@ public class Shooter2 implements Subsystem {
         return distanceToGoal;
     }
 
+    public double calculateError(){
+        double ShooterError = targetRPM-getShooterRPM();
+
+        return ShooterError;
+    }
+
+    public double CalculateCRError(){
+        double CRError = crTargetRPM-getCounterRollerRPM();
+
+        return CRError;
+    }
+
+
     public double calculateShooterRPM(double distance) {
         return RPM_BASE + (RPM_PER_INCH * distance);
     }
@@ -207,14 +220,14 @@ public class Shooter2 implements Subsystem {
                 targetRPM = CLOSE_SHOOTER_RPM;
                 crTargetRPM = CLOSE_CR_RPM;
                 blockerOpen();
-//                intake.pivSendBalls();
+//                intake.Transfer();
                 break;
 
             case READY_FAR:
                 targetRPM = FAR_SHOOTER_RPM;
                 crTargetRPM = FAR_CR_RPM;
                 blockerOpen();
-//                intake.pivSendBalls();
+//                intake.Transfer();
                 break;
 
             case SPINNING_UP_AUTO:
@@ -232,14 +245,14 @@ public class Shooter2 implements Subsystem {
                 targetRPM = calculateShooterRPM(distance);
                 crTargetRPM = calculateCounterRollerRPM(distance);
                 blockerOpen();
-//                intake.pivSendBalls();
+//                intake.Transfer();
                 break;
 
             case STOPPING:
                 targetRPM = 0;
                 crTargetRPM = 0;
-//                intake.pivIntake();
                 blockerClose();
+//                intake.IntakeIdle();
 
                 if (getShooterRPM() < 100 && getCounterRollerRPM() < 100) {
                     setState(ShooterState.IDLE);
@@ -258,6 +271,8 @@ public class Shooter2 implements Subsystem {
         telemetry.addData("At Speed", atTargetSpeed());
         telemetry.addData("ShooterPower", shooterMotor.getPower());
         telemetry.addData("CR Power", counterRoller.getPower());
+        telemetry.addData("Shooter Error", calculateError());
+        telemetry.addData("CR Error", CalculateCRError());
     }
 
     private void resetPID() {

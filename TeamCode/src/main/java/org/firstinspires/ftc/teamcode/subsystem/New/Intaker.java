@@ -21,11 +21,11 @@ public class Intaker implements Subsystem {
     public static double intakeDown = 0;
     public static double intakeOff = 0;
 
-    public static double intakeIntake = 0.7;
+    public static double intakeIntake = -1;
 
     public static double intakeTransfer = 0.5;
 
-    public static double transferPowerON = 1;
+    public static double transferPowerON = -1;
     public static double transferPowerOFF = 0;
 
     boolean isIntaking = false;
@@ -112,6 +112,7 @@ public class Intaker implements Subsystem {
                 intake.setPower(intakeIntake);
                 transfer.setPower(transferPowerON);
                 break;
+                
             case TRANSFER:
                 intakePiv.setPosition(intakeDown);
                 intake.setPower(intakeTransfer);
