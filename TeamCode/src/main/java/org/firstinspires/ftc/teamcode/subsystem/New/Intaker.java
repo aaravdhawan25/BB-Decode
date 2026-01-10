@@ -9,13 +9,15 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.botconstants;
 import org.firstinspires.ftc.teamcode.subsystem.Subsystem;
+
+import java.security.PublicKey;
+
 @Config
 public class Intaker implements Subsystem {
     public DcMotor intake, transfer;
     Telemetry telemetry;
     public double intakePower;
 
-    Servo intakePiv;
 
     public static double intakeUp = 0;
     public static double intakeDown = 0;
@@ -25,16 +27,20 @@ public class Intaker implements Subsystem {
 
     public static double intakeTransfer = 0.5;
 
+    public static double intakeReverse = 1;
+
     public static double transferPowerON = -1;
     public static double transferPowerOFF = 0;
+    public static double transferPowerRev = 1;
 
-    boolean isIntaking = false;
-    boolean isTransfer = false;
     private IntakeStates state = IntakeStates.IDLE;
 
     public enum IntakeStates{
         INTAKING,
         TRANSFER,
+        REVERSE,
+
+        ReverseWith,
         IDLE
     }
 
@@ -44,7 +50,6 @@ public class Intaker implements Subsystem {
     public Intaker(HardwareMap hardwareMap, Telemetry telemetry){
         this.telemetry = telemetry;
         intake = hardwareMap.get(DcMotor.class, "intake");
-        intakePiv = hardwareMap.get(Servo.class, "pivServo");
         transfer = hardwareMap.get(DcMotor.class, "transfer");
     }
 
@@ -70,12 +75,10 @@ public class Intaker implements Subsystem {
     }
 
     public void pivSendBalls(){
-        intakePiv.setPosition(intakeDown);// changePos based on irl
         intake.setPower(intakeTransfer);
         transfer.setPower(transferPowerON);
     }
     public void pivIntake(){
-        intakePiv.setPosition(intakeUp);// changePos based on irl
         transfer.setPower(transferPowerOFF);
     }
 
@@ -98,26 +101,36 @@ public class Intaker implements Subsystem {
 
     }
 
+    public void Reverse(){
+        setState(IntakeStates.REVERSE);
+    }
+    public void Rev(){
+        setState(IntakeStates.ReverseWith);
+    }
+
     @Override
     public void update(){
         switch (state){
             case IDLE:
-                intakePiv.setPosition(intakeUp);
                 transfer.setPower(transferPowerOFF);
                 intake.setPower(intakeOff);
                 break;
 
             case INTAKING:
-                intakePiv.setPosition(intakeUp);
                 intake.setPower(intakeIntake);
                 transfer.setPower(transferPowerON);
                 break;
-                
+
             case TRANSFER:
-                intakePiv.setPosition(intakeDown);
                 intake.setPower(intakeTransfer);
                 transfer.setPower(transferPowerON);
                 break;
+            case REVERSE:
+                intake.setPower(intakeReverse);
+            case ReverseWith:
+                intake.setPower(intakeReverse);
+                transfer.setPower(transferPowerRev);
+
         }
 
         telemetry.addData("Intake State", state);
@@ -139,6 +152,21 @@ public class Intaker implements Subsystem {
             Intake();
         }
         if (gp1.rightBumperWasReleased()){
+            IntakeIdle();
+        }
+
+        if (gp1.leftBumperWasPressed()){
+            Reverse();
+        }
+
+        if (gp1.leftBumperWasReleased()){
+            IntakeIdle();
+        }
+
+        if (gp1.bWasPressed()){
+            Rev();
+        }
+        if (gp1.bWasReleased()){
             IntakeIdle();
         }
 

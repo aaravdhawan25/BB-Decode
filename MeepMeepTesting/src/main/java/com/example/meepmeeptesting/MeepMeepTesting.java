@@ -7,6 +7,8 @@ import com.noahbres.meepmeep.MeepMeep;
 import com.noahbres.meepmeep.roadrunner.DefaultBotBuilder;
 import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
 
+import java.util.Vector;
+
 public class MeepMeepTesting {
     public static void main(String[] args) {
         MeepMeep meepMeep = new MeepMeep(800);
@@ -22,7 +24,7 @@ public class MeepMeepTesting {
                 //.splineToLinearHeading(new Pose2d(-14.5,-49.3,Math.toRadians(270)), Math.toRadians(200))
                 .waitSeconds(0.1)
                 .setTangent(Math.toRadians(45))
-                .splineToSplineHeading(new Pose2d(-21.9,-22,Math.toRadians(290)),Math.toRadians(150))
+                .splineToSplineHeading(new Pose2d(-21.9,-22,Math.toRadians(230)),Math.toRadians(150))
 //                .splineTo(new Vector2d(-21.9,-22),Math.toRadians(130))
                 .waitSeconds(5)
                 .setTangent(Math.toRadians(45))
@@ -30,7 +32,7 @@ public class MeepMeepTesting {
                 .splineToSplineHeading(new Pose2d(11.5,-48.4,Math.toRadians(270)),Math.toRadians(270))
                 .waitSeconds(0.1)
 //                .strafeToLinearHeading(new Vector2d(-22.9,-22.7), Math.toRadians(225))
-                .strafeTo(new Vector2d(-22.9,-22.7))
+                .strafeToLinearHeading(new Vector2d(-22.9,-22.7), Math.toRadians(230))
                 .waitSeconds(5)
 //                .setTangent(Math.toRadians(45))
 //                .splineToSplineHeading(new Pose2d(24.1,-28.6,Math.toRadians(290)), Math.toRadians(330))
@@ -39,7 +41,7 @@ public class MeepMeepTesting {
                 .splineToSplineHeading(new Pose2d(24.1,-28.6,Math.toRadians(290)), Math.toRadians(330))
                 .splineToLinearHeading(new Pose2d(34.4, -49,Math.toRadians(270)), Math.toRadians(280))
 //                .strafeToLinearHeading(new Vector2d(-23.8,-23.8), Math.toRadians(225))
-                .strafeTo(new Vector2d(-23.8,-23.8))
+                .strafeToLinearHeading(new Vector2d(-23.8,-23.8), Math.toRadians(230))
                 .waitSeconds(4.7)
                 .strafeToLinearHeading(new Vector2d(0,-48.8),Math.toRadians(180))
                 //.waitSeconds(1)

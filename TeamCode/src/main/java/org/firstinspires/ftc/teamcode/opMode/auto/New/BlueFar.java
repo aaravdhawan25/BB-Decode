@@ -97,21 +97,21 @@ public class BlueFar extends LinearOpMode {
                 .waitSeconds(0.1);
         TrajectoryActionBuilder shootPos1 = intakeSpike1.fresh()
                 .setTangent(Math.toRadians(45))
-                .splineToSplineHeading(new Pose2d(-21.9,-22,Math.toRadians(290)),Math.toRadians(150))
+                .splineToSplineHeading(new Pose2d(-21.9,-22,Math.toRadians(230)),Math.toRadians(150))
                 .waitSeconds(5);
         TrajectoryActionBuilder intakeSpike2 = shootPos1.fresh()
                 .splineToLinearHeading(new Pose2d(5.3,-27.8,Math.toRadians(290)), Math.toRadians(310))
                 .splineToSplineHeading(new Pose2d(11.5,-48.4,Math.toRadians(270)),Math.toRadians(270))
                 .waitSeconds(0.1);
         TrajectoryActionBuilder shootPos2 = intakeSpike2.fresh()
-                .strafeTo(new Vector2d(-22.9,-22.7))
+                .strafeToLinearHeading(new Vector2d(-22.9,-22.7),Math.toRadians(230))
                 .waitSeconds(5);
         TrajectoryActionBuilder intakeSpike3 = shootPos2.fresh()
                 .setTangent(Math.toRadians(45))
                 .splineToSplineHeading(new Pose2d(24.1,-28.6,Math.toRadians(290)), Math.toRadians(330))
                 .splineToLinearHeading(new Pose2d(34.4, -49,Math.toRadians(270)), Math.toRadians(280));
         TrajectoryActionBuilder shootPos3 = intakeSpike3.fresh()
-                .strafeTo(new Vector2d(-23.8,-23.8))
+                .strafeToLinearHeading(new Vector2d(-23.8,-23.8),Math.toRadians(230))
                 .waitSeconds(4.7);
         TrajectoryActionBuilder parkPos = shootPos3.fresh()
                 .strafeToLinearHeading(new Vector2d(0,-48.8),Math.toRadians(180));
