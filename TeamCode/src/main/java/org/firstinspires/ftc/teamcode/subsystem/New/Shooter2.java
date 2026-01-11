@@ -48,7 +48,6 @@ public class Shooter2 implements Subsystem {
     private DcMotorEx shooterMotor;
     private DcMotorEx counterRoller;
 
-    Intaker intake;
     private Servo blocker;
 
     private MultipleTelemetry multipleTelemetry;
@@ -226,6 +225,7 @@ public class Shooter2 implements Subsystem {
                 targetRPM = FAR_SHOOTER_RPM;
                 crTargetRPM = FAR_CR_RPM;
                 blockerOpen();
+
                 break;
 
             case SPINNING_UP_AUTO:
