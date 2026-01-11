@@ -19,17 +19,17 @@ public class Shooter2 implements Subsystem {
     public static double KD = 0.00001;
     public static double KF = 0.0002;
 
-    public static double CR_KP = 0.0;
+    public static double CR_KP = 0.00005;
     public static double CR_KI = 0.0;
-    public static double CR_KD = 0.0;
-    public static double CR_KF = 0.0;
+    public static double CR_KD = 0.000000001;
+    public static double CR_KF = 0.0001;
 
     public static double TICKS_PER_REV = 28.0;
     public static double CR_TICKS_PER_REV = 28.0;
-    public static double CLOSE_SHOOTER_RPM = 2500;
-    public static double CLOSE_CR_RPM = 2500;
-    public static double FAR_SHOOTER_RPM = 3500;
-    public static double FAR_CR_RPM = 3500;
+    public static double CLOSE_SHOOTER_RPM = 3450;
+    public static double CLOSE_CR_RPM = 2700;
+    public static double FAR_SHOOTER_RPM = 5100;
+    public static double FAR_CR_RPM = 2600;
     public static double RPM_TOLERANCE = 50;
     public static double MAX_RPM = 5400;
 
@@ -220,14 +220,12 @@ public class Shooter2 implements Subsystem {
                 targetRPM = CLOSE_SHOOTER_RPM;
                 crTargetRPM = CLOSE_CR_RPM;
                 blockerOpen();
-//                intake.Transfer();
                 break;
 
             case READY_FAR:
                 targetRPM = FAR_SHOOTER_RPM;
                 crTargetRPM = FAR_CR_RPM;
                 blockerOpen();
-//                intake.Transfer();
                 break;
 
             case SPINNING_UP_AUTO:
@@ -252,7 +250,6 @@ public class Shooter2 implements Subsystem {
                 targetRPM = 0;
                 crTargetRPM = 0;
                 blockerClose();
-//                intake.IntakeIdle();
 
                 if (getShooterRPM() < 100 && getCounterRollerRPM() < 100) {
                     setState(ShooterState.IDLE);
@@ -324,6 +321,20 @@ public class Shooter2 implements Subsystem {
         }
         if (gp2.aWasReleased()){
             stop();
+        }
+
+        if (state == ShooterState.READY_FAR){
+            gp1.rumble(200);
+        }
+        if (state == ShooterState.READY_CLOSE){
+            gp1.rumble(200);
+        }
+
+        if (state != ShooterState.READY_FAR){
+            gp1.stopRumble();
+        }
+        if (state != ShooterState.READY_CLOSE){
+            gp1.stopRumble();
         }
 
 

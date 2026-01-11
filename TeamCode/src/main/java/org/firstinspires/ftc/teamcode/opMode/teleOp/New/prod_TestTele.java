@@ -40,7 +40,7 @@ public class prod_TestTele extends LinearOpMode {
         shooter.init();
 
 
-        while (!opModeIsActive()) {
+        while (opModeInInit()) {
             telemetry.addData("Status", "Waiting for Start");
             telemetry.update();
             runtime.reset();
@@ -63,16 +63,10 @@ public class prod_TestTele extends LinearOpMode {
             intaker.updateCtrls(gamepad1, gamepad2);
             shooter.updateCtrls(gamepad1, gamepad2);
 
-            if (runtime.seconds() >= 140){
+            if (runtime.seconds() >= 140) {
                 isEndgame = true;
-            }
-
-            if (runtime.seconds() >= 140 && runtime.seconds() <= 140.5){
-                gamepad1.rumble(200);
-
             } else {
-                gamepad1.stopRumble();
-            }
+                isEndgame = false;}
 
             telemetry.addData("Time Period", isEndgame ? "TeleOp" : "Go Park");
 

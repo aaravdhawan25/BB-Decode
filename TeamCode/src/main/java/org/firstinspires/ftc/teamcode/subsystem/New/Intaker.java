@@ -38,8 +38,8 @@ public class Intaker implements Subsystem {
     public enum IntakeStates{
         INTAKING,
         TRANSFER,
-        REVERSE,
 
+        REVERSE,
         ReverseWith,
         IDLE
     }
@@ -127,9 +127,11 @@ public class Intaker implements Subsystem {
                 break;
             case REVERSE:
                 intake.setPower(intakeReverse);
+                break;
             case ReverseWith:
                 intake.setPower(intakeReverse);
                 transfer.setPower(transferPowerRev);
+                break;
 
         }
 
@@ -139,11 +141,11 @@ public class Intaker implements Subsystem {
 
     @Override
     public void updateCtrls(Gamepad gp1, Gamepad gp2) {
-        if (gp2.aWasPressed()){
+        if (gp1.aWasPressed()){
             Transfer();
         }
 
-        if (gp2.aWasReleased()){
+        if (gp1.aWasReleased()){
             IntakeIdle();
         }
 
