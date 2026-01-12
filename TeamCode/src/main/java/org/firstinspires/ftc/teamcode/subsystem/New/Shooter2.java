@@ -24,6 +24,8 @@ public class Shooter2 implements Subsystem {
     public static double CR_KD = 0.000000001;
     public static double CR_KF = 0.0001;
 
+    public static double IDLE_SHOOTER = 1000;
+
     public static double TICKS_PER_REV = 28.0;
     public static double CR_TICKS_PER_REV = 28.0;
     public static double CLOSE_SHOOTER_RPM = 3450;
@@ -78,6 +80,7 @@ public class Shooter2 implements Subsystem {
 
         SPINNING_UP_AUTO,
         READY_AUTO,
+        OPEN_BLOCKER,
         STOPPING
     }
 
@@ -168,6 +171,9 @@ public class Shooter2 implements Subsystem {
 
         return CRError;
     }
+    public void kickBallOff(){
+        setState(ShooterState.OPEN_BLOCKER);
+    }
 
 
     public double calculateShooterRPM(double distance) {
@@ -190,7 +196,7 @@ public class Shooter2 implements Subsystem {
 
         switch (state) {
             case IDLE:
-                targetRPM = 0;
+                targetRPM = IDLE_SHOOTER;
                 crTargetRPM = 0;
                 blockerClose();
 //                resetPID();
@@ -245,9 +251,12 @@ public class Shooter2 implements Subsystem {
                 blockerOpen();
 //                intake.Transfer();
                 break;
+            case OPEN_BLOCKER:
+                blockerOpen();
+                break;
 
             case STOPPING:
-                targetRPM = 0;
+                targetRPM = IDLE_SHOOTER;
                 crTargetRPM = 0;
                 blockerClose();
 
@@ -335,6 +344,13 @@ public class Shooter2 implements Subsystem {
         }
         if (state != ShooterState.READY_CLOSE){
             gp1.stopRumble();
+        }
+
+        if (gp1.dpadDownWasPressed()){
+            kickBallOff();
+        }
+        if (gp1.dpadDownWasReleased()){
+            stop();
         }
 
 

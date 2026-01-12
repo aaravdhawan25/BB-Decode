@@ -57,7 +57,8 @@ public class BlueFar extends LinearOpMode {
         telemetry = new MultipleTelemetry(FtcDashboard.getInstance().getTelemetry());
         build_paths();
 
-        while (!opModeIsActive()) {
+        while (opModeInInit()) {
+
 
         }
 

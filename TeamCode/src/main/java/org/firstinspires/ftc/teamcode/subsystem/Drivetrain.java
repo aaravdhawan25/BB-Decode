@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.subsystem;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -9,7 +10,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-
+@Config
 public class Drivetrain implements Subsystem {
 
     public DcMotor lfMotor, lbMotor, rfMotor, rbMotor;
@@ -20,6 +21,16 @@ public class Drivetrain implements Subsystem {
     public double lfPower = 0, lbPower = 0, rfPower = 0, rbPower = 0;
 
     public boolean bumpToggle = false;
+
+    public static double lfDP = 1;
+    public static double lbDP = 1;
+    public static double rfDP = -1;
+    public static double rbDP = -1;
+
+    public static double lfStrafe = 1;
+    public static double lbStrafe = 1;
+    public static double rfStrafe = -1;
+    public static double rbStrafe = -1;
     public Drivetrain(HardwareMap map, Telemetry telemetry) {
         this.telemetry = telemetry;
         lfMotor = map.get(DcMotor.class, "LFM");
@@ -62,6 +73,34 @@ public class Drivetrain implements Subsystem {
         lbMotor.setPower(lbPower);
         rfMotor.setPower(rfPower);
         rbMotor.setPower(rbPower);
+    }
+
+    public void MoveForward(){
+        lfMotor.setPower(lfDP);
+        lbMotor.setPower(lbDP);
+        rfMotor.setPower(rfDP);
+        rbMotor.setPower(rbDP);
+    }
+    public void StrafeRight(){
+        lfMotor.setPower(lfStrafe);
+        lbMotor.setPower(lbStrafe);
+        rfMotor.setPower(rfStrafe);
+        rbMotor.setPower(rbStrafe);
+    }
+
+    public void StrafeLeft(){
+        lfMotor.setPower(-lfStrafe);
+        lbMotor.setPower(-lbStrafe);
+        rfMotor.setPower(rfStrafe);
+        rbMotor.setPower(rbStrafe);
+
+    }
+
+    public void stopMoving(){
+        lfMotor.setPower(0);
+        lbMotor.setPower(0);
+        rfMotor.setPower(0);
+        rbMotor.setPower(0);
     }
 
     @Override
