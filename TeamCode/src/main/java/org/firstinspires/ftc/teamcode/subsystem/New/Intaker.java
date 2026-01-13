@@ -41,6 +41,8 @@ public class Intaker implements Subsystem {
 
         REVERSE,
         ReverseWith,
+
+        TRANSFER_SHOOTER,
         IDLE
     }
 
@@ -108,6 +110,10 @@ public class Intaker implements Subsystem {
         setState(IntakeStates.ReverseWith);
     }
 
+    public void TransferShootSub(){
+        setState(IntakeStates.TRANSFER_SHOOTER);
+    }
+
     @Override
     public void update(){
         switch (state){
@@ -132,6 +138,11 @@ public class Intaker implements Subsystem {
                 intake.setPower(intakeReverse);
                 transfer.setPower(transferPowerRev);
                 break;
+            case TRANSFER_SHOOTER:
+                intake.setPower(intakeIntake);
+                transfer.setPower(transferPowerON);
+                break;
+
 
         }
 

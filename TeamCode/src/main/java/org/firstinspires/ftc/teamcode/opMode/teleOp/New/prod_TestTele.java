@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.opMode.teleOp.New;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -11,7 +12,7 @@ import org.firstinspires.ftc.teamcode.RoadRunner.MecanumDrive;
 import org.firstinspires.ftc.teamcode.subsystem.Drivetrain;
 import org.firstinspires.ftc.teamcode.subsystem.New.Intaker;
 import org.firstinspires.ftc.teamcode.subsystem.New.Shooter2;
-
+@Config
 @TeleOp(name = "COMP Teleop", group = "a")
 public class prod_TestTele extends LinearOpMode {
 
@@ -23,10 +24,27 @@ public class prod_TestTele extends LinearOpMode {
     Intaker intaker;
     Shooter2 shooter;
 
+    ElapsedTime commandTime = new ElapsedTime();
+
     boolean isEndgame = false;
+
+    public static double FarShootDelay1 = 0.6;
+
+    public static double FarShootDelayDelay = 1.6;
+
+    public static double FarShootDelay2Delay = 0.6;
+
+    public static double FarShootDelay2 = FarShootDelay1+0.05 + FarShootDelay1;
+
+
+    boolean set = false;
+
+    boolean set2 = false;
 
     MecanumDrive follower;
     ElapsedTime runtime = new ElapsedTime();
+
+    ElapsedTime FarShoot = new ElapsedTime();
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -44,6 +62,8 @@ public class prod_TestTele extends LinearOpMode {
             telemetry.addData("Status", "Waiting for Start");
             telemetry.update();
             runtime.reset();
+            commandTime.reset();
+            FarShoot.reset();
 
         }
 
@@ -51,6 +71,8 @@ public class prod_TestTele extends LinearOpMode {
 
         while (opModeIsActive()){
             runtime.startTime();
+            commandTime.startTime();
+            FarShoot.startTime();
 
 
 
@@ -63,10 +85,52 @@ public class prod_TestTele extends LinearOpMode {
             intaker.updateCtrls(gamepad1, gamepad2);
             shooter.updateCtrls(gamepad1, gamepad2);
 
+            if (!gamepad1.right_bumper && !gamepad1.b && !gamepad1.left_bumper && shooter.getState() == Shooter2.ShooterState.READY_CLOSE){
+                if (!set){
+                    commandTime.reset();
+                    set = true;
+                }
+                if (commandTime.seconds() >= 0.2){
+                    intaker.Intake();
+                }
+            } else {
+                set = false;
+
+            }
+
+            if (!gamepad1.right_bumper && !gamepad1.b && !gamepad1.left_bumper && shooter.getState() == Shooter2.ShooterState.STOPPING){
+                intaker.IntakeIdle();
+            }
+
+            if (!gamepad1.right_bumper && !gamepad1.b && !gamepad1.left_bumper && shooter.getState() == Shooter2.ShooterState.READY_FAR){
+                if (!set){
+                    FarShoot.reset();
+                    set2 = true;
+                }
+                if (FarShoot.seconds() >= 0.25 && FarShoot.seconds() < FarShootDelay1){
+                    intaker.Intake();
+                }
+                if (FarShoot.seconds() >= FarShootDelay1 && FarShoot.seconds() < FarShootDelayDelay){
+                    intaker.IntakeIdle();
+                }
+                if (FarShoot.seconds() >= FarShootDelayDelay && FarShoot.seconds() < FarShootDelay2){
+                    intaker.Intake();
+                }
+                if (FarShoot.seconds() >= FarShootDelay2Delay){
+                    intaker.IntakeIdle();
+                }
+
+            } else {
+                set2 = false;
+
+            }
+
+
             if (runtime.seconds() >= 140) {
                 isEndgame = true;
             } else {
                 isEndgame = false;}
+
 
             telemetry.addData("Time Period", isEndgame ? "TeleOp" : "Go Park");
 

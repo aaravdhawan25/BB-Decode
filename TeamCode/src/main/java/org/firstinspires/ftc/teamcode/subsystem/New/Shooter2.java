@@ -71,6 +71,7 @@ public class Shooter2 implements Subsystem {
     private ShooterState state = ShooterState.IDLE;
 
 
+
     public enum ShooterState {
         IDLE,
         SPINNING_UP_CLOSE,
@@ -310,18 +311,18 @@ public class Shooter2 implements Subsystem {
 
     @Override
     public void updateCtrls(Gamepad gp1, Gamepad gp2) {
-        if (gp2.xWasPressed()) {
+        if (gp1.xWasPressed()) {
             spinUpClose();
         }
-        if (gp2.xWasReleased()){
+        if (gp1.xWasReleased()){
             stop();
         }
 
-        if (gp2.yWasPressed()) {
+        if (gp1.yWasPressed()) {
             spinUpFar();
         }
 
-        if (gp2.yWasReleased()){
+        if (gp1.yWasReleased()){
             stop();
         }
 
