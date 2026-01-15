@@ -59,7 +59,6 @@ public class Intaker implements Subsystem {
     @Override
     public void init() {
         telemetry.addData("Intake","Initialized");
-        telemetry.addData("PivServo", "Initialized");
         telemetry.addData("Transfer", "Initialized");
         telemetry.update();
 
