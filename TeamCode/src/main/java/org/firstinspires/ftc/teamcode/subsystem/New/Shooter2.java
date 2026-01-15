@@ -91,7 +91,6 @@ public class Shooter2 implements Subsystem {
         CRpidfController = new PIDFController(CR_KP, CR_KI,CR_KD, CR_KF);
         shooterMotor = hardwareMap.get(DcMotorEx.class, "shooter");
         counterRoller = hardwareMap.get(DcMotorEx.class, "CR");
-//        counterRoller.setDirection(DcMotorSimple.Direction.REVERSE);
         blocker = hardwareMap.get(Servo.class, "blocker");
 
     }

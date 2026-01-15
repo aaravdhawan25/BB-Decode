@@ -102,28 +102,8 @@ public class prod_TestTele extends LinearOpMode {
                 intaker.IntakeIdle();
             }
 
-            if (!gamepad1.right_bumper && !gamepad1.b && !gamepad1.left_bumper && shooter.getState() == Shooter2.ShooterState.READY_FAR){
-                if (!set){
-                    FarShoot.reset();
-                    set2 = true;
-                }
-                if (FarShoot.seconds() >= 0.25 && FarShoot.seconds() < FarShootDelay1){
-                    intaker.Intake();
-                }
-                if (FarShoot.seconds() >= FarShootDelay1 && FarShoot.seconds() < FarShootDelayDelay){
-                    intaker.IntakeIdle();
-                }
-                if (FarShoot.seconds() >= FarShootDelayDelay && FarShoot.seconds() < FarShootDelay2){
-                    intaker.Intake();
-                }
-                if (FarShoot.seconds() >= FarShootDelay2Delay){
-                    intaker.IntakeIdle();
-                }
 
-            } else {
-                set2 = false;
 
-            }
 
 
             if (runtime.seconds() >= 140) {

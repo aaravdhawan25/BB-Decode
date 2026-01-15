@@ -20,7 +20,7 @@ import org.firstinspires.ftc.teamcode.subsystem.New.Shooter2;
 
 
 @Config
-@Autonomous(name = "BlueFar", group = "Autonomous")
+@Autonomous(name = "RedFar", group = "Autonomous")
 public class RedFar extends LinearOpMode {
 
     Pose2d START_POSE = new Pose2d(-49.5, 49.5, Math.toRadians(305));

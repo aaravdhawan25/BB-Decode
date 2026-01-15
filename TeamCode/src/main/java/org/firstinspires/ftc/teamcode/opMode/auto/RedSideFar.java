@@ -8,6 +8,7 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -20,6 +21,7 @@ import org.firstinspires.ftc.teamcode.subsystem.Transfer;
 
 @Config
 @Autonomous(name = "RedSideFar", group = "Autonomous")
+@Disabled
 public class RedSideFar extends LinearOpMode {
     Pose2d initialPose = new Pose2d(-49.5, 49.5, Math.toRadians(305));
 
