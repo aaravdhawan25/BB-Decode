@@ -48,10 +48,10 @@ public class MeepMeepTesting {
 //                .splineToSplineHeading(new Pose2d(24.1,-28.6,Math.toRadians(290)), Math.toRadians(330))
 //                .splineToLinearHeading(new Pose2d(37, -48.5,Math.toRadians(290)), Math.toRadians(280))
                 .setTangent(Math.toRadians(45))
-                .splineToSplineHeading(new Pose2d(24.1,-28.6,Math.toRadians(290)), Math.toRadians(330),
+                .splineToSplineHeading(new Pose2d(29,-28.6,Math.toRadians(290)), Math.toRadians(330),
                         new TranslationalVelConstraint(30)
                 )
-                .splineToLinearHeading(new Pose2d(34.4, -53,Math.toRadians(270)), Math.toRadians(280),
+                .splineToLinearHeading(new Pose2d(36, -53,Math.toRadians(270)), Math.toRadians(270),
                         new TranslationalVelConstraint(30))
 //                .strafeToLinearHeading(new Vector2d(-23.8,-23.8), Math.toRadians(225))
                 .strafeToLinearHeading(new Vector2d(-33,-23.8), Math.toRadians(230))
@@ -88,7 +88,7 @@ public class MeepMeepTesting {
                 .waitSeconds(3.5)
                 .strafeToLinearHeading(new Vector2d(0,48.8),Math.toRadians(180))
                 .build());
-        meepMeep.setBackground(MeepMeep.Background.FIELD_DECODE_OFFICIAL)
+        meepMeep.setBackground(MeepMeep.Background.FIELD_DECODE_JUICE_DARK)
                 .setDarkMode(true)
                 .setBackgroundAlpha(0.95f)
                 .addEntity(myBot)
