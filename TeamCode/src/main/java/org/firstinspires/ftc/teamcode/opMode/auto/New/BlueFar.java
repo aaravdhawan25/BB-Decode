@@ -104,7 +104,7 @@ public class BlueFar extends LinearOpMode {
                 .splineToLinearHeading(new Pose2d(-23.3,-24,Math.toRadians(250)), Math.toRadians(15),
                         new TranslationalVelConstraint(30))
 
-                .splineToSplineHeading(new Pose2d(-12,-52,Math.toRadians(270)),Math.toRadians(270),
+                .splineToSplineHeading(new Pose2d(-12,-53,Math.toRadians(270)),Math.toRadians(270),
                         new TranslationalVelConstraint(30))
                 .waitSeconds(0.1);
         TrajectoryActionBuilder shootPos1 = intakeSpike1.fresh()
@@ -114,7 +114,7 @@ public class BlueFar extends LinearOpMode {
         TrajectoryActionBuilder intakeSpike2 = shootPos1.fresh()
                 .splineToLinearHeading(new Pose2d(5.3,-27.8,Math.toRadians(290)), Math.toRadians(310),
                         new TranslationalVelConstraint(30))
-                .splineToSplineHeading(new Pose2d(11.5,-52,Math.toRadians(270)),Math.toRadians(270),
+                .splineToSplineHeading(new Pose2d(11.5,-53,Math.toRadians(270)),Math.toRadians(270),
                         new TranslationalVelConstraint(30))
                 .waitSeconds(0.1);
         TrajectoryActionBuilder shootPos2 = intakeSpike2.fresh()
@@ -124,7 +124,7 @@ public class BlueFar extends LinearOpMode {
                 .setTangent(Math.toRadians(45))
                 .splineToSplineHeading(new Pose2d(24.1,-28.6,Math.toRadians(290)), Math.toRadians(330),
                         new TranslationalVelConstraint(30))
-                .splineToLinearHeading(new Pose2d(34.4, -52,Math.toRadians(270)), Math.toRadians(280),
+                .splineToLinearHeading(new Pose2d(34.4, -53,Math.toRadians(270)), Math.toRadians(280),
                         new TranslationalVelConstraint(30));
         TrajectoryActionBuilder shootPos3 = intakeSpike3.fresh()
                 .strafeToLinearHeading(new Vector2d(-33,-23.8),Math.toRadians(230))
