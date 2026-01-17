@@ -29,6 +29,9 @@ public class Shooter2 implements Subsystem {
     public static double TICKS_PER_REV = 28.0;
     public static double CR_TICKS_PER_REV = 28.0;
     public static double CLOSE_SHOOTER_RPM = 3450;
+
+    public static double AUTO_SHOOTER_RPM = 3450;
+    public static double AUTO_CR_RPM = 2700;
     public static double CLOSE_CR_RPM = 2700;
     public static double FAR_SHOOTER_RPM = 5100;
     public static double FAR_CR_RPM = 2600;
@@ -37,7 +40,10 @@ public class Shooter2 implements Subsystem {
 
 
     public static double RPM_BASE = 2500;
+    public static double CR_RPM_BASE = 2500;
     public static double RPM_PER_INCH = 10.0;
+
+    public static double CR_RPM_PER_INCH = 10.0;
 
     private double distanceToGoal = 0;
 
@@ -78,6 +84,8 @@ public class Shooter2 implements Subsystem {
         SPINNING_UP_FAR,
         READY_CLOSE,
         READY_FAR,
+        SPINNING_UP_AUTOMATIC,
+        READY_AUTOMATIC,
 
         SPINNING_UP_AUTO,
         READY_AUTO,
@@ -181,7 +189,7 @@ public class Shooter2 implements Subsystem {
     }
 
     public double calculateCounterRollerRPM(double distance) {
-        return RPM_BASE + (RPM_PER_INCH * distance);
+        return CR_RPM_BASE + (CR_RPM_BASE * distance);
     }
 
     public void spinUpAuto() {
@@ -235,19 +243,16 @@ public class Shooter2 implements Subsystem {
                 break;
 
             case SPINNING_UP_AUTO:
-                double distance = getDistanceToGoal();
-                targetRPM = calculateShooterRPM(distance);
-                crTargetRPM = calculateCounterRollerRPM(distance);
+                targetRPM = AUTO_SHOOTER_RPM;
+                crTargetRPM = AUTO_CR_RPM;
                 blockerClose();
                 if (atTargetSpeed()) {
                     setState(ShooterState.READY_AUTO);
                 }
                 break;
-
             case READY_AUTO:
-                distance = getDistanceToGoal();
-                targetRPM = calculateShooterRPM(distance);
-                crTargetRPM = calculateCounterRollerRPM(distance);
+                targetRPM = AUTO_SHOOTER_RPM;
+                crTargetRPM = AUTO_CR_RPM;
                 blockerOpen();
 //                intake.Transfer();
                 break;

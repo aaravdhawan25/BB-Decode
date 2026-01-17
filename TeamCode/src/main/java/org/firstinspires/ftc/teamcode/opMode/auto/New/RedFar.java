@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.opMode.auto.New;
 
+import android.icu.lang.UScript;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -19,9 +21,9 @@ import org.firstinspires.ftc.teamcode.subsystem.New.Intaker;
 import org.firstinspires.ftc.teamcode.subsystem.New.Shooter2;
 
 @Config
-@Autonomous(name = "BlueFar", group = "Autonomous")
+@Autonomous(name = "Red Side Close Auto", group = "Autonomous")
 public class RedFar extends LinearOpMode {
-    Pose2d initialPose = new Pose2d(-49.5, 49.5, Math.toRadians(130));
+    Pose2d initialPose = new Pose2d(-49.9, 49.7, Math.toRadians(360-230));
 
     MecanumDrive follower;
 
@@ -30,7 +32,7 @@ public class RedFar extends LinearOpMode {
 
 
     Telemetry telemetry;
-    Action preloads, intake1, shoot1, intake2, shoot2, intake3, shoot3, park;
+    Action preloads, intake1, shoot1, intake2, shoot2, intake3, shoot3;
     boolean currentAction;
     enum AutoStates {
         START,
@@ -41,7 +43,6 @@ public class RedFar extends LinearOpMode {
         SHOOT2,
         INTAKE3,
         SHOOT3,
-        PARK,
         END
     }
 
@@ -62,6 +63,8 @@ public class RedFar extends LinearOpMode {
 
         while (opModeInInit()){
             shooter.init();
+            intaker.init();
+
         }
 
 
@@ -97,43 +100,43 @@ public class RedFar extends LinearOpMode {
 
     public void build_paths() {
         TrajectoryActionBuilder preloadsShoot = follower.actionBuilder(initialPose)
-                .strafeToLinearHeading(new Vector2d(-29.1,29),Math.toRadians(130),new TranslationalVelConstraint(13));
+                .strafeToLinearHeading(new Vector2d(-29.1,29),Math.toRadians(360-230),new TranslationalVelConstraint(13))
+                .waitSeconds(1);
         TrajectoryActionBuilder intakeSpike1 = preloadsShoot.fresh()
-                .setTangent(Math.toRadians(290))
-                .splineToLinearHeading(new Pose2d(-23.3,24,Math.toRadians(110)), Math.toRadians(345),
-                        new TranslationalVelConstraint(30))
-                .splineToSplineHeading(new Pose2d(-12,53,Math.toRadians(90)),Math.toRadians(90),
-                        new TranslationalVelConstraint(30))
+                .setTangent(Math.toRadians(360-70))
+                .splineToLinearHeading(new Pose2d(-23.3,24,Math.toRadians(360-250)), Math.toRadians(360-15),
+                        new TranslationalVelConstraint(40))
+
+                .splineToSplineHeading(new Pose2d(-12,55,Math.toRadians(360-270)),Math.toRadians(360-270),
+                        new TranslationalVelConstraint(40))
+                //.splineToLinearHeading(new Pose2d(-14.5,-49.3,Math.toRadians(270)), Math.toRadians(200))
                 .waitSeconds(0.1);
         TrajectoryActionBuilder shootPos1 = intakeSpike1.fresh()
                 .setTangent(Math.toRadians(360-45))
-                .splineToSplineHeading(new Pose2d(-33,22,Math.toRadians(360-230)),Math.toRadians(360-150))
-                .waitSeconds(3.5);
+                .splineToSplineHeading(new Pose2d(-29,22,Math.toRadians(360-230)),Math.toRadians(360-150))
+//                .splineTo(new Vector2d(-21.9,-22),Math.toRadians(130))
+                .waitSeconds(3);
         TrajectoryActionBuilder intakeSpike2 = shootPos1.fresh()
                 .setTangent(Math.toRadians(360-45))
                 .splineToLinearHeading(new Pose2d(5.3,27.8,Math.toRadians(360-280)), Math.toRadians(360-310),
-                        new TranslationalVelConstraint(30))
-                .splineToSplineHeading(new Pose2d(11.5,53,Math.toRadians(360-270)),Math.toRadians(360-270)
+                        new TranslationalVelConstraint(40))
+                .splineToSplineHeading(new Pose2d(11.5,56.5,Math.toRadians(360-270)),Math.toRadians(360-270)
 
-                        ,new TranslationalVelConstraint(30))
+                        ,new TranslationalVelConstraint(40))
                 .waitSeconds(0.1);
         TrajectoryActionBuilder shootPos2 = intakeSpike2.fresh()
-                .strafeToLinearHeading(new Vector2d(-33,22.7), Math.toRadians(360-230))
+                .strafeToLinearHeading(new Vector2d(-28.5,22.7), Math.toRadians(360-230))
                 .waitSeconds(3.5);
         TrajectoryActionBuilder intakeSpike3 = shootPos2.fresh()
                 .setTangent(Math.toRadians(360-45))
-                .splineToSplineHeading(new Pose2d(29,28.6,Math.toRadians(360-280)), Math.toRadians(360-330),
-                        new TranslationalVelConstraint(30)
+                .splineToSplineHeading(new Pose2d(26.5 ,25,Math.toRadians(360-280)), Math.toRadians(360-330),
+                        new TranslationalVelConstraint(40)
                 )
-                .splineToLinearHeading(new Pose2d(36, 53,Math.toRadians(360-270)), Math.toRadians(360-270),
-                        new TranslationalVelConstraint(30));
+                .splineToLinearHeading(new Pose2d(36, 58,Math.toRadians(360-270)), Math.toRadians(360-270),
+                        new TranslationalVelConstraint(40));
         TrajectoryActionBuilder shootPos3 = intakeSpike3.fresh()
-                .strafeToLinearHeading(new Vector2d(-33,23.8), Math.toRadians(360-230))
+                .strafeToLinearHeading(new Vector2d(-40.4,21), Math.toRadians(360-242))
                 .waitSeconds(3.5);
-        TrajectoryActionBuilder parkPos = shootPos3.fresh()
-                .strafeToLinearHeading(new Vector2d(0,48.8),Math.toRadians(360-180));
-
-
         preloads = preloadsShoot.build();
         intake1 = intakeSpike1.build();
         shoot1 = shootPos1.build();
@@ -141,7 +144,6 @@ public class RedFar extends LinearOpMode {
         shoot2 = shootPos2.build();
         intake3 = intakeSpike3.build();
         shoot3 = shootPos3.build();
-        park = parkPos.build();
 
 
     }
@@ -158,9 +160,9 @@ public class RedFar extends LinearOpMode {
                 currentAction = preloads.run(packet);
                 intaker.IntakeIdle();
                 if (time.seconds() <= 1){
-                    shooter.spinUpClose();
+                    shooter.spinUpAuto();
                 }
-                if (shooter.getState() == Shooter2.ShooterState.READY_CLOSE){
+                if (shooter.getState() == Shooter2.ShooterState.READY_AUTO){
                     intaker.Intake();
                 }
 
@@ -185,9 +187,9 @@ public class RedFar extends LinearOpMode {
                 currentAction = shoot1.run(packet);
                 intaker.IntakeIdle();
                 if (time.seconds() >= 1.4 && time.seconds()<=2){
-                    shooter.spinUpClose();
+                    shooter.spinUpAuto();
                 }
-                if (shooter.getState() == Shooter2.ShooterState.READY_CLOSE){
+                if (shooter.getState() == Shooter2.ShooterState.READY_AUTO){
                     intaker.Intake();
                 }
 
@@ -212,10 +214,10 @@ public class RedFar extends LinearOpMode {
                 currentAction = shoot2.run(packet);
                 intaker.IntakeIdle();
                 if (time.seconds() >= 1.84 && time.seconds() <= 2.1){
-                    shooter.spinUpClose();
+                    shooter.spinUpAuto();
                 }
 
-                if (shooter.getState() == Shooter2.ShooterState.READY_CLOSE){
+                if (shooter.getState() == Shooter2.ShooterState.READY_AUTO){
                     intaker.Intake();
                 }
 
@@ -242,27 +244,17 @@ public class RedFar extends LinearOpMode {
                 currentAction = shoot3.run(packet);
                 intaker.IntakeIdle();
                 if (time.seconds() >= 2.12 && time.seconds() <= 2.4){
-                    shooter.spinUpClose();
+                    shooter.spinUpAuto();
                 }
-                if (shooter.getState() == Shooter2.ShooterState.READY_CLOSE){
+                if (shooter.getState() == Shooter2.ShooterState.READY_AUTO){
                     intaker.Intake();
                 }
 
                 if (!currentAction) {
-                    state = AutoStates.PARK;
-                    time.reset();
-                }
-                break;
-
-            case PARK:
-                currentAction = park.run(packet);
-                shooter.stop();
-                intaker.IntakeIdle();
-
-                if (!currentAction){
                     state = AutoStates.END;
                     time.reset();
                 }
+                break;
 
             case END:
                 break;

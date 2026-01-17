@@ -21,7 +21,7 @@ import org.firstinspires.ftc.teamcode.subsystem.New.Intaker;
 import org.firstinspires.ftc.teamcode.subsystem.New.Shooter2;
 
 @Config
-@Autonomous(name = "BlueFar", group = "Autonomous")
+@Autonomous(name = "Blue Side Close Auto", group = "Autonomous")
 public class BlueFar extends LinearOpMode {
     Pose2d initialPose = new Pose2d(-49.9, -49.7, Math.toRadians(230));
 
@@ -32,7 +32,7 @@ public class BlueFar extends LinearOpMode {
 
 
     Telemetry telemetry;
-    Action preloads, intake1, shoot1, intake2, shoot2, intake3, shoot3, park;
+    Action preloads, intake1, shoot1, intake2, shoot2, intake3, shoot3;
     boolean currentAction;
     enum AutoStates {
         START,
@@ -43,7 +43,6 @@ public class BlueFar extends LinearOpMode {
         SHOOT2,
         INTAKE3,
         SHOOT3,
-        PARK,
         END
     }
 
@@ -65,7 +64,7 @@ public class BlueFar extends LinearOpMode {
         while (opModeInInit()){
             shooter.init();
             intaker.init();
-            
+
         }
 
 
@@ -101,44 +100,43 @@ public class BlueFar extends LinearOpMode {
 
     public void build_paths() {
         TrajectoryActionBuilder preloadsShoot = follower.actionBuilder(initialPose)
-                .strafeToLinearHeading(new Vector2d(-29.1,-29),Math.toRadians(230),new TranslationalVelConstraint(13));
+                .strafeToLinearHeading(new Vector2d(-29.1,-29),Math.toRadians(230),new TranslationalVelConstraint(13))
+                .waitSeconds(1);
         TrajectoryActionBuilder intakeSpike1 = preloadsShoot.fresh()
                 .setTangent(Math.toRadians(70))
                 .splineToLinearHeading(new Pose2d(-23.3,-24,Math.toRadians(250)), Math.toRadians(15),
-                        new TranslationalVelConstraint(30))
+                        new TranslationalVelConstraint(40))
 
-                .splineToSplineHeading(new Pose2d(-12,-53,Math.toRadians(270)),Math.toRadians(270),
-                        new TranslationalVelConstraint(30))
+                .splineToSplineHeading(new Pose2d(-12,-55,Math.toRadians(270)),Math.toRadians(270),
+                        new TranslationalVelConstraint(40))
                 //.splineToLinearHeading(new Pose2d(-14.5,-49.3,Math.toRadians(270)), Math.toRadians(200))
                 .waitSeconds(0.1);
         TrajectoryActionBuilder shootPos1 = intakeSpike1.fresh()
                 .setTangent(Math.toRadians(45))
-                .splineToSplineHeading(new Pose2d(-33,-22,Math.toRadians(230)),Math.toRadians(150))
+                .splineToSplineHeading(new Pose2d(-29,-22,Math.toRadians(230)),Math.toRadians(150))
 //                .splineTo(new Vector2d(-21.9,-22),Math.toRadians(130))
-                .waitSeconds(3.5);
+                .waitSeconds(3);
         TrajectoryActionBuilder intakeSpike2 = shootPos1.fresh()
                 .setTangent(Math.toRadians(45))
                 .splineToLinearHeading(new Pose2d(5.3,-27.8,Math.toRadians(280)), Math.toRadians(310),
-                        new TranslationalVelConstraint(30))
-                .splineToSplineHeading(new Pose2d(11.5,-53,Math.toRadians(270)),Math.toRadians(270)
+                        new TranslationalVelConstraint(40))
+                .splineToSplineHeading(new Pose2d(11.5,-56.5,Math.toRadians(270)),Math.toRadians(270)
 
-                        ,new TranslationalVelConstraint(30))
+                        ,new TranslationalVelConstraint(40))
                 .waitSeconds(0.1);
         TrajectoryActionBuilder shootPos2 = intakeSpike2.fresh()
-                .strafeToLinearHeading(new Vector2d(-33,-22.7), Math.toRadians(230))
+                .strafeToLinearHeading(new Vector2d(-28.5,-22.7), Math.toRadians(230))
                 .waitSeconds(3.5);
         TrajectoryActionBuilder intakeSpike3 = shootPos2.fresh()
                 .setTangent(Math.toRadians(45))
-                .splineToSplineHeading(new Pose2d(29,-28.6,Math.toRadians(280)), Math.toRadians(330),
-                        new TranslationalVelConstraint(30)
+                .splineToSplineHeading(new Pose2d(26.5 ,-25,Math.toRadians(280)), Math.toRadians(330),
+                        new TranslationalVelConstraint(40)
                 )
-                .splineToLinearHeading(new Pose2d(36, -53,Math.toRadians(270)), Math.toRadians(270),
-                        new TranslationalVelConstraint(30));
+                .splineToLinearHeading(new Pose2d(36, -58,Math.toRadians(270)), Math.toRadians(270),
+                        new TranslationalVelConstraint(40));
         TrajectoryActionBuilder shootPos3 = intakeSpike3.fresh()
-                .strafeToLinearHeading(new Vector2d(-33,-23.8), Math.toRadians(230))
+                .strafeToLinearHeading(new Vector2d(-40.4,-21), Math.toRadians(242))
                 .waitSeconds(3.5);
-        TrajectoryActionBuilder parkPos = shootPos3.fresh()
-                .strafeToLinearHeading(new Vector2d(0,-48.8),Math.toRadians(180));
         preloads = preloadsShoot.build();
         intake1 = intakeSpike1.build();
         shoot1 = shootPos1.build();
@@ -146,7 +144,6 @@ public class BlueFar extends LinearOpMode {
         shoot2 = shootPos2.build();
         intake3 = intakeSpike3.build();
         shoot3 = shootPos3.build();
-        park = parkPos.build();
 
 
     }
@@ -163,9 +160,9 @@ public class BlueFar extends LinearOpMode {
                 currentAction = preloads.run(packet);
                 intaker.IntakeIdle();
                 if (time.seconds() <= 1){
-                    shooter.spinUpClose();
+                    shooter.spinUpAuto();
                 }
-                if (shooter.getState() == Shooter2.ShooterState.READY_CLOSE){
+                if (shooter.getState() == Shooter2.ShooterState.READY_AUTO){
                     intaker.Intake();
                 }
 
@@ -190,9 +187,9 @@ public class BlueFar extends LinearOpMode {
                 currentAction = shoot1.run(packet);
                 intaker.IntakeIdle();
                 if (time.seconds() >= 1.4 && time.seconds()<=2){
-                    shooter.spinUpClose();
+                    shooter.spinUpAuto();
                 }
-                if (shooter.getState() == Shooter2.ShooterState.READY_CLOSE){
+                if (shooter.getState() == Shooter2.ShooterState.READY_AUTO){
                     intaker.Intake();
                 }
 
@@ -217,10 +214,10 @@ public class BlueFar extends LinearOpMode {
                 currentAction = shoot2.run(packet);
                 intaker.IntakeIdle();
                 if (time.seconds() >= 1.84 && time.seconds() <= 2.1){
-                    shooter.spinUpClose();
+                    shooter.spinUpAuto();
                 }
 
-                if (shooter.getState() == Shooter2.ShooterState.READY_CLOSE){
+                if (shooter.getState() == Shooter2.ShooterState.READY_AUTO){
                     intaker.Intake();
                 }
 
@@ -247,27 +244,17 @@ public class BlueFar extends LinearOpMode {
                 currentAction = shoot3.run(packet);
                 intaker.IntakeIdle();
                 if (time.seconds() >= 2.12 && time.seconds() <= 2.4){
-                    shooter.spinUpClose();
+                    shooter.spinUpAuto();
                 }
-                if (shooter.getState() == Shooter2.ShooterState.READY_CLOSE){
+                if (shooter.getState() == Shooter2.ShooterState.READY_AUTO){
                     intaker.Intake();
                 }
 
                 if (!currentAction) {
-                    state = AutoStates.PARK;
-                    time.reset();
-                }
-                break;
-
-            case PARK:
-                currentAction = park.run(packet);
-                shooter.stop();
-                intaker.IntakeIdle();
-
-                if (!currentAction){
                     state = AutoStates.END;
                     time.reset();
                 }
+                break;
 
             case END:
                 break;
