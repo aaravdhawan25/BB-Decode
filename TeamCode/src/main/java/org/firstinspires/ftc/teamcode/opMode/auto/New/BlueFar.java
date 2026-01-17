@@ -118,7 +118,7 @@ public class BlueFar extends LinearOpMode {
                 .waitSeconds(3);
         TrajectoryActionBuilder intakeSpike2 = shootPos1.fresh()
                 .setTangent(Math.toRadians(45))
-                .splineToLinearHeading(new Pose2d(5.3,-27.8,Math.toRadians(280)), Math.toRadians(310),
+                .splineToLinearHeading(new Pose2d(6,-24.8,Math.toRadians(270)), Math.toRadians(310),
                         new TranslationalVelConstraint(40))
                 .splineToSplineHeading(new Pose2d(11.5,-56.5,Math.toRadians(270)),Math.toRadians(270)
 
