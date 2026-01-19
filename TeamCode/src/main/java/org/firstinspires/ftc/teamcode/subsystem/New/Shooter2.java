@@ -84,8 +84,8 @@ public class Shooter2 implements Subsystem {
         SPINNING_UP_FAR,
         READY_CLOSE,
         READY_FAR,
-        SPINNING_UP_AUTOMATIC,
-        READY_AUTOMATIC,
+        SPINNING_UP_DISTANCE,
+        READY_DISTANCE,
 
         SPINNING_UP_AUTO,
         READY_AUTO,
@@ -196,6 +196,10 @@ public class Shooter2 implements Subsystem {
         setState(ShooterState.SPINNING_UP_AUTO);
     }
 
+    public void spinUpDistance(){
+        setState(ShooterState.SPINNING_UP_DISTANCE);
+    }
+
     @Override
     public void update() {
         long currentTime = System.nanoTime();
@@ -259,6 +263,18 @@ public class Shooter2 implements Subsystem {
             case OPEN_BLOCKER:
                 blockerOpen();
                 break;
+            case SPINNING_UP_DISTANCE:
+                targetRPM = calculateShooterRPM(getDistanceToGoal());
+                crTargetRPM = calculateCounterRollerRPM(getDistanceToGoal());
+                blockerClose();
+                if (atTargetSpeed()){
+                    setState(ShooterState.READY_DISTANCE);
+                }
+                break;
+            case READY_DISTANCE:
+                targetRPM = calculateShooterRPM(getDistanceToGoal());
+                crTargetRPM = calculateCounterRollerRPM(getDistanceToGoal());
+                blockerOpen();
 
             case STOPPING:
                 targetRPM = IDLE_SHOOTER;
@@ -355,6 +371,12 @@ public class Shooter2 implements Subsystem {
             kickBallOff();
         }
         if (gp1.dpadDownWasReleased()){
+            stop();
+        }
+        if (gp1.dpadUpWasPressed()){
+            spinUpDistance();
+        }
+        if (gp1.dpadUpWasReleased()){
             stop();
         }
 
