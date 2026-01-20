@@ -5,20 +5,24 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Vector2d;
+import com.bylazar.configurables.annotations.IgnoreConfigurable;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.RoadRunner.MecanumDrive;
+import org.firstinspires.ftc.teamcode.subsystem.AprilTagAlignment;
 import org.firstinspires.ftc.teamcode.subsystem.Drivetrain;
 import org.firstinspires.ftc.teamcode.subsystem.New.DistanceToGoal;
 import org.firstinspires.ftc.teamcode.subsystem.New.Intaker;
 import org.firstinspires.ftc.teamcode.subsystem.New.Shooter2;
+import org.opencv.core.Mat;
+
 @Config
 @TeleOp(name = "COMP Teleop", group = "a")
 public class prod_TestTele extends LinearOpMode {
 
-    private static final Pose2d START_POSE = new Pose2d(-40.4,-21,Math.toRadians(242));
+    private static final Pose2d START_POSE = new Pose2d(-40.4,-20, Math.toRadians(245));
 
 
 
@@ -105,8 +109,7 @@ public class prod_TestTele extends LinearOpMode {
             drivetrain.updateCtrls(gamepad1, gamepad2);
             intaker.updateCtrls(gamepad1, gamepad2);
             shooter.updateCtrls(gamepad1, gamepad2);
-
-            if (!gamepad1.right_bumper && !gamepad1.b && !gamepad1.left_bumper && shooter.getState() == Shooter2.ShooterState.READY_CLOSE){
+            if (!gamepad1.right_bumper && !gamepad1.b && !gamepad1.left_bumper && shooter.getState() == Shooter2.ShooterState.READY_DISTANCE && distance <= 100 && !gamepad1.dpad_right){
                 if (!set){
                     commandTime.reset();
                     set = true;

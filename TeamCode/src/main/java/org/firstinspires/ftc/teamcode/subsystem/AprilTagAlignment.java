@@ -125,6 +125,8 @@ public class AprilTagAlignment implements Subsystem {
         return alignmentActive;
     }
 
+
+
     private void performAlignment() {
         AprilTagDetection tag = getTagByID(targetTagID);
 
@@ -179,6 +181,11 @@ public class AprilTagAlignment implements Subsystem {
 
     public boolean isAligned() {
         return isAligned;
+    }
+
+    public double getDistance(){
+        AprilTagDetection tag = getTagByID(targetTagID);
+        return tag.ftcPose.range;
     }
 
     private AprilTagDetection getTagByID(int id) {

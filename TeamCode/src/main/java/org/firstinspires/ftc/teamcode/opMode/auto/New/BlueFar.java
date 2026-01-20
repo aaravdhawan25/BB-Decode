@@ -17,6 +17,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.RoadRunner.MecanumDrive;
+import org.firstinspires.ftc.teamcode.subsystem.New.DistanceToGoal;
 import org.firstinspires.ftc.teamcode.subsystem.New.Intaker;
 import org.firstinspires.ftc.teamcode.subsystem.New.Shooter2;
 
@@ -29,6 +30,13 @@ public class BlueFar extends LinearOpMode {
 
     Shooter2 shooter;
     Intaker intaker;
+
+    DistanceToGoal distanceToGoal;
+
+    Vector2d robotPos = new Vector2d(0,0);
+    Vector2d goalPos = new Vector2d(-70,-70);
+
+    public double distance = 0;
 
 
     Telemetry telemetry;
@@ -56,6 +64,7 @@ public class BlueFar extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         telemetry = new MultipleTelemetry(super.telemetry, FtcDashboard.getInstance().getTelemetry());
         follower = new MecanumDrive(hardwareMap, initialPose);
+        distanceToGoal = new DistanceToGoal(telemetry);
         shooter = new Shooter2(hardwareMap, telemetry);
         intaker = new Intaker(hardwareMap, telemetry);
 
@@ -78,6 +87,9 @@ public class BlueFar extends LinearOpMode {
         while (opModeIsActive()) {
             follower.updatePoseEstimate();
             Pose2d currentPose = follower.localizer.getPose();
+            robotPos = follower.localizer.getPose().position;
+            distance = distanceToGoal.calculateDistanceToGoal(robotPos,goalPos);
+            shooter.setDistanceToGoal(distance);
             shooter.update();
             intaker.update();
 
@@ -135,7 +147,7 @@ public class BlueFar extends LinearOpMode {
                 .splineToLinearHeading(new Pose2d(36, -58,Math.toRadians(270)), Math.toRadians(270),
                         new TranslationalVelConstraint(40));
         TrajectoryActionBuilder shootPos3 = intakeSpike3.fresh()
-                .strafeToLinearHeading(new Vector2d(-40.4,-21), Math.toRadians(242))
+                .strafeToLinearHeading(new Vector2d(-40.4,-20), Math.toRadians(245))
                 .waitSeconds(3.5);
         preloads = preloadsShoot.build();
         intake1 = intakeSpike1.build();
@@ -187,9 +199,9 @@ public class BlueFar extends LinearOpMode {
                 currentAction = shoot1.run(packet);
                 intaker.IntakeIdle();
                 if (time.seconds() >= 1.4 && time.seconds()<=2){
-                    shooter.spinUpAuto();
+                    shooter.spinUpDistance();
                 }
-                if (shooter.getState() == Shooter2.ShooterState.READY_AUTO){
+                if (shooter.getState() == Shooter2.ShooterState.READY_DISTANCE){
                     intaker.Intake();
                 }
 
@@ -214,10 +226,10 @@ public class BlueFar extends LinearOpMode {
                 currentAction = shoot2.run(packet);
                 intaker.IntakeIdle();
                 if (time.seconds() >= 1.84 && time.seconds() <= 2.1){
-                    shooter.spinUpAuto();
+                    shooter.spinUpDistance();
                 }
 
-                if (shooter.getState() == Shooter2.ShooterState.READY_AUTO){
+                if (shooter.getState() == Shooter2.ShooterState.READY_DISTANCE){
                     intaker.Intake();
                 }
 
@@ -244,9 +256,9 @@ public class BlueFar extends LinearOpMode {
                 currentAction = shoot3.run(packet);
                 intaker.IntakeIdle();
                 if (time.seconds() >= 2.12 && time.seconds() <= 2.4){
-                    shooter.spinUpAuto();
+                    shooter.spinUpDistance();
                 }
-                if (shooter.getState() == Shooter2.ShooterState.READY_AUTO){
+                if (shooter.getState() == Shooter2.ShooterState.READY_DISTANCE){
                     intaker.Intake();
                 }
 

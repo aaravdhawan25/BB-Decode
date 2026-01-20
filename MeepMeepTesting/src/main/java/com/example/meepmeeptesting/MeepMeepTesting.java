@@ -50,7 +50,7 @@ public class MeepMeepTesting {
                 )
                 .splineToLinearHeading(new Pose2d(36, -58,Math.toRadians(270)), Math.toRadians(270),
                         new TranslationalVelConstraint(40))
-                .strafeToLinearHeading(new Vector2d(-40.4,-21), Math.toRadians(242))
+                .strafeToLinearHeading(new Vector2d(-40.4,-20), Math.toRadians(245))
                 .waitSeconds(3.5)
                 .build());
 

@@ -31,19 +31,24 @@ public class Shooter2 implements Subsystem {
     public static double CLOSE_SHOOTER_RPM = 3450;
 
     public static double AUTO_SHOOTER_RPM = 3450;
-    public static double AUTO_CR_RPM = 2700;
+    public static double AUTO_CR_RPM = 2650;
     public static double CLOSE_CR_RPM = 2700;
     public static double FAR_SHOOTER_RPM = 5100;
     public static double FAR_CR_RPM = 2600;
     public static double RPM_TOLERANCE = 50;
     public static double MAX_RPM = 5400;
 
+    public static double G = 386.1;
+    public static double TARGET_Y = 26;
+    public static double IMPACT_ANGLE_THETA = 0.0006;
+    public static double FLYWHEEL_RADIUS = 1.43701;
 
-    public static double RPM_BASE = 2500;
-    public static double CR_RPM_BASE = 2500;
-    public static double RPM_PER_INCH = 10.0;
+    public static double CR_RATIO = 0.7;
+    public static double VELOCITY_TO_RPM_RATIO = 2;
+    public static double RPM_BASE = 400.0;
 
-    public static double CR_RPM_PER_INCH = 10.0;
+
+
 
     private double distanceToGoal = 0;
 
@@ -184,13 +189,22 @@ public class Shooter2 implements Subsystem {
     }
 
 
-    public double calculateShooterRPM(double distance) {
-        return RPM_BASE + (RPM_PER_INCH * distance);
+    public double calculateShooterRPM(double x) {
+        if (x < 1.0) x = 1.0 ;
+
+        double alpha = Math.atan((2 * TARGET_Y / x) - Math.tan(IMPACT_ANGLE_THETA));
+
+        double cosAlpha = Math.cos(alpha);
+        double v0 = Math.sqrt(
+                (G * Math.pow(x, 2)) /
+                        (2 * Math.pow(cosAlpha, 2) * (x * Math.tan(alpha) - TARGET_Y))
+        );
+
+        double theoreticalRPM = (v0 * 60) / (2 * Math.PI * FLYWHEEL_RADIUS);
+
+        return (theoreticalRPM * VELOCITY_TO_RPM_RATIO) + RPM_BASE;
     }
 
-    public double calculateCounterRollerRPM(double distance) {
-        return CR_RPM_BASE + (CR_RPM_BASE * distance);
-    }
 
     public void spinUpAuto() {
         setState(ShooterState.SPINNING_UP_AUTO);
@@ -265,7 +279,7 @@ public class Shooter2 implements Subsystem {
                 break;
             case SPINNING_UP_DISTANCE:
                 targetRPM = calculateShooterRPM(getDistanceToGoal());
-                crTargetRPM = calculateCounterRollerRPM(getDistanceToGoal());
+                crTargetRPM = targetRPM*CR_RATIO;
                 blockerClose();
                 if (atTargetSpeed()){
                     setState(ShooterState.READY_DISTANCE);
@@ -273,8 +287,9 @@ public class Shooter2 implements Subsystem {
                 break;
             case READY_DISTANCE:
                 targetRPM = calculateShooterRPM(getDistanceToGoal());
-                crTargetRPM = calculateCounterRollerRPM(getDistanceToGoal());
+                crTargetRPM = targetRPM*CR_RATIO;
                 blockerOpen();
+                break;
 
             case STOPPING:
                 targetRPM = IDLE_SHOOTER;
@@ -331,52 +346,22 @@ public class Shooter2 implements Subsystem {
 
     @Override
     public void updateCtrls(Gamepad gp1, Gamepad gp2) {
-        if (gp1.xWasPressed()) {
+        if (gp2.xWasPressed()) {
             spinUpClose();
         }
-        if (gp1.xWasReleased()){
+        if (gp2.xWasReleased()){
             stop();
         }
-
-        if (gp1.yWasPressed()) {
-            spinUpFar();
-        }
-
-        if (gp1.yWasReleased()){
-            stop();
-        }
-
-        if (gp2.aWasPressed()){
-            spinUpAuto();
-        }
-        if (gp2.aWasReleased()){
-            stop();
-        }
-
-        if (state == ShooterState.READY_FAR){
-            gp1.rumble(200);
-        }
-        if (state == ShooterState.READY_CLOSE){
-            gp1.rumble(200);
-        }
-
-        if (state != ShooterState.READY_FAR){
-            gp1.stopRumble();
-        }
-        if (state != ShooterState.READY_CLOSE){
-            gp1.stopRumble();
-        }
-
         if (gp1.dpadDownWasPressed()){
             kickBallOff();
         }
         if (gp1.dpadDownWasReleased()){
             stop();
         }
-        if (gp1.dpadUpWasPressed()){
+        if (gp2.triangleWasPressed()){
             spinUpDistance();
         }
-        if (gp1.dpadUpWasReleased()){
+        if (gp2.triangleWasReleased()){
             stop();
         }
 
