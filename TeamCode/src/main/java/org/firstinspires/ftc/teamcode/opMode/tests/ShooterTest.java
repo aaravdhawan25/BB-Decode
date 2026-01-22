@@ -21,7 +21,6 @@ public class ShooterTest extends OpMode {
     public void loop() {
         // Controls
         if (gamepad1.a) {
-            shooter.setTargetRPM(3000, 3000);
         }
         if (gamepad1.b) {
             shooter.stop();

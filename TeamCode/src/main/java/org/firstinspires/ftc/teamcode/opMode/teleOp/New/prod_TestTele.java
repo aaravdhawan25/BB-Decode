@@ -3,20 +3,20 @@ package org.firstinspires.ftc.teamcode.opMode.teleOp.New;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
-import com.bylazar.configurables.annotations.IgnoreConfigurable;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.RoadRunner.MecanumDrive;
-import org.firstinspires.ftc.teamcode.subsystem.AprilTagAlignment;
 import org.firstinspires.ftc.teamcode.subsystem.Drivetrain;
 import org.firstinspires.ftc.teamcode.subsystem.New.DistanceToGoal;
 import org.firstinspires.ftc.teamcode.subsystem.New.Intaker;
-import org.firstinspires.ftc.teamcode.subsystem.New.Shooter2;
-import org.opencv.core.Mat;
+import org.firstinspires.ftc.teamcode.subsystem.New.Shooter;
 
 @Config
 @TeleOp(name = "COMP Teleop", group = "a")
@@ -24,11 +24,13 @@ public class prod_TestTele extends LinearOpMode {
 
     private static final Pose2d START_POSE = new Pose2d(-40.4,-20, Math.toRadians(245));
 
+    boolean isWaypointing = false;
+
 
 
     Drivetrain drivetrain;
     Intaker intaker;
-    Shooter2 shooter;
+    Shooter shooter;
 
     DistanceToGoal distanceToGoal;
 
@@ -36,12 +38,20 @@ public class prod_TestTele extends LinearOpMode {
 
     boolean isEndgame = false;
 
+    Action waypointing;
+
     public static Vector2d goalPos = new Vector2d(-70,-70);
+
+    Pose2d currPos = new Pose2d(0,0,Math.toRadians(0));
 
     Vector2d robotPos = new Vector2d(0,0);
 
+
+    TelemetryPacket packet;
     double robotHeading = 0;
     public static double FarShootDelay1 = 0.6;
+
+    double turnAngle;
 
     public static double FarShootDelayDelay = 1.6;
 
@@ -65,9 +75,10 @@ public class prod_TestTele extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+        packet = new TelemetryPacket();
         drivetrain = new Drivetrain(hardwareMap,telemetry);
         intaker = new Intaker(hardwareMap, telemetry);
-        shooter = new Shooter2(hardwareMap, telemetry);
+        shooter = new Shooter(hardwareMap, telemetry);
         follower = new MecanumDrive(hardwareMap, START_POSE);
         distanceToGoal = new DistanceToGoal(telemetry);
         drivetrain.init();
@@ -91,9 +102,10 @@ public class prod_TestTele extends LinearOpMode {
             commandTime.startTime();
             FarShoot.startTime();
             robotPos = follower.localizer.getPose().position;
+            currPos = follower.localizer.getPose();
             follower.updatePoseEstimate();
             distance = distanceToGoal.calculateDistanceToGoal(robotPos,goalPos);
-
+            turnAngle = distanceToGoal.calculateRobotAngle(robotPos, Math.toDegrees(currPos.heading.toDouble()), goalPos);
 
             telemetry.addData("Position", robotPos);
             telemetry.addData("Distance To Goal", distance);
@@ -109,7 +121,7 @@ public class prod_TestTele extends LinearOpMode {
             drivetrain.updateCtrls(gamepad1, gamepad2);
             intaker.updateCtrls(gamepad1, gamepad2);
             shooter.updateCtrls(gamepad1, gamepad2);
-            if (!gamepad1.right_bumper && !gamepad1.b && !gamepad1.left_bumper && shooter.getState() == Shooter2.ShooterState.READY_DISTANCE && distance <= 100 && !gamepad1.dpad_right){
+            if (!gamepad1.right_bumper && !gamepad1.b && !gamepad1.left_bumper && shooter.getState() == Shooter.ShooterState.READY_DISTANCE && distance <= 100 && !gamepad1.dpad_right){
                 if (!set){
                     commandTime.reset();
                     set = true;
@@ -122,9 +134,33 @@ public class prod_TestTele extends LinearOpMode {
 
             }
 
-            if (!gamepad1.right_bumper && !gamepad1.b && !gamepad1.left_bumper && shooter.getState() == Shooter2.ShooterState.STOPPING){
+            if (!gamepad1.right_bumper && !gamepad1.b && !gamepad1.left_bumper && shooter.getState() == Shooter.ShooterState.STOPPING){
                 intaker.IntakeIdle();
             }
+
+
+            TrajectoryActionBuilder waypoint = follower.actionBuilder(currPos)
+                    .turnTo(Math.toRadians(turnAngle));
+
+            if (gamepad1.triangleWasPressed()){
+                waypointing = waypoint.build();
+                isWaypointing = true;
+            }
+
+            if (!(gamepad1.left_stick_y == 0 && gamepad1.right_stick_x == 0 && gamepad1.left_stick_x == 0 && gamepad1.right_stick_y == 0)) {
+                isWaypointing = false;
+
+            }
+
+            if (isWaypointing && waypointing != null) {
+                if(!waypointing.run(packet)){
+                    isWaypointing = false;
+                }
+
+            }
+
+            FtcDashboard.getInstance().sendTelemetryPacket(packet);
+
 
 
 

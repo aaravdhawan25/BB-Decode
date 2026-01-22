@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.RoadRunner.MecanumDrive;
 import org.firstinspires.ftc.teamcode.subsystem.Drivetrain;
 import org.firstinspires.ftc.teamcode.subsystem.New.Intaker;
-import org.firstinspires.ftc.teamcode.subsystem.New.Shooter2;
+import org.firstinspires.ftc.teamcode.subsystem.New.Shooter;
 import org.firstinspires.ftc.teamcode.subsystem.New.Turret;
 
 @TeleOp(name = "TurretTeleRed", group = "Blue")
@@ -22,7 +22,7 @@ public class prod_TestTele_Red extends LinearOpMode {
     Drivetrain drivetrain;
     Turret turret;
     Intaker intaker;
-    Shooter2 shooter;
+    Shooter shooter;
 
     MecanumDrive drive;
 
@@ -31,7 +31,7 @@ public class prod_TestTele_Red extends LinearOpMode {
         drivetrain = new Drivetrain(hardwareMap,telemetry);
         turret = new Turret(hardwareMap, telemetry);
         intaker = new Intaker(hardwareMap, telemetry);
-        shooter = new Shooter2(hardwareMap, telemetry);
+        shooter = new Shooter(hardwareMap, telemetry);
         drive = new MecanumDrive(hardwareMap, START_POSE);
         drivetrain.init();
         turret.init();

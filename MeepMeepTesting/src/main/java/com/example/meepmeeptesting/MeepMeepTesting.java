@@ -23,7 +23,7 @@ public class MeepMeepTesting {
                 .build();
         myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(-49.9, -49.7, Math.toRadians(230)))
                 .strafeToLinearHeading(new Vector2d(-29.1,-29),Math.toRadians(230),new TranslationalVelConstraint(13))
-                        .waitSeconds(1)
+                .waitSeconds(1)
                 .setTangent(Math.toRadians(70))
                 .splineToLinearHeading(new Pose2d(-23.3,-24,Math.toRadians(250)), Math.toRadians(15),
                         new TranslationalVelConstraint(40))
@@ -31,6 +31,7 @@ public class MeepMeepTesting {
                 .splineToSplineHeading(new Pose2d(-12,-55,Math.toRadians(270)),Math.toRadians(270),
                         new TranslationalVelConstraint(40))
                 //.splineToLinearHeading(new Pose2d(-14.5,-49.3,Math.toRadians(270)), Math.toRadians(200))
+                .waitSeconds(0.1)
                 .setTangent(Math.toRadians(45))
                 .splineToSplineHeading(new Pose2d(-29,-22,Math.toRadians(230)),Math.toRadians(150))
 //                .splineTo(new Vector2d(-21.9,-22),Math.toRadians(130))
@@ -48,9 +49,9 @@ public class MeepMeepTesting {
                 .splineToSplineHeading(new Pose2d(26.5 ,-24,Math.toRadians(270)), Math.toRadians(330),
                         new TranslationalVelConstraint(40)
                 )
-                .splineToLinearHeading(new Pose2d(36, -58,Math.toRadians(270)), Math.toRadians(270),
+                .splineToLinearHeading(new Pose2d(36, -60,Math.toRadians(270)), Math.toRadians(270),
                         new TranslationalVelConstraint(40))
-                .strafeToLinearHeading(new Vector2d(-40.4,-20), Math.toRadians(245))
+                .strafeToLinearHeading(new Vector2d(-44,-23), Math.toRadians(246))
                 .waitSeconds(3.5)
                 .build());
 

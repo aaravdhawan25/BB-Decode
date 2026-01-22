@@ -75,38 +75,10 @@ public class Drivetrain implements Subsystem {
         rbMotor.setPower(rbPower);
     }
 
-    public void MoveForward(){
-        lfMotor.setPower(lfDP);
-        lbMotor.setPower(lbDP);
-        rfMotor.setPower(rfDP);
-        rbMotor.setPower(rbDP);
-    }
-    public void StrafeRight(){
-        lfMotor.setPower(lfStrafe);
-        lbMotor.setPower(lbStrafe);
-        rfMotor.setPower(rfStrafe);
-        rbMotor.setPower(rbStrafe);
-    }
-
-    public void StrafeLeft(){
-        lfMotor.setPower(-lfStrafe);
-        lbMotor.setPower(-lbStrafe);
-        rfMotor.setPower(rfStrafe);
-        rbMotor.setPower(rbStrafe);
-
-    }
-
-    public void stopMoving(){
-        lfMotor.setPower(0);
-        lbMotor.setPower(0);
-        rfMotor.setPower(0);
-        rbMotor.setPower(0);
-    }
-
     @Override
     public void updateCtrls(Gamepad gp1, Gamepad gp2) {
 
-        if (gp1.aWasPressed()) {
+        if (gp1.leftStickButtonWasPressed()) {
             bumpToggle = !bumpToggle;
         }
 

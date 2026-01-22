@@ -10,13 +10,13 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.RoadRunner.MecanumDrive;
-import org.firstinspires.ftc.teamcode.subsystem.New.Shooter2;
+import org.firstinspires.ftc.teamcode.subsystem.New.Shooter;
 import org.firstinspires.ftc.teamcode.subsystem.New.Turret;
 
 @TeleOp(name="Shooter Tuning", group = " Tuning")
 @Disabled
 public class ShooterTuning extends OpMode {
-    public Shooter2 shooter;
+    public Shooter shooter;
 
     public Turret turret;
 
@@ -31,7 +31,7 @@ public class ShooterTuning extends OpMode {
 
     @Override
     public void init() {
-        shooter = new Shooter2(hardwareMap, telemetry);
+        shooter = new Shooter(hardwareMap, telemetry);
         telemetry = new MultipleTelemetry(FtcDashboard.getInstance().getTelemetry());
         turret = new Turret(hardwareMap, telemetry);
         follower = new MecanumDrive(hardwareMap, START_POSE);
@@ -146,8 +146,8 @@ public class ShooterTuning extends OpMode {
     }
 
     private void setManualSpeed(double shooterRPM, double crRPM) {
-        Shooter2.CLOSE_SHOOTER_RPM = shooterRPM;
-        Shooter2.CLOSE_CR_RPM = crRPM;
+        Shooter.CLOSE_SHOOTER_RPM = shooterRPM;
+        Shooter.CLOSE_CR_RPM = crRPM;
         shooter.spinUpClose();
     }
 
@@ -155,10 +155,10 @@ public class ShooterTuning extends OpMode {
         switch (shooter.getState()) {
             case READY_CLOSE:
             case SPINNING_UP_CLOSE:
-                return Shooter2.CLOSE_SHOOTER_RPM;
+                return Shooter.CLOSE_SHOOTER_RPM;
             case READY_FAR:
             case SPINNING_UP_FAR:
-                return Shooter2.FAR_SHOOTER_RPM;
+                return Shooter.FAR_SHOOTER_RPM;
             default:
                 return 0;
         }
@@ -168,10 +168,10 @@ public class ShooterTuning extends OpMode {
         switch (shooter.getState()) {
             case READY_CLOSE:
             case SPINNING_UP_CLOSE:
-                return Shooter2.CLOSE_CR_RPM;
+                return Shooter.CLOSE_CR_RPM;
             case READY_FAR:
             case SPINNING_UP_FAR:
-                return Shooter2.FAR_CR_RPM;
+                return Shooter.FAR_CR_RPM;
             default:
                 return 0;
         }
