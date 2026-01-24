@@ -15,6 +15,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.RoadRunner.MecanumDrive;
+import org.firstinspires.ftc.teamcode.subsystem.New.DistanceToGoal;
 import org.firstinspires.ftc.teamcode.subsystem.New.Intaker;
 import org.firstinspires.ftc.teamcode.subsystem.New.Shooter;
 
@@ -27,6 +28,13 @@ public class RedFar extends LinearOpMode {
 
     Shooter shooter;
     Intaker intaker;
+
+    DistanceToGoal distanceToGoal;
+
+    Vector2d robotPos = new Vector2d(0,0);
+    Vector2d goalPos = new Vector2d(-70,70);
+
+    public double distance = 0;
 
 
     Telemetry telemetry;
@@ -54,6 +62,7 @@ public class RedFar extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         telemetry = new MultipleTelemetry(super.telemetry, FtcDashboard.getInstance().getTelemetry());
         follower = new MecanumDrive(hardwareMap, initialPose);
+        distanceToGoal = new DistanceToGoal(telemetry);
         shooter = new Shooter(hardwareMap, telemetry);
         intaker = new Intaker(hardwareMap, telemetry);
 
@@ -76,6 +85,9 @@ public class RedFar extends LinearOpMode {
         while (opModeIsActive()) {
             follower.updatePoseEstimate();
             Pose2d currentPose = follower.localizer.getPose();
+            robotPos = follower.localizer.getPose().position;
+            distance = distanceToGoal.calculateDistanceToGoal(robotPos,goalPos);
+            shooter.setDistanceToGoal(distance);
             shooter.update();
             intaker.update();
 
@@ -84,7 +96,6 @@ public class RedFar extends LinearOpMode {
 
 
 
-            telemetry.addData("State", state);
             telemetry.addData("X", currentPose.position.x);
             telemetry.addData("Y", currentPose.position.y);
             telemetry.addData("Heading", Math.toDegrees(currentPose.heading.toDouble()));
@@ -102,7 +113,7 @@ public class RedFar extends LinearOpMode {
                 .waitSeconds(1);
         TrajectoryActionBuilder intakeSpike1 = preloadsShoot.fresh()
                 .setTangent(Math.toRadians(360-70))
-                .splineToLinearHeading(new Pose2d(-23.3,24,Math.toRadians(360-250)), Math.toRadians(360-15),
+                .splineToLinearHeading(new Pose2d(-23.3,22,Math.toRadians(360-250)), Math.toRadians(360-15),
                         new TranslationalVelConstraint(40))
 
                 .splineToSplineHeading(new Pose2d(-12,55,Math.toRadians(360-270)),Math.toRadians(360-270),
@@ -116,9 +127,9 @@ public class RedFar extends LinearOpMode {
                 .waitSeconds(3);
         TrajectoryActionBuilder intakeSpike2 = shootPos1.fresh()
                 .setTangent(Math.toRadians(360-45))
-                .splineToLinearHeading(new Pose2d(6,22,Math.toRadians(360-270)), Math.toRadians(360-310),
+                .splineToLinearHeading(new Pose2d(6,20,Math.toRadians(360-270)), Math.toRadians(360-310),
                         new TranslationalVelConstraint(40))
-                .splineToSplineHeading(new Pose2d(11.5,56.5,Math.toRadians(360-270)),Math.toRadians(360-270)
+                .splineToSplineHeading(new Pose2d(11.5,49,Math.toRadians(360-270)),Math.toRadians(360-270)
 
                         ,new TranslationalVelConstraint(40))
                 .waitSeconds(0.1);
@@ -127,13 +138,13 @@ public class RedFar extends LinearOpMode {
                 .waitSeconds(3.5);
         TrajectoryActionBuilder intakeSpike3 = shootPos2.fresh()
                 .setTangent(Math.toRadians(360-45))
-                .splineToSplineHeading(new Pose2d(26.5 ,24,Math.toRadians(360-270)), Math.toRadians(360-330),
+                .splineToSplineHeading(new Pose2d(26.5 ,20,Math.toRadians(360-270)), Math.toRadians(360-330),
                         new TranslationalVelConstraint(40)
                 )
-                .splineToLinearHeading(new Pose2d(36, 58,Math.toRadians(360-270)), Math.toRadians(360-270),
+                .splineToLinearHeading(new Pose2d(36, 50,Math.toRadians(360-270)), Math.toRadians(360-270),
                         new TranslationalVelConstraint(40));
         TrajectoryActionBuilder shootPos3 = intakeSpike3.fresh()
-                .strafeToLinearHeading(new Vector2d(-40.4,21), Math.toRadians(360-242))
+                .strafeToLinearHeading(new Vector2d(-44,19), Math.toRadians(360-246))
                 .waitSeconds(3.5);
         preloads = preloadsShoot.build();
         intake1 = intakeSpike1.build();
@@ -185,9 +196,9 @@ public class RedFar extends LinearOpMode {
                 currentAction = shoot1.run(packet);
                 intaker.IntakeIdle();
                 if (time.seconds() >= 1.4 && time.seconds()<=2){
-                    shooter.spinUpAuto();
+                    shooter.spinUpDistance();
                 }
-                if (shooter.getState() == Shooter.ShooterState.READY_AUTO){
+                if (shooter.getState() == Shooter.ShooterState.READY_DISTANCE){
                     intaker.Intake();
                 }
 
@@ -212,10 +223,10 @@ public class RedFar extends LinearOpMode {
                 currentAction = shoot2.run(packet);
                 intaker.IntakeIdle();
                 if (time.seconds() >= 1.84 && time.seconds() <= 2.1){
-                    shooter.spinUpAuto();
+                    shooter.spinUpDistance();
                 }
 
-                if (shooter.getState() == Shooter.ShooterState.READY_AUTO){
+                if (shooter.getState() == Shooter.ShooterState.READY_DISTANCE){
                     intaker.Intake();
                 }
 
@@ -242,9 +253,9 @@ public class RedFar extends LinearOpMode {
                 currentAction = shoot3.run(packet);
                 intaker.IntakeIdle();
                 if (time.seconds() >= 2.12 && time.seconds() <= 2.4){
-                    shooter.spinUpAuto();
+                    shooter.spinUpDistance();
                 }
-                if (shooter.getState() == Shooter.ShooterState.READY_AUTO){
+                if (shooter.getState() == Shooter.ShooterState.READY_DISTANCE){
                     intaker.Intake();
                 }
 
