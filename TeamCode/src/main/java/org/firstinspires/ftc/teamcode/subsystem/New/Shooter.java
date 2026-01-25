@@ -19,6 +19,8 @@ public class Shooter implements Subsystem {
     public static double KD = 0.00001;
     public static double KF = 0.0002;
 
+    public boolean isOneMan = false;
+
     public static double CR_KP = 0.00005;
     public static double CR_KI = 0.0;
     public static double CR_KD = 0.000000001;
@@ -346,23 +348,50 @@ public class Shooter implements Subsystem {
 
     @Override
     public void updateCtrls(Gamepad gp1, Gamepad gp2) {
-        if (gp2.xWasPressed()) {
-            spinUpClose();
-        }
-        if (gp2.xWasReleased()){
-            stop();
-        }
-        if (gp1.dpadDownWasPressed()){
-            kickBallOff();
-        }
-        if (gp1.dpadDownWasReleased()){
-            stop();
-        }
-        if (gp1.triangleWasPressed()){
-            spinUpDistance();
-        }
-        if (gp1.triangleWasReleased()){
-            stop();
+        if (gp1.leftStickButtonWasPressed()){
+            isOneMan = !isOneMan;
+            if (isOneMan) {
+
+                if (gp1.xWasPressed()) {
+                    spinUpClose();
+                }
+                if (gp1.xWasReleased()) {
+                    stop();
+                }
+                if (gp1.dpadDownWasPressed()) {
+                    kickBallOff();
+                }
+                if (gp1.dpadDownWasReleased()) {
+                    stop();
+                }
+                if (gp1.triangleWasPressed()) {
+                    spinUpDistance();
+                }
+                if (gp1.triangleWasReleased()) {
+                    stop();
+                }
+            } else {
+                if (gp2.xWasPressed()) {
+                    spinUpClose();
+                }
+                if (gp2.xWasReleased()) {
+                    stop();
+                }
+                if (gp1.dpadDownWasPressed()) {
+                    kickBallOff();
+                }
+                if (gp1.dpadDownWasReleased()) {
+                    stop();
+                }
+                if (gp2.triangleWasPressed()) {
+                    spinUpDistance();
+                }
+                if (gp2.triangleWasReleased()) {
+                    stop();
+                }
+
+            }
+
         }
 
 
