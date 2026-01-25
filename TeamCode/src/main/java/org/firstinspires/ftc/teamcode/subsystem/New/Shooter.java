@@ -358,10 +358,10 @@ public class Shooter implements Subsystem {
         if (gp1.dpadDownWasReleased()){
             stop();
         }
-        if (gp2.triangleWasPressed()){
+        if (gp1.triangleWasPressed()){
             spinUpDistance();
         }
-        if (gp2.triangleWasReleased()){
+        if (gp1.triangleWasReleased()){
             stop();
         }
 

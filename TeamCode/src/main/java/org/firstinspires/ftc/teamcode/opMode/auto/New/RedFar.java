@@ -109,14 +109,14 @@ public class RedFar extends LinearOpMode {
 
     public void build_paths() {
         TrajectoryActionBuilder preloadsShoot = follower.actionBuilder(initialPose)
-                .strafeToLinearHeading(new Vector2d(-29.1,29),Math.toRadians(360-230),new TranslationalVelConstraint(13))
+                .strafeToLinearHeading(new Vector2d(-29.1,29),Math.toRadians(360-230),new TranslationalVelConstraint(20))
                 .waitSeconds(1);
         TrajectoryActionBuilder intakeSpike1 = preloadsShoot.fresh()
                 .setTangent(Math.toRadians(360-70))
                 .splineToLinearHeading(new Pose2d(-23.3,22,Math.toRadians(360-250)), Math.toRadians(360-15),
                         new TranslationalVelConstraint(40))
 
-                .splineToSplineHeading(new Pose2d(-12,55,Math.toRadians(360-270)),Math.toRadians(360-270),
+                .splineToSplineHeading(new Pose2d(-12,52,Math.toRadians(360-270)),Math.toRadians(360-270),
                         new TranslationalVelConstraint(40))
                 //.splineToLinearHeading(new Pose2d(-14.5,-49.3,Math.toRadians(270)), Math.toRadians(200))
                 .waitSeconds(0.1);
@@ -129,7 +129,7 @@ public class RedFar extends LinearOpMode {
                 .setTangent(Math.toRadians(360-45))
                 .splineToLinearHeading(new Pose2d(6,20,Math.toRadians(360-270)), Math.toRadians(360-310),
                         new TranslationalVelConstraint(40))
-                .splineToSplineHeading(new Pose2d(11.5,49,Math.toRadians(360-270)),Math.toRadians(360-270)
+                .splineToSplineHeading(new Pose2d(11.5,45,Math.toRadians(360-270)),Math.toRadians(360-270)
 
                         ,new TranslationalVelConstraint(40))
                 .waitSeconds(0.1);
@@ -144,6 +144,7 @@ public class RedFar extends LinearOpMode {
                 .splineToLinearHeading(new Pose2d(36, 50,Math.toRadians(360-270)), Math.toRadians(360-270),
                         new TranslationalVelConstraint(40));
         TrajectoryActionBuilder shootPos3 = intakeSpike3.fresh()
+                .strafeToLinearHeading(new Vector2d(36,46),Math.toRadians(360-270))
                 .strafeToLinearHeading(new Vector2d(-44,19), Math.toRadians(360-246))
                 .waitSeconds(3.5);
         preloads = preloadsShoot.build();
