@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.opMode.teleOp;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -11,6 +12,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.subsystem.AprilTagAlignment;
 
 @TeleOp (name="TeleOp Red", group = "COMP")
+@Disabled
 public class
 MecanumTeleOP_RED extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();

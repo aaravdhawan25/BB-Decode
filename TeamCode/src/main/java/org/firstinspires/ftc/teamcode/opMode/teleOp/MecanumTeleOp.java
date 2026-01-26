@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.opMode.teleOp;
 import android.text.TextUtils;
 
 import com.pedropathing.geometry.Pose;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -18,6 +19,7 @@ import org.firstinspires.ftc.teamcode.Vision.AprilTag;
 import org.firstinspires.ftc.teamcode.subsystem.AprilTagAlignment;
 
 @TeleOp (name="TeleOp Blue", group = "COMP")
+@Disabled
 public class
 MecanumTeleOp extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();

@@ -370,6 +370,12 @@ public class Shooter implements Subsystem {
                 if (gp1.triangleWasReleased()) {
                     stop();
                 }
+                if (gp1.dpadUpWasPressed()){
+                    spinUpFar();
+                }
+                if (gp1.dpadUpWasReleased()){
+                    stop();
+                }
             } else {
                 if (gp2.xWasPressed()) {
                     spinUpClose();
@@ -387,6 +393,12 @@ public class Shooter implements Subsystem {
                     spinUpDistance();
                 }
                 if (gp2.triangleWasReleased()) {
+                    stop();
+                }
+                if (gp2.dpadUpWasPressed()){
+                    spinUpFar();
+                }
+                if (gp2.dpadUpWasReleased()){
                     stop();
                 }
 

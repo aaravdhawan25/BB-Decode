@@ -19,7 +19,7 @@ import org.firstinspires.ftc.teamcode.subsystem.New.Intaker;
 import org.firstinspires.ftc.teamcode.subsystem.New.Shooter;
 
 @Config
-@TeleOp(name = "COMP Teleop", group = "a")
+@TeleOp(name = "TeleOp Blue", group = "COMP")
 public class prod_TestTele extends LinearOpMode {
 
     private static final Pose2d START_POSE = new Pose2d(-40.4,-20, Math.toRadians(245));
@@ -38,7 +38,6 @@ public class prod_TestTele extends LinearOpMode {
 
     boolean isEndgame = false;
 
-    Action waypointing;
 
     public static Vector2d goalPos = new Vector2d(-70,-70);
 
@@ -139,27 +138,27 @@ public class prod_TestTele extends LinearOpMode {
             }
 
 
-            TrajectoryActionBuilder waypoint = follower.actionBuilder(currPos)
-                    .turnTo(Math.toRadians(turnAngle));
-
-            if (gamepad1.triangleWasPressed()){
-                waypointing = waypoint.build();
-                isWaypointing = true;
-            }
-
-            if (!(gamepad1.left_stick_y == 0 && gamepad1.right_stick_x == 0 && gamepad1.left_stick_x == 0 && gamepad1.right_stick_y == 0)) {
-                isWaypointing = false;
-
-            }
-
-            if (isWaypointing && waypointing != null) {
-                if(!waypointing.run(packet)){
-                    isWaypointing = false;
-                }
-
-            }
-
-            FtcDashboard.getInstance().sendTelemetryPacket(packet);
+//            TrajectoryActionBuilder waypoint = follower.actionBuilder(currPos)
+//                    .turnTo(Math.toRadians(turnAngle));
+//
+//            if (gamepad1.triangleWasPressed()){
+//                waypointing = waypoint.build();
+//                isWaypointing = true;
+//            }
+//
+//            if (!(gamepad1.left_stick_y == 0 && gamepad1.right_stick_x == 0 && gamepad1.left_stick_x == 0 && gamepad1.right_stick_y == 0)) {
+//                isWaypointing = false;
+//
+//            }
+//
+//            if (isWaypointing && waypointing != null) {
+//                if(!waypointing.run(packet)){
+//                    isWaypointing = false;
+//                }
+//
+//            }
+//
+//            FtcDashboard.getInstance().sendTelemetryPacket(packet);
 
 
 
