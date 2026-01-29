@@ -36,7 +36,6 @@ public class DistanceToGoal implements Subsystem {
                 robotPos.x - turretOffsetInchesx * Math.cos(robotHeadingRad),
                 robotPos.y - turretOffsetInchesy * Math.sin(robotHeadingRad)
         );
-
     }
 
     public double calculateDistanceToGoal(Vector2d robotPos, Vector2d goalPos) {

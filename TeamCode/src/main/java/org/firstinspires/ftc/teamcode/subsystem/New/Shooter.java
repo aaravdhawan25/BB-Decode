@@ -229,7 +229,6 @@ public class Shooter implements Subsystem {
                 blockerClose();
 //                resetPID();
                 break;
-
             case SPINNING_UP_CLOSE:
                 targetRPM = CLOSE_SHOOTER_RPM;
                 crTargetRPM = CLOSE_CR_RPM;
@@ -239,7 +238,6 @@ public class Shooter implements Subsystem {
                     setState(ShooterState.READY_CLOSE);
                 }
                 break;
-
             case SPINNING_UP_FAR:
                 targetRPM = FAR_SHOOTER_RPM;
                 crTargetRPM = FAR_CR_RPM;
@@ -248,20 +246,16 @@ public class Shooter implements Subsystem {
                     setState(ShooterState.READY_FAR);
                 }
                 break;
-
             case READY_CLOSE:
                 targetRPM = CLOSE_SHOOTER_RPM;
                 crTargetRPM = CLOSE_CR_RPM;
                 blockerOpen();
                 break;
-
             case READY_FAR:
                 targetRPM = FAR_SHOOTER_RPM;
                 crTargetRPM = FAR_CR_RPM;
                 blockerOpen();
-
                 break;
-
             case SPINNING_UP_AUTO:
                 targetRPM = AUTO_SHOOTER_RPM;
                 crTargetRPM = AUTO_CR_RPM;
@@ -274,7 +268,6 @@ public class Shooter implements Subsystem {
                 targetRPM = AUTO_SHOOTER_RPM;
                 crTargetRPM = AUTO_CR_RPM;
                 blockerOpen();
-//                intake.Transfer();
                 break;
             case OPEN_BLOCKER:
                 blockerOpen();
@@ -292,12 +285,10 @@ public class Shooter implements Subsystem {
                 crTargetRPM = targetRPM*CR_RATIO;
                 blockerOpen();
                 break;
-
             case STOPPING:
                 targetRPM = IDLE_SHOOTER;
                 crTargetRPM = 0;
                 blockerClose();
-
                 if (getShooterRPM() < 100 && getCounterRollerRPM() < 100) {
                     setState(ShooterState.IDLE);
                 }
@@ -348,62 +339,62 @@ public class Shooter implements Subsystem {
 
     @Override
     public void updateCtrls(Gamepad gp1, Gamepad gp2) {
-        if (gp1.leftStickButtonWasPressed()){
+        if (gp1.rightStickButtonWasPressed()){
             isOneMan = !isOneMan;
-            if (isOneMan) {
 
-                if (gp1.xWasPressed()) {
-                    spinUpClose();
-                }
-                if (gp1.xWasReleased()) {
-                    stop();
-                }
-                if (gp1.dpadDownWasPressed()) {
-                    kickBallOff();
-                }
-                if (gp1.dpadDownWasReleased()) {
-                    stop();
-                }
-                if (gp1.triangleWasPressed()) {
-                    spinUpDistance();
-                }
-                if (gp1.triangleWasReleased()) {
-                    stop();
-                }
-                if (gp1.dpadUpWasPressed()){
-                    spinUpFar();
-                }
-                if (gp1.dpadUpWasReleased()){
-                    stop();
-                }
-            } else {
-                if (gp2.xWasPressed()) {
-                    spinUpClose();
-                }
-                if (gp2.xWasReleased()) {
-                    stop();
-                }
-                if (gp1.dpadDownWasPressed()) {
-                    kickBallOff();
-                }
-                if (gp1.dpadDownWasReleased()) {
-                    stop();
-                }
-                if (gp2.triangleWasPressed()) {
-                    spinUpDistance();
-                }
-                if (gp2.triangleWasReleased()) {
-                    stop();
-                }
-                if (gp2.dpadUpWasPressed()){
-                    spinUpFar();
-                }
-                if (gp2.dpadUpWasReleased()){
-                    stop();
-                }
+        }
 
+        if (isOneMan) {
+
+            if (gp1.xWasPressed()) {
+                spinUpClose();
             }
-
+            if (gp1.xWasReleased()) {
+                stop();
+            }
+            if (gp1.dpadDownWasPressed()) {
+                kickBallOff();
+            }
+            if (gp1.dpadDownWasReleased()) {
+                stop();
+            }
+            if (gp1.triangleWasPressed()) {
+                spinUpDistance();
+            }
+            if (gp1.triangleWasReleased()) {
+                stop();
+            }
+            if (gp1.dpadUpWasPressed()){
+                spinUpFar();
+            }
+            if (gp1.dpadUpWasReleased()){
+                stop();
+            }
+        } else {
+            if (gp2.xWasPressed()) {
+                spinUpClose();
+            }
+            if (gp2.xWasReleased()) {
+                stop();
+            }
+            if (gp1.dpadDownWasPressed()) {
+                kickBallOff();
+            }
+            if (gp1.dpadDownWasReleased()) {
+                stop();
+            }
+            if (gp2.triangleWasPressed()) {
+                spinUpDistance();
+            }
+            if (gp2.triangleWasReleased()) {
+                stop();
+            }
+            if (gp2.dpadUpWasPressed()){
+                spinUpFar();
+            }
+            if (gp2.dpadUpWasReleased()){
+                stop();
+            }
         }
 
 
