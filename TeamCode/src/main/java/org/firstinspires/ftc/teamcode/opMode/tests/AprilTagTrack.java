@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.opMode.tests;
 
 import android.util.Size;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -18,6 +19,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import java.util.List;
 
 @TeleOp(name="AprilTag Center-Track (No Tag Size, Any 36h11)", group=" ")
+@Disabled
 public class AprilTagTrack extends LinearOpMode {
 
     private static final int IMG_WIDTH = 1280;

@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.teamcode.opMode.tests;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.subsystem.New.Shooter;
 
 @TeleOp(name="Shooter Test")
+@Disabled
 public class ShooterTest extends OpMode {
     private Shooter shooter;
 

@@ -19,7 +19,7 @@ import org.firstinspires.ftc.teamcode.subsystem.New.Intaker;
 import org.firstinspires.ftc.teamcode.subsystem.New.Shooter;
 
 @Config
-@TeleOp(name = "TeleOp Blue", group = "COMP")
+@TeleOp(name = "TeleOp Blue", group = "ABC")
 public class prod_TestTele extends LinearOpMode {
 
     private static final Pose2d START_POSE = new Pose2d(-40.4,-20, Math.toRadians(245));
@@ -135,6 +135,18 @@ public class prod_TestTele extends LinearOpMode {
 
             if (!gamepad1.right_bumper && !gamepad1.b && !gamepad1.left_bumper && shooter.getState() == Shooter.ShooterState.STOPPING){
                 intaker.IntakeIdle();
+            }
+            if (!gamepad1.right_bumper && !gamepad1.b && !gamepad1.left_bumper && shooter.getState() == Shooter.ShooterState.READY_CLOSE && !gamepad1.dpad_right){
+                if (!set2){
+                    commandTime.reset();
+                    set = true;
+                }
+                if (commandTime.seconds() >= 0.2){
+                    intaker.Intake();
+                }
+            } else {
+                set2 = false;
+
             }
 
 

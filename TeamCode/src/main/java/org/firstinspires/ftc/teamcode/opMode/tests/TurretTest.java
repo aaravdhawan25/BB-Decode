@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.opMode.tests;
 
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Vector2d;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -10,6 +11,7 @@ import org.firstinspires.ftc.teamcode.subsystem.Drivetrain;
 import org.firstinspires.ftc.teamcode.subsystem.New.Turret;
 
 @TeleOp(name = "Turret Test", group = "test")
+@Disabled
 public class TurretTest extends LinearOpMode {
 
     private static final Pose2d START_POSE = new Pose2d(-49.9, -49.7, Math.toRadians(55));
