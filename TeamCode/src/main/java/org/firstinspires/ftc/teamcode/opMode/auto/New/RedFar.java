@@ -113,7 +113,7 @@ public class RedFar extends LinearOpMode {
                 .waitSeconds(1);
         TrajectoryActionBuilder intakeSpike1 = preloadsShoot.fresh()
                 .setTangent(Math.toRadians(360-70))
-                .splineToLinearHeading(new Pose2d(-23.3,22,Math.toRadians(360-250)), Math.toRadians(360-15),
+                .splineToLinearHeading(new Pose2d(-23.3,19,Math.toRadians(360-250)), Math.toRadians(360-15),
                         new TranslationalVelConstraint(40))
 
                 .splineToSplineHeading(new Pose2d(-12,52,Math.toRadians(360-270)),Math.toRadians(360-270),

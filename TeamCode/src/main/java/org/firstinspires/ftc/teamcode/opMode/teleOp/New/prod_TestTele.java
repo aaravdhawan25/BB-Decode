@@ -139,7 +139,7 @@ public class prod_TestTele extends LinearOpMode {
             if (!gamepad1.right_bumper && !gamepad1.b && !gamepad1.left_bumper && shooter.getState() == Shooter.ShooterState.READY_CLOSE && !gamepad1.dpad_right){
                 if (!set2){
                     commandTime.reset();
-                    set = true;
+                    set2 = true;
                 }
                 if (commandTime.seconds() >= 0.2){
                     intaker.Intake();

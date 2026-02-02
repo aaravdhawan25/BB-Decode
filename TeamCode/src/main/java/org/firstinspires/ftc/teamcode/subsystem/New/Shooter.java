@@ -54,7 +54,7 @@ public class Shooter implements Subsystem {
 
     private double distanceToGoal = 0;
 
-    public static double BlockerOpen = 0.5;
+    public static double BlockerOpen = 0.55;
 
     public static double BlockerClosed = 1;
 
