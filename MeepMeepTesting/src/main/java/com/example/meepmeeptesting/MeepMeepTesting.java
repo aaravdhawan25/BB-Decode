@@ -15,6 +15,19 @@ import java.util.Vector;
 public class MeepMeepTesting {
     public static void main(String[] args) {
         MeepMeep meepMeep = new MeepMeep(800);
+        RoadRunnerBotEntity farBot1 = new DefaultBotBuilder(meepMeep)
+                .setConstraints(80, 60, Math.toRadians(180), Math.toRadians(180), 15)
+                .setDimensions(18,16)
+                .build();
+        farBot1.runAction(farBot1.getDrive().actionBuilder(new Pose2d(58.5, -10, Math.toRadians(215)))
+                .waitSeconds(5)
+                .strafeToLinearHeading(new Vector2d(61,-60),Math.toRadians(270))
+                .setTangent(Math.toRadians(120))
+                .splineToLinearHeading(new Pose2d(58.5,-10,Math.toRadians(215)),Math.toRadians(60))
+                .waitSeconds(5)
+                .strafeTo(new Vector2d(40,-16))
+
+                .build());
 
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
@@ -97,6 +110,7 @@ public class MeepMeepTesting {
                 .setBackgroundAlpha(0.95f)
                 .addEntity(myBot)
                 .addEntity(bot2)
+                .addEntity(farBot1)
                 .start();
 
     }
