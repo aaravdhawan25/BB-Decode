@@ -38,7 +38,6 @@ public class Shooter implements Subsystem {
     public static double FAR_SHOOTER_RPM = 5100;
     public static double FAR_CR_RPM = 2600;
     public static double RPM_TOLERANCE = 50;
-    public static double MAX_RPM = 5400;
 
     public static double G = 386.1;
     public static double TARGET_Y = 25.5;
@@ -65,7 +64,6 @@ public class Shooter implements Subsystem {
 
     private Servo blocker;
 
-    private MultipleTelemetry multipleTelemetry;
 
     private double targetRPM = 0;
     private double crTargetRPM = 0;
