@@ -30,10 +30,10 @@ public class ShooterConstants {
     public static double CR_RATIO = 0.7;
     public static double VELOCITY_TO_RPM_RATIO = 2.05;
     public static double RPM_BASE = 400.0;
-    public double distanceToGoal = 0;
-    public double targetRPM = 0;
-    public double crTargetRPM = 0;
-    public double integral = 0;
+    public static double distanceToGoal = 0;
+    public static double targetRPM = 0;
+    public static double crTargetRPM = 0;
+    public static double integral = 0;
     public double lastError = 0;
     public double crIntegral = 0;
     public double crLastError = 0;
