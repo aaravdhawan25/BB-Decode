@@ -106,6 +106,7 @@ public class FarBlue extends LinearOpMode {
 
     public void build_paths() {
         TrajectoryActionBuilder preloadsShoot = follower.actionBuilder(initialPose)
+                .strafeToLinearHeading(new Vector2d(58.5, -10), Math.toRadians(215))
                 .waitSeconds(5);
         TrajectoryActionBuilder intakeRun1 = preloadsShoot.fresh()
                 .strafeToLinearHeading(new Vector2d(61,-60),Math.toRadians(270))

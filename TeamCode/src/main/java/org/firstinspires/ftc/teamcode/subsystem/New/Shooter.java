@@ -36,7 +36,7 @@ public class Shooter implements Subsystem {
     public static double AUTO_CR_RPM = 2650;
     public static double CLOSE_CR_RPM = 2700;
     public static double FAR_SHOOTER_RPM = 5100;
-    public static double FAR_CR_RPM = 2600;
+    public static double FAR_CR_RPM = 2150;
     public static double RPM_TOLERANCE = 50;
     public static double MAX_RPM = 5400;
 
