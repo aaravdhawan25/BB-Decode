@@ -84,6 +84,7 @@ public class Robot {
         follower.updatePoseEstimate();
         robotPos = follower.localizer.getPose().position;
         shooter.setDistanceToGoal(getDistanceFromGoal());
+        shooter.periodic();
 
     }
 
