@@ -47,6 +47,8 @@ public class Robot {
         shooterMotor =  hardwareMap.get(DcMotorEx.class, "shooter");
         counterRoller =  hardwareMap.get(DcMotorEx.class, "CR");
         blockerServo = hardwareMap.get(Servo.class, "blocker");
+        intakeMotor = hardwareMap.get(DcMotorEx.class, "intake");
+        transferMotor = hardwareMap.get(DcMotorEx.class, "transfer");
         shooter = new ShooterCMD(shooterMotor,counterRoller);
         blocker = new Blocker(blockerServo);
         intake = new Intake(intakeMotor,transferMotor);
