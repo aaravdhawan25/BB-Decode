@@ -12,6 +12,7 @@ import org.firstinspires.ftc.teamcode.RoadRunner.MecanumDrive;
 import org.firstinspires.ftc.teamcode.subsystem.New.Blocker;
 import org.firstinspires.ftc.teamcode.subsystem.New.Intake;
 import org.firstinspires.ftc.teamcode.subsystem.New.ShooterCMD;
+import org.firstinspires.ftc.teamcode.utils.PerTelem;
 
 public class Robot {
 
@@ -43,7 +44,6 @@ public class Robot {
     }
 
     public Robot(HardwareMap hardwareMap ){
-
         shooterMotor =  hardwareMap.get(DcMotorEx.class, "shooter");
         counterRoller =  hardwareMap.get(DcMotorEx.class, "CR");
         blockerServo = hardwareMap.get(Servo.class, "blocker");
@@ -54,7 +54,7 @@ public class Robot {
         intake = new Intake(intakeMotor,transferMotor);
         shooterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         counterRoller.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        follower = new MecanumDrive(hardwareMap, START_POSE);
+        follower = new MecanumDrive(hardwareMap, getStartPose());
         CommandScheduler.getInstance().reset();
         CommandScheduler.getInstance().registerSubsystem(intake,shooter,blocker);
 
@@ -81,6 +81,16 @@ public class Robot {
         return goalPos;
     }
 
+    public static Pose2d getStartPose(){
+        if (blue){
+            START_POSE = new Pose2d(-40.4,-20, Math.toRadians(245));
+        }
+        else{
+            START_POSE = new Pose2d(-44,19, Math.toRadians(360-246));
+        }
+        return START_POSE;
+    }
+
     public void update(){
         CommandScheduler.getInstance().run();
         follower.updatePoseEstimate();
@@ -88,6 +98,11 @@ public class Robot {
         shooter.setDistanceToGoal(getDistanceFromGoal());
         shooter.periodic();
 
+        PerTelem.addData("Distance To Goal", getDistanceFromGoal());
+        PerTelem.addData("Shooter State", shooter.getState());
+        PerTelem.addData("Intake State", intake.getState());
+        PerTelem.addData("Blocker State", blocker.getState());
+        PerTelem.update();
     }
 
     public void stop(){

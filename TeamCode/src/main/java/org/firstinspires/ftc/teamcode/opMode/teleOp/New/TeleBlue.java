@@ -18,6 +18,8 @@ import org.firstinspires.ftc.teamcode.subsystem.Drivetrain;
 import org.firstinspires.ftc.teamcode.subsystem.New.Blocker;
 import org.firstinspires.ftc.teamcode.subsystem.New.Intake;
 import org.firstinspires.ftc.teamcode.subsystem.New.ShooterCMD;
+import org.firstinspires.ftc.teamcode.utils.PerTelem;
+
 @TeleOp(name = "CommandTele")
 public class TeleBlue extends LinearOpMode {
     @Override
@@ -26,6 +28,7 @@ public class TeleBlue extends LinearOpMode {
         Drivetrain drive = new Drivetrain(hardwareMap,telemetry);
         GamepadEx gp1 = new GamepadEx(gamepad1);
         GamepadEx gp2 = new GamepadEx(gamepad2);
+        PerTelem.init(telemetry);
 
         gp1.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(new IntakeCommand(robot, Intake.IntakeState.ON));
         gp1.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenReleased(new IntakeCommand(robot, Intake.IntakeState.OFF));
