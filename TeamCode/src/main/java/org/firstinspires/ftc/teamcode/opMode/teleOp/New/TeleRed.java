@@ -20,7 +20,7 @@ import org.firstinspires.ftc.teamcode.subsystem.New.Intake;
 import org.firstinspires.ftc.teamcode.subsystem.New.ShooterCMD;
 import org.firstinspires.ftc.teamcode.utils.PerTelem;
 
-@TeleOp(name = "CommandTele_RED")
+@TeleOp(name = "TeleOp Red")
 public class TeleRed extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {

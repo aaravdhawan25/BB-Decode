@@ -19,7 +19,7 @@ import org.firstinspires.ftc.teamcode.subsystem.New.Intaker;
 import org.firstinspires.ftc.teamcode.subsystem.New.Shooter;
 
 @Config
-@TeleOp(name = "TeleOp Blue", group = "ABC")
+@TeleOp(name = "TeleOp Blue Bad", group = "ABC")
 public class prod_TestTele extends LinearOpMode {
 
     private static final Pose2d START_POSE = new Pose2d(-40.4,-20, Math.toRadians(245));
