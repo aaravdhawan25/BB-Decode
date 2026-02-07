@@ -114,6 +114,9 @@ public class ShooterCMD implements Subsystem {
     public boolean atTargetSpeed() {
         double shooterRPM = getShooterRPM();
         double crRPM = getCounterRollerRPM();
+
+        if (targetRPM == ShooterConstants.IDLE_SHOOTER || crTargetRPM == 0) return false;
+
         return Math.abs(targetRPM - shooterRPM) < ShooterConstants.RPM_TOLERANCE &&
                 Math.abs(crTargetRPM - crRPM) < ShooterConstants.RPM_TOLERANCE;
     }
