@@ -43,25 +43,10 @@ public class DistanceToGoal implements Subsystem {
         return Math.sqrt(toGoal.x * toGoal.x + toGoal.y * toGoal.y);
     }
 
-    public double calculateRobotAngle(Vector2d robotPos, double robotHeadingDeg, Vector2d goalPos) {
+    public double calculateHeadingToGoal(Vector2d robotPos, Vector2d goalPos) {
         Vector2d toGoal = goalPos.minus(robotPos);
-        double angleToGoal = Math.toDegrees(Math.atan2(toGoal.y, toGoal.x));
-        angleToGoal = AngleUnit.normalizeDegrees(angleToGoal) + 180;
-//        if (angleToGoal < 0) {
-//            angleToGoal += 360;
-//        }
-//        double normalizedHeading = robotHeadingDeg;
-//        if (normalizedHeading < 0) {
-//            normalizedHeading += 360;
-//        }
-        double robotAngle = AngleUnit.normalizeDegrees(angleToGoal - robotHeadingDeg);
-//        while (turretAngle > 180) {
-//            turretAngle -= 360;
-//        }
-//        while (turretAngle < -180) {
-//            turretAngle += 360;
-//        }
-        return robotAngle;
+        double angleToGoalDeg = Math.toDegrees(Math.atan2(toGoal.y, toGoal.x));
+        return angleToGoalDeg;
     }
     @Override
     public void update() {

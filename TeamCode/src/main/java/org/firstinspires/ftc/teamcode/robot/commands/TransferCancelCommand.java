@@ -12,8 +12,8 @@ public class TransferCancelCommand extends SequentialCommandGroup {
     public TransferCancelCommand(Robot robot){
         addCommands(
                 new IntakeCommand(robot, Intake.IntakeState.OFF),
-                new BlockerCommand(robot, Blocker.BlockerState.BLOCKED),
-                new ShooterCommand(robot, ShooterCMD.ShooterState.STOP)
+                new ShooterCommand(robot, ShooterCMD.ShooterState.STOP),
+                new BlockerCommand(robot, Blocker.BlockerState.BLOCKED)
         );
     }
 }

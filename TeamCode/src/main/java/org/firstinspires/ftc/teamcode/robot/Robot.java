@@ -91,11 +91,18 @@ public class Robot {
         return START_POSE;
     }
 
+    public double calculateHeadingToGoal(Vector2d robotPos, Vector2d goalPos) {
+        Vector2d toGoal = goalPos.minus(robotPos);
+        double angleToGoalDeg = Math.toDegrees(Math.atan2(toGoal.y, toGoal.x));
+        return angleToGoalDeg;
+    }
+
     public void update(){
         CommandScheduler.getInstance().run();
         follower.updatePoseEstimate();
         robotPos = follower.localizer.getPose().position;
         shooter.setDistanceToGoal(getDistanceFromGoal());
+        calculateHeadingToGoal(robotPos, goalPos);
         shooter.periodic();
 
         PerTelem.addData("Distance To Goal", getDistanceFromGoal());

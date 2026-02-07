@@ -45,6 +45,8 @@ public class prod_TestTele_Red extends LinearOpMode {
 
     Vector2d robotPos = new Vector2d(0,0);
 
+    Action waypointing;
+
 
     TelemetryPacket packet;
     double robotHeading = 0;
@@ -104,7 +106,7 @@ public class prod_TestTele_Red extends LinearOpMode {
             currPos = follower.localizer.getPose();
             follower.updatePoseEstimate();
             distance = distanceToGoal.calculateDistanceToGoal(robotPos,goalPos);
-            turnAngle = distanceToGoal.calculateRobotAngle(robotPos, Math.toDegrees(currPos.heading.toDouble()), goalPos);
+            turnAngle = distanceToGoal.calculateHeadingToGoal(robotPos, goalPos);
 
             telemetry.addData("Position", robotPos);
             telemetry.addData("Distance To Goal", distance);
@@ -138,27 +140,27 @@ public class prod_TestTele_Red extends LinearOpMode {
             }
 
 
-//            TrajectoryActionBuilder waypoint = follower.actionBuilder(currPos)
-//                    .turnTo(Math.toRadians(turnAngle));
-//
-//            if (gamepad1.triangleWasPressed()){
-//                waypointing = waypoint.build();
-//                isWaypointing = true;
-//            }
-//
-//            if (!(gamepad1.left_stick_y == 0 && gamepad1.right_stick_x == 0 && gamepad1.left_stick_x == 0 && gamepad1.right_stick_y == 0)) {
-//                isWaypointing = false;
-//
-//            }
-//
-//            if (isWaypointing && waypointing != null) {
-//                if(!waypointing.run(packet)){
-//                    isWaypointing = false;
-//                }
-//
-//            }
+            TrajectoryActionBuilder waypoint = follower.actionBuilder(currPos)
+                    .turnTo(Math.toRadians(turnAngle));
 
-//            FtcDashboard.getInstance().sendTelemetryPacket(packet);
+            if (gamepad1.triangleWasPressed()){
+                waypointing = waypoint.build();
+                isWaypointing = true;
+            }
+
+            if (!(gamepad1.left_stick_y == 0 && gamepad1.right_stick_x == 0 && gamepad1.left_stick_x == 0 && gamepad1.right_stick_y == 0)) {
+                isWaypointing = false;
+
+            }
+
+            if (isWaypointing && waypointing != null) {
+                if(!waypointing.run(packet)){
+                    isWaypointing = false;
+                }
+
+            }
+
+            FtcDashboard.getInstance().sendTelemetryPacket(packet);
 
 
 

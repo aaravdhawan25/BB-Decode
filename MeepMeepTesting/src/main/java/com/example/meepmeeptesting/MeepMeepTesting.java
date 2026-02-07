@@ -108,9 +108,9 @@ public class MeepMeepTesting {
         meepMeep.setBackground(MeepMeep.Background.FIELD_DECODE_JUICE_DARK)
                 .setDarkMode(true)
                 .setBackgroundAlpha(0.95f)
-                .addEntity(myBot)
-                .addEntity(bot2)
-                .addEntity(farBot1)
+//                .addEntity(myBot)
+//                .addEntity(bot2)
+//                .addEntity(farBot1)
                 .start();
 
     }
