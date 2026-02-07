@@ -43,6 +43,7 @@ public class TeleBlue extends LinearOpMode {
         );
         gp2.getGamepadButton(GamepadKeys.Button.Y).whenReleased(
                 new ParallelCommandGroup(
+                        new ShooterCommand(robot, ShooterCMD.ShooterState.STOP),
                         new TransferCancelCommand(robot)
                 )
         );

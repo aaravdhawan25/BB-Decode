@@ -115,7 +115,7 @@ public class ShooterCMD implements Subsystem {
         double shooterRPM = getShooterRPM();
         double crRPM = getCounterRollerRPM();
 
-        if (targetRPM == ShooterConstants.IDLE_SHOOTER || crTargetRPM == 0) return false;
+        if (getState() == ShooterState.STOP) return false;
 
         return Math.abs(targetRPM - shooterRPM) < ShooterConstants.RPM_TOLERANCE &&
                 Math.abs(crTargetRPM - crRPM) < ShooterConstants.RPM_TOLERANCE;
