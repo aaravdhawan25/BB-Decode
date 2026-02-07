@@ -109,6 +109,7 @@ public class prod_TestTele extends LinearOpMode {
 
             telemetry.addData("Position", robotPos);
             telemetry.addData("Distance To Goal", distance);
+            telemetry.addData("Turn Angle", turnAngle);
 
 
             drivetrain.update();
