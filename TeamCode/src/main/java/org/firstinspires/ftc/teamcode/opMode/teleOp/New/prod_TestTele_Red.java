@@ -6,6 +6,8 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.PoseVelocity2d;
+import com.acmerobotics.roadrunner.Rotation2d;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -53,6 +55,13 @@ public class prod_TestTele_Red extends LinearOpMode {
     public static double FarShootDelay1 = 0.6;
 
     double turnAngle;
+
+    public static double xyP = 0.15;
+    public static double headingP = 0.3;
+
+    public boolean isActive = false;
+
+    public Pose2d lockTarget = null;
 
     public static double FarShootDelayDelay = 1.6;
 
@@ -152,22 +161,48 @@ public class prod_TestTele_Red extends LinearOpMode {
             }
 
 
-            TrajectoryActionBuilder waypoint = follower.actionBuilder(currPos)
-                    .turnTo(Math.toRadians(turnAngle));
+//            TrajectoryActionBuilder waypoint = follower.actionBuilder(currPos)
+//                    .turnTo(Math.toRadians(turnAngle));
 
-            if (gamepad1.triangleWasPressed()){
-                waypointing = waypoint.build();
-                isWaypointing = true;
+//            if (gamepad1.triangleWasPressed()){
+//                waypointing = waypoint.build();
+//                isWaypointing = true;
+//            }
+//
+//            if (isWaypointing && waypointing != null) {
+//                if(!waypointing.run(packet)){
+//                    isWaypointing = false;
+//                }
+//
+//            } else {
+//                drivetrain.updateCtrls(gamepad1, gamepad2);
+//                drivetrain.update();
+//            }
+
+            if (gamepad1.triangleWasPressed()) {
+                // Capture position once on press
+                lockTarget = follower.localizer.getPose();
+                isActive = true;
             }
 
-            if (isWaypointing && waypointing != null) {
-                if(!waypointing.run(packet)){
-                    isWaypointing = false;
-                }
+            if (gamepad1.triangle) {  // While held (not wasPressed)
+                // Keep running lockTo every loop
+                lockTo(lockTarget);
+                isActive = true;
+            } if(gamepad1.triangleWasReleased()) {
+                isActive = false;
+            }
 
-            } else {
-                drivetrain.updateCtrls(gamepad1, gamepad2);
+            if (isActive == false){
+//                // Normal driving when not holding triangle
+//                double y = -gamepad1.left_stick_y;
+//                double x = gamepad1.left_stick_x;
+//                double rx = gamepad1.right_stick_x;
+//                follower.setDrivePowers(new PoseVelocity2d(
+//                        new Vector2d(x, y),
+//                        rx));
                 drivetrain.update();
+                drivetrain.updateCtrls(gamepad1,gamepad2);
             }
 
             FtcDashboard.getInstance().sendTelemetryPacket(packet);
@@ -189,6 +224,30 @@ public class prod_TestTele_Red extends LinearOpMode {
 
 
         }
+    }
+
+    public void lockTo(Pose2d targetPos) {
+        Pose2d currPos = follower.localizer.getPose();
+
+        Vector2d difference = targetPos.position.minus(currPos.position);
+
+        // Manually rotate the difference vector by -currPos.heading
+        double angle = -currPos.heading.toDouble();
+        double cos = Math.cos(angle);
+        double sin = Math.sin(angle);
+        Vector2d xy = new Vector2d(
+                difference.x * cos - difference.y * sin,
+                difference.x * sin + difference.y * cos
+        );
+
+        double heading = targetPos.heading.toDouble() - currPos.heading.toDouble();
+        // Normalize heading to [-PI, PI]
+        heading = Rotation2d.exp(heading).toDouble();
+
+        follower.setDrivePowers(new PoseVelocity2d(
+                xy.times(xyP),
+                heading * headingP
+        ));
     }
 
 
