@@ -112,14 +112,14 @@ public class prod_TestTele extends LinearOpMode {
             telemetry.addData("Turn Angle", turnAngle);
 
 
-            drivetrain.update();
+
             intaker.update();
             shooter.update();
             distanceToGoal.update();
             shooter.setDistanceToGoal(distance);
 
 
-            drivetrain.updateCtrls(gamepad1, gamepad2);
+
             intaker.updateCtrls(gamepad1, gamepad2);
             shooter.updateCtrls(gamepad1, gamepad2);
             if (!gamepad1.right_bumper && !gamepad1.b && !gamepad1.left_bumper && shooter.getState() == Shooter.ShooterState.READY_DISTANCE && distance <= 100 && !gamepad1.dpad_right){
@@ -160,16 +160,19 @@ public class prod_TestTele extends LinearOpMode {
                 isWaypointing = true;
             }
 
-            if (!(gamepad1.left_stick_y == 0 && gamepad1.right_stick_x == 0 && gamepad1.left_stick_x == 0 && gamepad1.right_stick_y == 0)) {
-                isWaypointing = false;
-
-            }
+//            if (!(gamepad1.left_stick_y == 0 && gamepad1.right_stick_x == 0 && gamepad1.left_stick_x == 0 && gamepad1.right_stick_y == 0)) {
+//                isWaypointing = false;
+//
+//            }
 
             if (isWaypointing && waypointing != null) {
                 if(!waypointing.run(packet)){
                     isWaypointing = false;
                 }
 
+            } else {
+                drivetrain.update();
+                drivetrain.updateCtrls(gamepad1, gamepad2);
             }
 
             FtcDashboard.getInstance().sendTelemetryPacket(packet);

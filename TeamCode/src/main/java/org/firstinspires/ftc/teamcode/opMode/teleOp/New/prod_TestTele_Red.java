@@ -106,21 +106,19 @@ public class prod_TestTele_Red extends LinearOpMode {
             currPos = follower.localizer.getPose();
             follower.updatePoseEstimate();
             distance = distanceToGoal.calculateDistanceToGoal(robotPos,goalPos);
-            turnAngle = distanceToGoal.calculateHeadingToGoal(robotPos, goalPos);
+            turnAngle = distanceToGoal.calculateHeadingToGoalRED(robotPos, goalPos);
 
             telemetry.addData("Position", robotPos);
             telemetry.addData("Distance To Goal", distance);
             telemetry.addData("Turn Heading", turnAngle);
 
 
-            drivetrain.update();
             intaker.update();
             shooter.update();
             distanceToGoal.update();
             shooter.setDistanceToGoal(distance);
 
 
-            drivetrain.updateCtrls(gamepad1, gamepad2);
             intaker.updateCtrls(gamepad1, gamepad2);
             shooter.updateCtrls(gamepad1, gamepad2);
             if (!gamepad1.right_bumper && !gamepad1.b && !gamepad1.left_bumper && shooter.getState() == Shooter.ShooterState.READY_DISTANCE && distance <= 100 && !gamepad1.dpad_right){
@@ -133,6 +131,19 @@ public class prod_TestTele_Red extends LinearOpMode {
                 }
             } else {
                 set = false;
+
+            }
+
+            if (!gamepad1.right_bumper && !gamepad1.b && !gamepad1.left_bumper && shooter.getState() == Shooter.ShooterState.READY_CLOSE && !gamepad1.dpad_right){
+                if (!set2){
+                    commandTime.reset();
+                    set2 = true;
+                }
+                if (commandTime.seconds() >= 0.2){
+                    intaker.Intake();
+                }
+            } else {
+                set2 = false;
 
             }
 
@@ -149,16 +160,14 @@ public class prod_TestTele_Red extends LinearOpMode {
                 isWaypointing = true;
             }
 
-            if (!(gamepad1.left_stick_y == 0 && gamepad1.right_stick_x == 0 && gamepad1.left_stick_x == 0 && gamepad1.right_stick_y == 0)) {
-                isWaypointing = false;
-
-            }
-
             if (isWaypointing && waypointing != null) {
                 if(!waypointing.run(packet)){
                     isWaypointing = false;
                 }
 
+            } else {
+                drivetrain.updateCtrls(gamepad1, gamepad2);
+                drivetrain.update();
             }
 
             FtcDashboard.getInstance().sendTelemetryPacket(packet);

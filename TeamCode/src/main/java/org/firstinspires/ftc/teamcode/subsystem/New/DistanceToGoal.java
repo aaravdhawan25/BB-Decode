@@ -48,6 +48,12 @@ public class DistanceToGoal implements Subsystem {
         double angleToGoalDeg = Math.toDegrees(Math.atan2(toGoal.y, toGoal.x));
         return angleToGoalDeg;
     }
+
+    public double calculateHeadingToGoalRED(Vector2d robotPos, Vector2d goalPos) {
+        Vector2d toGoal = goalPos.minus(robotPos);
+        double angleToGoalDeg = Math.toDegrees(Math.atan2(toGoal.y, toGoal.x));
+        return angleToGoalDeg;
+    }
     @Override
     public void update() {
     }

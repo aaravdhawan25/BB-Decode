@@ -22,6 +22,8 @@ public class Drivetrain implements Subsystem {
 
     public boolean bumpToggle = false;
 
+    public boolean isDrive = false;
+
     public static double lfDP = 1;
     public static double lbDP = 1;
     public static double rfDP = -1;
