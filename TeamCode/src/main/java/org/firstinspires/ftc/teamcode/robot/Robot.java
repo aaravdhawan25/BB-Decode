@@ -1,6 +1,9 @@
 package org.firstinspires.ftc.teamcode.robot;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.PoseVelocity2d;
+import com.acmerobotics.roadrunner.Rotation2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -12,17 +15,24 @@ import org.firstinspires.ftc.teamcode.RoadRunner.MecanumDrive;
 import org.firstinspires.ftc.teamcode.subsystem.New.Blocker;
 import org.firstinspires.ftc.teamcode.subsystem.New.Intake;
 import org.firstinspires.ftc.teamcode.subsystem.New.ShooterCMD;
+import org.firstinspires.ftc.teamcode.subsystem.New.TurretCMD;
 import org.firstinspires.ftc.teamcode.utils.PerTelem;
-
+@Config
 public class Robot {
 
     DcMotorEx shooterMotor, counterRoller, intakeMotor, transferMotor;
     public ShooterCMD shooter;
     public Intake intake;
-
     public Blocker blocker;
 
-    public Servo blockerServo;
+    public TurretCMD turret;
+
+    public Pose2d lockTarget = null;
+
+    public static double xyP = 0.23;
+    public static double headingP = 0.23;
+
+    public Servo blockerServo, turretServo1, turretServo2, hoodServo;
 
     public MecanumDrive follower;
 
@@ -49,14 +59,17 @@ public class Robot {
         blockerServo = hardwareMap.get(Servo.class, "blocker");
         intakeMotor = hardwareMap.get(DcMotorEx.class, "intake");
         transferMotor = hardwareMap.get(DcMotorEx.class, "transfer");
-        shooter = new ShooterCMD(shooterMotor,counterRoller);
+        turretServo1 = hardwareMap.get(Servo.class, "turretLeft");
+        turretServo2 = hardwareMap.get(Servo.class, "turretRight");
+        hoodServo = hardwareMap.get(Servo.class, "hoodServo");
+        shooter = new ShooterCMD(shooterMotor,counterRoller, hoodServo);
         blocker = new Blocker(blockerServo);
+        turret = new TurretCMD(turretServo1, turretServo2);
         intake = new Intake(intakeMotor,transferMotor);
-        shooterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        counterRoller.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        shooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         follower = new MecanumDrive(hardwareMap, getStartPose());
         CommandScheduler.getInstance().reset();
-        CommandScheduler.getInstance().registerSubsystem(intake,shooter,blocker);
+        CommandScheduler.getInstance().registerSubsystem(intake,shooter,blocker, turret);
 
     }
 
@@ -91,6 +104,39 @@ public class Robot {
         return START_POSE;
     }
 
+    public Pose2d getCurrPos(){
+        return currPos;
+
+    }
+
+    public void setLockTarget(){
+        lockTarget = getCurrPos();
+    }
+
+    public void lockTo(Pose2d targetPos) {
+        Pose2d currPos = follower.localizer.getPose();
+
+        Vector2d difference = targetPos.position.minus(currPos.position);
+
+        // Manually rotate the difference vector by -currPos.heading
+        double angle = -currPos.heading.toDouble();
+        double cos = Math.cos(angle);
+        double sin = Math.sin(angle);
+        Vector2d xy = new Vector2d(
+                difference.x * cos - difference.y * sin,
+                difference.x * sin + difference.y * cos
+        );
+
+        double heading = targetPos.heading.toDouble() - currPos.heading.toDouble();
+        // Normalize heading to [-PI, PI]
+        heading = Rotation2d.exp(heading).toDouble();
+
+        follower.setDrivePowers(new PoseVelocity2d(
+                xy.times(xyP),
+                heading * headingP
+        ));
+    }
+
     public double calculateHeadingToGoal(Vector2d robotPos, Vector2d goalPos) {
         Vector2d toGoal = goalPos.minus(robotPos);
         double angleToGoalDeg = Math.toDegrees(Math.atan2(toGoal.y, toGoal.x));
@@ -101,6 +147,7 @@ public class Robot {
         CommandScheduler.getInstance().run();
         follower.updatePoseEstimate();
         robotPos = follower.localizer.getPose().position;
+        currPos = follower.localizer.getPose();
         shooter.setDistanceToGoal(getDistanceFromGoal());
         calculateHeadingToGoal(robotPos, goalPos);
         shooter.periodic();
@@ -109,6 +156,7 @@ public class Robot {
         PerTelem.addData("Shooter State", shooter.getState());
         PerTelem.addData("Intake State", intake.getState());
         PerTelem.addData("Blocker State", blocker.getState());
+        PerTelem.addData("Cur Pose", follower.localizer.getPose());
         PerTelem.update();
     }
 

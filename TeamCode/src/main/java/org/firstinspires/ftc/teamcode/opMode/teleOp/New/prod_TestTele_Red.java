@@ -56,8 +56,8 @@ public class prod_TestTele_Red extends LinearOpMode {
 
     double turnAngle;
 
-    public static double xyP = 0.15;
-    public static double headingP = 0.3;
+    public static double xyP = 0.23;
+    public static double headingP = 0.23;
 
     public boolean isActive = false;
 

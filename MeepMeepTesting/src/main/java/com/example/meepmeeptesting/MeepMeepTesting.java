@@ -39,32 +39,31 @@ public class MeepMeepTesting {
                 .waitSeconds(1)
                 .setTangent(Math.toRadians(70))
                 .splineToLinearHeading(new Pose2d(-23.3,-24,Math.toRadians(250)), Math.toRadians(15),
-                        new TranslationalVelConstraint(40))
+                        new TranslationalVelConstraint(55))
 
                 .splineToSplineHeading(new Pose2d(-12,-55,Math.toRadians(270)),Math.toRadians(270),
-                        new TranslationalVelConstraint(40))
+                        new TranslationalVelConstraint(55))
                 //.splineToLinearHeading(new Pose2d(-14.5,-49.3,Math.toRadians(270)), Math.toRadians(200))
                 .waitSeconds(0.1)
                 .setTangent(Math.toRadians(45))
-                .splineToSplineHeading(new Pose2d(-29,-22,Math.toRadians(230)),Math.toRadians(150))
+                .splineToSplineHeading(new Pose2d(-22,-16,Math.toRadians(230)),Math.toRadians(150))
 //                .splineTo(new Vector2d(-21.9,-22),Math.toRadians(130))
                 .waitSeconds(3)
                 .setTangent(Math.toRadians(45))
-                .splineToLinearHeading(new Pose2d(6,-24.8,Math.toRadians(270)), Math.toRadians(310),
-                        new TranslationalVelConstraint(40))
-                .splineToSplineHeading(new Pose2d(11.5,-56.5,Math.toRadians(270)),Math.toRadians(270)
-
-                        ,new TranslationalVelConstraint(40))
+                .splineToLinearHeading(new Pose2d(4,-16,Math.toRadians(270)), Math.toRadians(310),
+                        new TranslationalVelConstraint(55))
+                .splineToSplineHeading(new Pose2d(11.5,-57.2,Math.toRadians(270)),Math.toRadians(270),
+                        new TranslationalVelConstraint(55))
                 .waitSeconds(0.1)
-                .strafeToLinearHeading(new Vector2d(-28.5,-22.7), Math.toRadians(230))
+                .strafeToLinearHeading(new Vector2d(-22,-16), Math.toRadians(230))
                 .waitSeconds(3.5)
-                .setTangent(Math.toRadians(45))
-                .splineToSplineHeading(new Pose2d(26.5 ,-24,Math.toRadians(270)), Math.toRadians(330),
-                        new TranslationalVelConstraint(40)
+                .setTangent(Math.toRadians(60))
+                .splineToSplineHeading(new Pose2d(17 ,-17,Math.toRadians(270)), Math.toRadians(330),
+                        new TranslationalVelConstraint(55)
                 )
                 .splineToLinearHeading(new Pose2d(36, -60,Math.toRadians(270)), Math.toRadians(270),
-                        new TranslationalVelConstraint(40))
-                .strafeToLinearHeading(new Vector2d(-44,-23), Math.toRadians(246))
+                        new TranslationalVelConstraint(55))
+                .strafeToLinearHeading(new Vector2d(-41.8,-15.7), Math.toRadians(246))
                 .waitSeconds(3.5)
                 .build());
 
@@ -105,11 +104,55 @@ public class MeepMeepTesting {
                 .strafeToLinearHeading(new Vector2d(-44,19), Math.toRadians(360-246))
                 .waitSeconds(3.5)
                 .build());
+
+        RoadRunnerBotEntity myBot2 = new DefaultBotBuilder(meepMeep)
+                // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
+                .setConstraints(80, 60, Math.toRadians(180), Math.toRadians(180), 15)
+                .setDimensions(18,16)
+                .build();
+        myBot2.runAction(myBot2.getDrive().actionBuilder(new Pose2d(-49.9, -49.7, Math.toRadians(230)))
+                .strafeToLinearHeading(new Vector2d(-29.1,-29),Math.toRadians(230),new TranslationalVelConstraint(13))
+                .waitSeconds(1)
+//
+                .setTangent(Math.toRadians(45))
+                .splineToLinearHeading(new Pose2d(4,-23,Math.toRadians(270)), Math.toRadians(310),
+                        new TranslationalVelConstraint(55))
+                .splineToSplineHeading(new Pose2d(11.5,-57.2,Math.toRadians(270)),Math.toRadians(270),
+                        new TranslationalVelConstraint(55))
+                .waitSeconds(0.1)
+                .strafeToLinearHeading(new Vector2d(-22,-16), Math.toRadians(230))
+                .waitSeconds(3.5)
+                .setTangent(Math.toRadians(60))
+                .splineToSplineHeading(new Pose2d(17 ,-17,Math.toRadians(270)), Math.toRadians(330),
+                        new TranslationalVelConstraint(55)
+                )
+                .splineToLinearHeading(new Pose2d(36, -60,Math.toRadians(270)), Math.toRadians(270),
+                        new TranslationalVelConstraint(55))
+                .strafeToLinearHeading(new Vector2d(-22,-16), Math.toRadians(230))
+                .waitSeconds(3.5)
+                        .setTangent(Math.toRadians(20))
+                        .splineToLinearHeading(new Pose2d(4,-56,Math.toRadians(270)), Math.toRadians(270))
+                .setTangent(Math.toRadians(50))
+                .splineToLinearHeading(new Pose2d(23, -58, Math.toRadians(245)), Math.toRadians(160))
+                .waitSeconds(2)
+                .strafeToLinearHeading(new Vector2d(-22,-16), Math.toRadians(230))
+                .waitSeconds(3.5)
+                .setTangent(Math.toRadians(100))
+                .splineToLinearHeading(new Pose2d(-21,-14,Math.toRadians(0)), Math.toRadians(20),
+                        new TranslationalVelConstraint(55))
+
+                .splineToSplineHeading(new Pose2d(-12,-55,Math.toRadians(270)),Math.toRadians(270),
+                        new TranslationalVelConstraint(55))
+                .waitSeconds(0.1)
+                .setTangent(Math.toRadians(45))
+                .splineToSplineHeading(new Pose2d(-22,-16,Math.toRadians(230)),Math.toRadians(150))
+                .waitSeconds(3)
+                .build());
         meepMeep.setBackground(MeepMeep.Background.FIELD_DECODE_JUICE_DARK)
                 .setDarkMode(true)
                 .setBackgroundAlpha(0.95f)
-//                .addEntity(myBot)
-//                .addEntity(bot2)
+                .addEntity(myBot)
+                .addEntity(bot2)
 //                .addEntity(farBot1)
                 .start();
 

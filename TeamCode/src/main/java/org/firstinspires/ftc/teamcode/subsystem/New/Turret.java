@@ -28,6 +28,9 @@ public class Turret implements Subsystem {
 
     // Current state
     public Vector2d robotPos = new Vector2d(0, 0);
+
+    public static boolean blue;
+
     private double robotHeading = 0;
     public boolean isAligning = false;
     private double currentTurretAngle = 0;
@@ -40,16 +43,21 @@ public class Turret implements Subsystem {
 
 
 
-    public Turret(HardwareMap map, Telemetry telemetry) {
+
+
+    public Turret(HardwareMap map, Telemetry telemetry, String Color) {
         this.telemetry = telemetry;
         turretServo1 = map.get(Servo.class, "turretservo1");
         turretServo2 = map.get(Servo.class, "turretservo2");
+        blue = Color.equals("BLUE");
     }
+
 
     @Override
     public void init() {
         telemetry.addData("Turret", "Initialized");
         telemetry.update();
+
     }
 
 

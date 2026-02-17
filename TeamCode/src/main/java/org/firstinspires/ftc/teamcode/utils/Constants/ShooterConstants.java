@@ -38,6 +38,10 @@ public class ShooterConstants {
     public double crIntegral = 0;
     public double crLastError = 0;
     public long lastTime = 0;
+
+    public static double MAX_RPM = 6000;
+
+    public static double tuningRPM = 2000;
     
 
 

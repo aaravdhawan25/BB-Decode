@@ -33,7 +33,7 @@ public class ShooterTuning extends OpMode {
     public void init() {
         shooter = new Shooter(hardwareMap, telemetry);
         telemetry = new MultipleTelemetry(FtcDashboard.getInstance().getTelemetry());
-        turret = new Turret(hardwareMap, telemetry);
+        turret = new Turret(hardwareMap, telemetry, "BLUE");
         follower = new MecanumDrive(hardwareMap, START_POSE);
         shooter.init();
         turret.init();

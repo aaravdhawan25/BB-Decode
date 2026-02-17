@@ -27,7 +27,7 @@ public class TurretTest extends LinearOpMode {
 
         // Initialize subsystems
         drivetrain = new Drivetrain(hardwareMap, telemetry);
-        turret = new Turret(hardwareMap, telemetry);
+        turret = new Turret(hardwareMap, telemetry, "BLUE");
 
         drivetrain.init();
         turret.init();

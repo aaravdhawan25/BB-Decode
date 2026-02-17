@@ -41,9 +41,9 @@ public class prod_TestTele extends LinearOpMode {
 
     boolean isEndgame = false;
 
-    public double xyP = 0.15;
+    public double xyP = 0.23;
 
-    public double headingP = 0.3;
+    public double headingP = 0.23;
 
 
     public static Vector2d goalPos = new Vector2d(-70,-70);

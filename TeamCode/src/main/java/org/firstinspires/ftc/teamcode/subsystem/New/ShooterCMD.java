@@ -5,32 +5,36 @@ import static org.firstinspires.ftc.teamcode.utils.Constants.ShooterConstants.ta
 
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.Subsystem;
+import com.arcrobotics.ftclib.controller.PIDController;
 import com.arcrobotics.ftclib.controller.PIDFController;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.utils.Constants.ShooterConstants;
+import org.firstinspires.ftc.teamcode.utils.PerTelem;
 
 @Config
 public class ShooterCMD implements Subsystem {
     Telemetry telemetry;
 
-    public DcMotorEx shooterMotor,counterRoller;
+    public DcMotorEx shooterMotor,shooterMotor2;
+
+    Servo hoodServo;
     private double distanceToGoal = 0;
-    public PIDFController pidfController;
-    public PIDFController CRpidfController;
+    public PIDController pidController;
 
     public ShooterState state = ShooterState.STOP;
 
     public long lastTime = 0;
 
-    public ShooterCMD(DcMotorEx shooterMotor, DcMotorEx counterRoller){
+    public ShooterCMD(DcMotorEx shooterMotor, DcMotorEx shooterMotor2, Servo hoodServo){
         this.shooterMotor = shooterMotor;
-        this.counterRoller = counterRoller;
-        pidfController = new PIDFController(ShooterConstants.KP, ShooterConstants.KI, ShooterConstants.KD, ShooterConstants.KF);
-        CRpidfController = new PIDFController(ShooterConstants.CR_KP, ShooterConstants.CR_KI, ShooterConstants.CR_KD, ShooterConstants.CR_KF);
+        this.shooterMotor2 = shooterMotor2;
+        this.hoodServo = hoodServo;
+        pidController = new PIDController(ShooterConstants.KP, ShooterConstants.KI, ShooterConstants.KD);
     }
     
     public void setState(ShooterState state){
@@ -38,38 +42,40 @@ public class ShooterCMD implements Subsystem {
         switch (state){
             case CLOSE:
                 targetRPM = ShooterConstants.CLOSE_SHOOTER_RPM;
-                crTargetRPM = ShooterConstants.CLOSE_CR_RPM;
-                break;
             case FAR:
                 targetRPM = ShooterConstants.FAR_SHOOTER_RPM;
-                crTargetRPM = ShooterConstants.FAR_CR_RPM;
                 break;
             case MATH:
                 targetRPM = calculateShooterRPM(getDistanceToGoal());
-                crTargetRPM = targetRPM*ShooterConstants.CR_RATIO;
                 break;
             case STOP:
                 targetRPM = ShooterConstants.IDLE_SHOOTER;
-                crTargetRPM = 0;
+                break;
+            case TESTING:
+                targetRPM = ShooterConstants.tuningRPM;
+                break;
         }
     }
 
-    private void updateShooterMotor(double dt) {
-        double currentRPM = getShooterRPM();
-        double error = targetRPM - currentRPM;
-        double power = pidfController.calculate(currentRPM,targetRPM);
+    public double ticksPerSecToRPM(double tps){
+        return tps * 60.0 / ShooterConstants.TICKS_PER_REV;
+    }
+
+    public void setShooterPIDPower(double targetRPM){
+        double topVelocity = Math.abs(shooterMotor.getVelocity());
+        double currentRPM = (ticksPerSecToRPM(topVelocity));
+
+        pidController.setPID(ShooterConstants.KP, ShooterConstants.KI, ShooterConstants.KD);
+
+        double power = pidController.calculate(currentRPM, targetRPM);
+        power += (targetRPM > 0) ? (ShooterConstants.KF * (targetRPM / ShooterConstants.MAX_RPM)) : 0.0;
         power = Range.clip(power, 0, 1);
 
         shooterMotor.setPower(power);
-    }
+        shooterMotor2.setPower(power);
 
-    private void updateCounterRollerMotor(double dt) {
-        double currentRPMCR = getCounterRollerRPM();
-        double error = crTargetRPM + currentRPMCR;
-        double CRpower = CRpidfController.calculate(-currentRPMCR, crTargetRPM);
-        CRpower = Range.clip(CRpower, 0, 1);
-
-        counterRoller.setPower(CRpower);
+        PerTelem.addData("Shooter Current RPM", currentRPM);
+        PerTelem.addData("Shooter Target RPM", targetRPM);
     }
 
     public ShooterState getState(){
@@ -106,31 +112,17 @@ public class ShooterCMD implements Subsystem {
         return (velocity * 60.0) / ShooterConstants.TICKS_PER_REV;
     }
 
-    public double getCounterRollerRPM() {
-        double velocity = counterRoller.getVelocity();
-        return (velocity * 60.0) / ShooterConstants.CR_TICKS_PER_REV;
-    }
+
 
     public boolean atTargetSpeed() {
-        double shooterRPM = getShooterRPM();
-        double crRPM = getCounterRollerRPM();
-
-        if (getState() == ShooterState.STOP) return false;
-
-        return Math.abs(targetRPM - shooterRPM) < ShooterConstants.RPM_TOLERANCE &&
-                Math.abs(crTargetRPM - crRPM) < ShooterConstants.RPM_TOLERANCE;
+        return pidController.getPositionError() <= 100;
     }
 
     @Override
     public void periodic(){
-        long currentTime = System.nanoTime();
-        double dt = (currentTime - lastTime) / 1e9;
-        lastTime = currentTime;
         setState(state);
-        pidfController.setPIDF(ShooterConstants.KP, ShooterConstants.KI, ShooterConstants.KD, ShooterConstants.KF);
-        CRpidfController.setPIDF(ShooterConstants.CR_KP, ShooterConstants.CR_KI, ShooterConstants.CR_KD, ShooterConstants.CR_KF);
-        updateShooterMotor(dt);
-        updateCounterRollerMotor(dt);
+        pidController.setPID(ShooterConstants.KP, ShooterConstants.KI, ShooterConstants.KD);
+        setShooterPIDPower(targetRPM);
 
     }
 
@@ -139,6 +131,8 @@ public class ShooterCMD implements Subsystem {
         CLOSE,
         STOP,
         FAR,
+
+        TESTING,
         MATH
 
 

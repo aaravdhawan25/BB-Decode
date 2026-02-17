@@ -17,11 +17,11 @@ import org.firstinspires.ftc.teamcode.subsystem.New.Turret;
 @Disabled
 public class TurretTest extends LinearOpMode {
 
-    private static final Pose2d START_POSE = new Pose2d(-36, -60, Math.toRadians(90));
+    public static final Pose2d START_POSE = new Pose2d(-36, -60, Math.toRadians(90));
 
-    private Drivetrain drivetrain;
-    private Turret turret;
-    private MecanumDrive drive;
+    Drivetrain drivetrain;
+    Turret turret;
+    MecanumDrive drive;
     Telemetry telemetry;
 
     @Override
@@ -29,7 +29,7 @@ public class TurretTest extends LinearOpMode {
         drive = new MecanumDrive(hardwareMap, START_POSE);
 
         drivetrain = new Drivetrain(hardwareMap, telemetry);
-        turret = new Turret(hardwareMap, telemetry);
+        turret = new Turret(hardwareMap, telemetry, "BLUE");
         telemetry = new MultipleTelemetry(FtcDashboard.getInstance().getTelemetry());
 
         drivetrain.init();

@@ -14,10 +14,12 @@ import org.firstinspires.ftc.teamcode.robot.commands.IntakeCommand;
 import org.firstinspires.ftc.teamcode.robot.commands.ShooterCommand;
 import org.firstinspires.ftc.teamcode.robot.commands.TransferCancelCommand;
 import org.firstinspires.ftc.teamcode.robot.commands.TransferCommand;
+import org.firstinspires.ftc.teamcode.robot.commands.TurretCommand;
 import org.firstinspires.ftc.teamcode.subsystem.Drivetrain;
 import org.firstinspires.ftc.teamcode.subsystem.New.Blocker;
 import org.firstinspires.ftc.teamcode.subsystem.New.Intake;
 import org.firstinspires.ftc.teamcode.subsystem.New.ShooterCMD;
+import org.firstinspires.ftc.teamcode.subsystem.New.TurretCMD;
 import org.firstinspires.ftc.teamcode.utils.PerTelem;
 
 @TeleOp(name = "TeleOp Blue")
@@ -60,17 +62,29 @@ public class TeleBlue extends LinearOpMode {
         );
         gp2.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(
                 new ParallelCommandGroup(
-                        new ShooterCommand(robot, ShooterCMD.ShooterState.FAR),
-                        new TransferCommand(robot)
+                        new TurretCommand(robot, TurretCMD.TurretState.MATH)
                 )
         );
         gp2.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenReleased(
                 new ParallelCommandGroup(
-                        new TransferCancelCommand(robot)
+                        new TurretCommand(robot, TurretCMD.TurretState.FORWARD)
                 )
         );
 
-        CommandScheduler.getInstance().schedule(new BlockerCommand(robot, Blocker.BlockerState.BLOCKED));
+
+        gp1.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(
+                new BlockerCommand(robot, Blocker.BlockerState.UNBLOCKED)
+        );
+
+        gp1.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenReleased(
+                new BlockerCommand(robot, Blocker.BlockerState.BLOCKED)
+        );
+
+
+        CommandScheduler.getInstance().schedule(new ParallelCommandGroup(
+                new BlockerCommand(robot, Blocker.BlockerState.BLOCKED),
+                new TurretCommand(robot, TurretCMD.TurretState.FORWARD)
+        ));
         waitForStart();
 
         while (opModeIsActive()){
