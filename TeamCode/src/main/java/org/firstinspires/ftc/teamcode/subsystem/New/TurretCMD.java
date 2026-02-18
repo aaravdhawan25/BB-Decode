@@ -55,9 +55,9 @@ public class TurretCMD implements Subsystem {
                 robotPos.position.x- TurretConstants.turretOffsetInchesx * Math.cos(robotHeadingRad),
                 robotPos.position.y - TurretConstants.turretOffsetInchesy * Math.sin(robotHeadingRad)
         );
-        Vector2d toGoal = goal.minus(robotPos.position);
+        Vector2d toGoal = goal.minus(turretPos);
         double fieldAngle = Math.atan2(
-                goal.y, goal.x
+                toGoal.y, toGoal.x
         );
         double relAngle = fieldAngle - robotPos.heading.toDouble() - Math.PI;
         while (relAngle > Math.PI)  relAngle -= 2 * Math.PI;

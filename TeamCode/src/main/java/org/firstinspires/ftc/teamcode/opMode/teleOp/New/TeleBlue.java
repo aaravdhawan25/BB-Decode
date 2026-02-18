@@ -39,13 +39,11 @@ public class TeleBlue extends LinearOpMode {
 
         gp2.getGamepadButton(GamepadKeys.Button.Y).whenPressed(
                 new ParallelCommandGroup(
-                        new ShooterCommand(robot, ShooterCMD.ShooterState.MATH),
                         new TransferCommand(robot)
                 )
         );
         gp2.getGamepadButton(GamepadKeys.Button.Y).whenReleased(
                 new ParallelCommandGroup(
-                        new ShooterCommand(robot, ShooterCMD.ShooterState.STOP),
                         new TransferCancelCommand(robot)
                 )
         );
@@ -62,12 +60,15 @@ public class TeleBlue extends LinearOpMode {
         );
         gp2.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(
                 new ParallelCommandGroup(
-                        new TurretCommand(robot, TurretCMD.TurretState.MATH)
+                        new TurretCommand(robot, TurretCMD.TurretState.MATH),
+                        new ShooterCommand(robot, ShooterCMD.ShooterState.MATH)
                 )
         );
         gp2.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenReleased(
                 new ParallelCommandGroup(
-                        new TurretCommand(robot, TurretCMD.TurretState.FORWARD)
+                        new TurretCommand(robot, TurretCMD.TurretState.FORWARD),
+                        new ShooterCommand(robot, ShooterCMD.ShooterState.STOP)
+
                 )
         );
 

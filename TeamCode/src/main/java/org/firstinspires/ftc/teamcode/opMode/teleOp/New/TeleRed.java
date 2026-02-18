@@ -18,6 +18,7 @@ import org.firstinspires.ftc.teamcode.robot.commands.TurretCommand;
 import org.firstinspires.ftc.teamcode.subsystem.Drivetrain;
 import org.firstinspires.ftc.teamcode.subsystem.New.Blocker;
 import org.firstinspires.ftc.teamcode.subsystem.New.Intake;
+import org.firstinspires.ftc.teamcode.subsystem.New.Shooter;
 import org.firstinspires.ftc.teamcode.subsystem.New.ShooterCMD;
 import org.firstinspires.ftc.teamcode.subsystem.New.Turret;
 import org.firstinspires.ftc.teamcode.subsystem.New.TurretCMD;
@@ -40,7 +41,6 @@ public class TeleRed extends LinearOpMode {
 
         gp2.getGamepadButton(GamepadKeys.Button.Y).whenPressed(
                 new ParallelCommandGroup(
-                        new ShooterCommand(robot, ShooterCMD.ShooterState.MATH),
                         new TransferCommand(robot)
                 )
         );
@@ -62,12 +62,14 @@ public class TeleRed extends LinearOpMode {
         );
         gp2.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(
                 new ParallelCommandGroup(
-                        new TurretCommand(robot, TurretCMD.TurretState.MATH)
+                        new TurretCommand(robot, TurretCMD.TurretState.MATH),
+                        new ShooterCommand(robot, ShooterCMD.ShooterState.MATH)
                 )
         );
         gp2.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenReleased(
                 new ParallelCommandGroup(
-                        new TurretCommand(robot, TurretCMD.TurretState.MATH)
+                        new TurretCommand(robot, TurretCMD.TurretState.FORWARD),
+                        new ShooterCommand(robot, ShooterCMD.ShooterState.STOP)
                 )
         );
 

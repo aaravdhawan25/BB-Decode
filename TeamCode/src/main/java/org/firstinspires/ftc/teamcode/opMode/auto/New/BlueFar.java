@@ -15,6 +15,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.RoadRunner.MecanumDrive;
+import org.firstinspires.ftc.teamcode.subsystem.Intake;
 import org.firstinspires.ftc.teamcode.subsystem.New.DistanceToGoal;
 import org.firstinspires.ftc.teamcode.subsystem.New.Intaker;
 import org.firstinspires.ftc.teamcode.subsystem.New.Shooter;
@@ -28,6 +29,10 @@ public class BlueFar extends LinearOpMode {
 
     Shooter shooter;
     Intaker intaker;
+
+    public static double IntakeVel = 50;
+
+    public static double RevVel = 13;
 
     DistanceToGoal distanceToGoal;
 
@@ -114,37 +119,37 @@ public class BlueFar extends LinearOpMode {
         TrajectoryActionBuilder intakeSpike1 = preloadsShoot.fresh()
                 .setTangent(Math.toRadians(70))
                 .splineToLinearHeading(new Pose2d(-23.3,-24,Math.toRadians(250)), Math.toRadians(15),
-                        new TranslationalVelConstraint(40))
+                        new TranslationalVelConstraint(IntakeVel))
 
                 .splineToSplineHeading(new Pose2d(-12,-55,Math.toRadians(270)),Math.toRadians(270),
-                        new TranslationalVelConstraint(40))
+                        new TranslationalVelConstraint(IntakeVel))
                 //.splineToLinearHeading(new Pose2d(-14.5,-49.3,Math.toRadians(270)), Math.toRadians(200))
                 .waitSeconds(0.1);
         TrajectoryActionBuilder shootPos1 = intakeSpike1.fresh()
                 .setTangent(Math.toRadians(45))
                 .splineToSplineHeading(new Pose2d(-29,-22,Math.toRadians(230)),Math.toRadians(150))
 //                .splineTo(new Vector2d(-21.9,-22),Math.toRadians(130))
-                .waitSeconds(3);
+                .waitSeconds(2.5);
         TrajectoryActionBuilder intakeSpike2 = shootPos1.fresh()
                 .setTangent(Math.toRadians(45))
                 .splineToLinearHeading(new Pose2d(6,-24.8,Math.toRadians(270)), Math.toRadians(310),
-                        new TranslationalVelConstraint(40))
+                        new TranslationalVelConstraint(IntakeVel))
                 .splineToSplineHeading(new Pose2d(11.5,-57.2,Math.toRadians(270)),Math.toRadians(270),
-                        new TranslationalVelConstraint(40))
+                        new TranslationalVelConstraint(IntakeVel))
                 .waitSeconds(0.1);
         TrajectoryActionBuilder shootPos2 = intakeSpike2.fresh()
                 .strafeToLinearHeading(new Vector2d(-28.5,-22.7), Math.toRadians(230))
-                .waitSeconds(3.5);
+                .waitSeconds(2.5);
         TrajectoryActionBuilder intakeSpike3 = shootPos2.fresh()
                 .setTangent(Math.toRadians(45))
                 .splineToSplineHeading(new Pose2d(26.5 ,-24,Math.toRadians(270)), Math.toRadians(330),
-                        new TranslationalVelConstraint(40)
+                        new TranslationalVelConstraint(IntakeVel)
                 )
                 .splineToLinearHeading(new Pose2d(36, -60,Math.toRadians(270)), Math.toRadians(270),
-                        new TranslationalVelConstraint(40));
+                        new TranslationalVelConstraint(IntakeVel));
         TrajectoryActionBuilder shootPos3 = intakeSpike3.fresh()
                 .strafeToLinearHeading(new Vector2d(-44,-19), Math.toRadians(246))
-                .waitSeconds(3.5);
+                .waitSeconds(2.5);
         preloads = preloadsShoot.build();
         intake1 = intakeSpike1.build();
         shoot1 = shootPos1.build();
