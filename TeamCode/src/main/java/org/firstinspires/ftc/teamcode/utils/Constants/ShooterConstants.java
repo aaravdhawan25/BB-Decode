@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.utils.Constants;
 
 import com.acmerobotics.dashboard.config.Config;
 
+import org.opencv.core.Mat;
+
 @Config
 public class ShooterConstants {
     public static double KP = 0.0005;
@@ -42,6 +44,17 @@ public class ShooterConstants {
     public static double MAX_RPM = 6000;
 
     public static double tuningRPM = 2000;
+
+
+
+    public static double PASS_THROUGH_POINT_RADIUS = -5;
+    public static double HOOD_MIN_ANGLE = Math.toRadians(20);
+
+    public static double HOOD_MAX_ANGLE = Math.toRadians(45);
+
+    public static double HOOD_SERVO_MIN = 0.2;
+
+    public static double HOOD_SERVO_MAX = 0.4;
     
 
 

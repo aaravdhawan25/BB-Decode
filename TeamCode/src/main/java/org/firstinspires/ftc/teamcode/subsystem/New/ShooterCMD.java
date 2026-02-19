@@ -4,6 +4,7 @@ import static org.firstinspires.ftc.teamcode.utils.Constants.ShooterConstants.cr
 import static org.firstinspires.ftc.teamcode.utils.Constants.ShooterConstants.targetRPM;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.roadrunner.Vector2d;
 import com.arcrobotics.ftclib.command.Subsystem;
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.arcrobotics.ftclib.controller.PIDFController;
@@ -53,6 +54,10 @@ public class ShooterCMD implements Subsystem {
                 break;
             case TESTING:
                 targetRPM = ShooterConstants.tuningRPM;
+                break;
+
+            case WHILE_MOVING:
+                updateShotForVelocityComp();
                 break;
         }
     }
@@ -112,6 +117,39 @@ public class ShooterCMD implements Subsystem {
         return (velocity * 60.0) / ShooterConstants.TICKS_PER_REV;
     }
 
+    private void updateShotForVelocityComp() {
+        double x = Math.max(Robot.compensatedDistance, 1);
+        double y = ShooterConstants.TARGET_Y;
+        double a = ShooterConstants.IMPACT_ANGLE_THETA;
+        double g = ShooterConstants.G;
+
+        double hoodAngle = Math.atan(2 * y / x - Math.tan(a));
+        hoodAngle = Range.clip(hoodAngle, ShooterConstants.HOOD_MIN_ANGLE, ShooterConstants.HOOD_MAX_ANGLE);
+
+        double flywheelSpeed = Math.sqrt(
+                g * x * x /
+                        (2 * Math.pow(Math.cos(hoodAngle), 2) * (x * Math.tan(hoodAngle) - y))
+        );
+
+        double theoreticalRPM = (flywheelSpeed * 60) / (2 * Math.PI * ShooterConstants.FLYWHEEL_RADIUS);
+        targetRPM = (theoreticalRPM * ShooterConstants.VELOCITY_TO_RPM_RATIO) + ShooterConstants.RPM_BASE;
+
+        double hoodServoPos = ShooterConstants.HOOD_SERVO_MIN +
+                ((hoodAngle - ShooterConstants.HOOD_MIN_ANGLE) /
+                        (ShooterConstants.HOOD_MAX_ANGLE - ShooterConstants.HOOD_MIN_ANGLE)) *
+                        (ShooterConstants.HOOD_SERVO_MAX - ShooterConstants.HOOD_SERVO_MIN);
+
+        hoodServoPos = Range.clip(hoodServoPos, ShooterConstants.HOOD_SERVO_MIN, ShooterConstants.HOOD_SERVO_MAX);
+        hoodServo.setPosition(hoodServoPos);
+
+        PerTelem.addData("Hood Angle (deg)", Math.toDegrees(hoodAngle));
+        PerTelem.addData("Hood Servo Pos", hoodServoPos);
+        PerTelem.addData("Compensated Distance", x);
+        PerTelem.addData("Target RPM (VelComp)", targetRPM);
+    }
+
+
+
 
 
     public boolean atTargetSpeed() {
@@ -131,6 +169,8 @@ public class ShooterCMD implements Subsystem {
         CLOSE,
         STOP,
         FAR,
+
+        WHILE_MOVING,
 
         TESTING,
         MATH

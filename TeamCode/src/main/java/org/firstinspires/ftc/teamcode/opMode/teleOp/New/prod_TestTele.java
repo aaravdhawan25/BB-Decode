@@ -108,6 +108,10 @@ public class prod_TestTele extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()){
+            PoseVelocity2d velocity = follower.updatePoseEstimate();
+            double yVel = velocity.linearVel.y;
+            double xVel = velocity.linearVel.x;
+            double angVel = velocity.angVel;
             runtime.startTime();
             commandTime.startTime();
             FarShoot.startTime();
@@ -120,6 +124,9 @@ public class prod_TestTele extends LinearOpMode {
             telemetry.addData("Position", robotPos);
             telemetry.addData("Distance To Goal", distance);
             telemetry.addData("Turn Angle", turnAngle);
+            telemetry.addData("X Vel", xVel);
+            telemetry.addData("Y Vel", yVel);
+            telemetry.addData("Angle Vel", angVel);
 
 
 

@@ -16,6 +16,7 @@ import org.firstinspires.ftc.teamcode.subsystem.New.Blocker;
 import org.firstinspires.ftc.teamcode.subsystem.New.Intake;
 import org.firstinspires.ftc.teamcode.subsystem.New.ShooterCMD;
 import org.firstinspires.ftc.teamcode.subsystem.New.TurretCMD;
+import org.firstinspires.ftc.teamcode.utils.Constants.ShooterConstants;
 import org.firstinspires.ftc.teamcode.utils.PerTelem;
 @Config
 public class Robot {
@@ -26,6 +27,10 @@ public class Robot {
     public Blocker blocker;
 
     public TurretCMD turret;
+
+    public static double compensatedDistance = 0;
+
+    public static PoseVelocity2d robotVel;
 
     public Pose2d lockTarget = null;
 
@@ -143,10 +148,60 @@ public class Robot {
         return angleToGoalDeg;
     }
 
+    public static void updateCompensatedDistance() {
+        if (robotVel == null) return;
+
+        Vector2d toGoal = getGoalPos().minus(robotPos);
+        double x = Math.max(toGoal.norm() - ShooterConstants.PASS_THROUGH_POINT_RADIUS, 1.0);
+        double y = ShooterConstants.TARGET_Y;
+        double a = ShooterConstants.IMPACT_ANGLE_THETA;
+        double g = ShooterConstants.G;
+
+        // initial flywheel speed assuming stationary
+        double hoodAngle = Math.atan(2 * y / x - Math.tan(a));
+        double flywheelSpeed = Math.sqrt(
+                g * x * x /
+                        (2 * Math.pow(Math.cos(hoodAngle), 2) * (x * Math.tan(hoodAngle) - y))
+        );
+
+        // get velocity components
+        double velMagnitude = Math.hypot(robotVel.linearVel.x, robotVel.linearVel.y);
+
+        // if barely moving just use real distance, no compensation needed
+        if (velMagnitude < 0.5) {
+            compensatedDistance = x;
+            return;
+        }
+
+        double fieldAngle = Math.atan2(toGoal.y, toGoal.x);
+        double velocityTheta = Math.atan2(robotVel.linearVel.y, robotVel.linearVel.x);
+
+        // decompose velocity into parallel and perpendicular to goal direction
+        double coordinateTheta = velocityTheta - fieldAngle;
+        double parallelComponent = -Math.cos(coordinateTheta) * velMagnitude;
+        double perpendicularComponent = Math.sin(coordinateTheta) * velMagnitude;
+
+        // time of flight using stationary flywheel speed
+        double time = x / (flywheelSpeed * Math.cos(hoodAngle));
+
+        // ivr = required radial speed accounting for robot moving toward/away
+        double ivr = x / time + parallelComponent;
+
+        // nvr = total horizontal speed needed combining radial and sideways
+        double nvr = Math.sqrt(ivr * ivr + perpendicularComponent * perpendicularComponent);
+
+        // ndr = virtual distance the ball needs to travel
+        double ndr = nvr * time;
+
+        compensatedDistance = ndr;
+    }
+
     public void update(){
         CommandScheduler.getInstance().run();
         follower.updatePoseEstimate();
         robotPos = follower.localizer.getPose().position;
+        updateCompensatedDistance();
+        robotVel = follower.updatePoseEstimate();
         currPos = follower.localizer.getPose();
         shooter.setDistanceToGoal(getDistanceFromGoal());
         calculateHeadingToGoal(robotPos, goalPos);

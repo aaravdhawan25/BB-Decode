@@ -6,8 +6,10 @@ import static org.firstinspires.ftc.teamcode.utils.Constants.TurretConstants.P;
 import static org.firstinspires.ftc.teamcode.utils.Constants.TurretConstants.SLOPE;
 
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.arcrobotics.ftclib.command.Subsystem;
+import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
@@ -38,6 +40,10 @@ public class TurretCMD implements Subsystem {
             case MATH:
                 pointToGoalPinPoint(Robot.currPos);
                 break;
+
+            case WHILE_MOVING_TURRET:
+                pointToGoalVelocityCompensated(Robot.currPos);
+
         }
     }
 
@@ -71,8 +77,54 @@ public class TurretCMD implements Subsystem {
         PerTelem.addData("Turret Angle", angleDeg);
     }
 
+    private void pointToGoalVelocityCompensated(Pose2d robotPos) {
+        Vector2d goal = Robot.getGoalPos();
+
+        double robotHeadingRad = robotPos.heading.toDouble();
+        Vector2d turretPos = new Vector2d(
+                robotPos.position.x - TurretConstants.turretOffsetInchesx * Math.cos(robotHeadingRad),
+                robotPos.position.y - TurretConstants.turretOffsetInchesy * Math.sin(robotHeadingRad)
+        );
+
+        Vector2d toGoal = goal.minus(turretPos);
+        double distanceToGoal = Math.max(toGoal.norm(), 1.0);
+        double fieldAngle = Math.atan2(toGoal.y, toGoal.x);
+
+        PoseVelocity2d poseVel = Robot.robotVel;
+        double velocityMagnitude = Math.hypot(poseVel.linearVel.x, poseVel.linearVel.y);
+
+        double turretVelCompOffset = 0.0;
+        if (velocityMagnitude > 0.5) {
+            double velocityTheta = Math.atan2(poseVel.linearVel.y, poseVel.linearVel.x);
+
+            double coordinateTheta = velocityTheta - fieldAngle;
+            double parallelComponent = -Math.cos(coordinateTheta) * velocityMagnitude;
+            double perpendicularComponent = Math.sin(coordinateTheta) * velocityMagnitude;
+
+            double timeOfFlight = distanceToGoal * TurretConstants.FLIGHT_TIME_PER_INCH;
+            double ivr = distanceToGoal / timeOfFlight + parallelComponent;
+
+            turretVelCompOffset = Math.atan(perpendicularComponent / ivr);
+        }
+
+        double compensatedFieldAngle = fieldAngle + turretVelCompOffset;
+        double relAngle = compensatedFieldAngle - robotPos.heading.toDouble() - Math.PI;
+        while (relAngle > Math.PI)  relAngle -= 2 * Math.PI;
+        while (relAngle < -Math.PI) relAngle += 2 * Math.PI;
+
+        double angleDeg = Math.toDegrees(relAngle);
+        double servoPos = TurretConstants.OFFSET + SLOPE * angleDeg;
+        servoPos = Range.clip(servoPos, 0, 1.0);
+
+        setServoPos(servoPos);
+
+        PerTelem.addData("Turret Servo Position (VelComp)", servoPos);
+        PerTelem.addData("Turret Angle (VelComp)", angleDeg);
+        PerTelem.addData("Vel Comp Offset (deg)", Math.toDegrees(turretVelCompOffset));
+    }
+
     public enum TurretState {
-        FORWARD, MATH, MATH_CAMERA
+        FORWARD, MATH, MATH_CAMERA, WHILE_MOVING_TURRET
     }
 
 }
