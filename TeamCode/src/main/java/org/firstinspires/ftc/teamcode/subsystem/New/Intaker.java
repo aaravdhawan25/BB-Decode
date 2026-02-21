@@ -42,7 +42,6 @@ public class Intaker implements Subsystem {
         IDLE
     }
 
-    botconstants botconstants;
 
 
     public Intaker(HardwareMap hardwareMap, Telemetry telemetry){

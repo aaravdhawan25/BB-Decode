@@ -19,6 +19,7 @@ import org.firstinspires.ftc.teamcode.subsystem.Drivetrain;
 import org.firstinspires.ftc.teamcode.subsystem.New.DistanceToGoal;
 import org.firstinspires.ftc.teamcode.subsystem.New.Intaker;
 import org.firstinspires.ftc.teamcode.subsystem.New.Shooter;
+import org.firstinspires.ftc.teamcode.subsystem.New.kickStand;
 
 @Config
 @TeleOp(name = "TeleOp Blue Bad", group = "ABC")
@@ -32,6 +33,8 @@ public class prod_TestTele extends LinearOpMode {
 
 
     Drivetrain drivetrain;
+
+    kickStand kickstand;
     Intaker intaker;
     Shooter shooter;
 
@@ -54,6 +57,7 @@ public class prod_TestTele extends LinearOpMode {
 
 
     TelemetryPacket packet;
+
     double robotHeading = 0;
     public static double FarShootDelay1 = 0.6;
 
@@ -78,6 +82,7 @@ public class prod_TestTele extends LinearOpMode {
 
 
     MecanumDrive follower;
+
     ElapsedTime runtime = new ElapsedTime();
 
     ElapsedTime FarShoot = new ElapsedTime();
@@ -90,6 +95,7 @@ public class prod_TestTele extends LinearOpMode {
         intaker = new Intaker(hardwareMap, telemetry);
         shooter = new Shooter(hardwareMap, telemetry);
         follower = new MecanumDrive(hardwareMap, START_POSE);
+        kickstand = new kickStand(hardwareMap, telemetry);
         distanceToGoal = new DistanceToGoal(telemetry);
         drivetrain.init();
         intaker.init();
@@ -102,6 +108,8 @@ public class prod_TestTele extends LinearOpMode {
             runtime.reset();
             commandTime.reset();
             FarShoot.reset();
+            kickstand.init();
+
 
         }
 
@@ -139,6 +147,8 @@ public class prod_TestTele extends LinearOpMode {
 
             intaker.updateCtrls(gamepad1, gamepad2);
             shooter.updateCtrls(gamepad1, gamepad2);
+            kickstand.updateCtrls(gamepad1, gamepad2);
+            kickstand.update();
             if (!gamepad1.right_bumper && !gamepad1.b && !gamepad1.left_bumper && shooter.getState() == Shooter.ShooterState.READY_DISTANCE && distance <= 100 && !gamepad1.dpad_right){
                 if (!set){
                     commandTime.reset();
