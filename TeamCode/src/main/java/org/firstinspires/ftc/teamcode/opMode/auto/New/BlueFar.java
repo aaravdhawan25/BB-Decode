@@ -30,9 +30,9 @@ public class BlueFar extends LinearOpMode {
     Shooter shooter;
     Intaker intaker;
 
-    public static double IntakeVel = 50;
+    public static double IntakeVel = 53;
 
-    public static double RevVel = 13;
+    public static double RevVel = 15;
 
     DistanceToGoal distanceToGoal;
 

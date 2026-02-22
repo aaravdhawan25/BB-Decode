@@ -36,6 +36,7 @@ public class ShooterCMD implements Subsystem {
         this.shooterMotor2 = shooterMotor2;
         this.hoodServo = hoodServo;
         pidController = new PIDController(ShooterConstants.KP, ShooterConstants.KI, ShooterConstants.KD);
+        pidController.setTolerance(10);
     }
     
     public void setState(ShooterState state){
