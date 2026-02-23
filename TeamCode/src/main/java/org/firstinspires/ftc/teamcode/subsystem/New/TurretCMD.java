@@ -54,11 +54,27 @@ public class TurretCMD implements Subsystem {
         turretServo2.setPosition(position);
     }
 
+//    private void pointToGoalCamera(LLCam.TagTarget tag){
+//        if (tag == null || !tag.hasTarget) return;
+//        double tX = tag.tX;
+//        if (Math.abs(tX) < 0.5){
+//            return;
+//        }
+//        double deltaPos = tX * SLOPE * P;
+//        double targetAngleDeg = turretPose - deltaPos;
+//
+//        double step = Range.clip(targetAngleDeg - turretPose, -MAX_STEP_PER_LOOP, MAX_STEP_PER_LOOP);
+//        setServoPos(turretPose + step);
+//
+//
+//        PerTelem.addData("Math Camera", true);
+//    }
+
     private void pointToGoalPinPoint(Pose2d robotPos) {
         Vector2d goal = Robot.getGoalPos();
         double robotHeadingRad = Math.toRadians(robotPos.heading.toDouble());
         Vector2d turretPos = new Vector2d(
-                robotPos.position.x- TurretConstants.turretOffsetInchesx * Math.cos(robotHeadingRad),
+                robotPos.position.x - TurretConstants.turretOffsetInchesx * Math.cos(robotHeadingRad),
                 robotPos.position.y - TurretConstants.turretOffsetInchesy * Math.sin(robotHeadingRad)
         );
         Vector2d toGoal = goal.minus(turretPos);

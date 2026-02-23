@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.RoadRunner.MecanumDrive;
 import org.firstinspires.ftc.teamcode.subsystem.New.Blocker;
@@ -19,6 +20,9 @@ import org.firstinspires.ftc.teamcode.subsystem.New.ShooterCMD;
 import org.firstinspires.ftc.teamcode.subsystem.New.TurretCMD;
 import org.firstinspires.ftc.teamcode.utils.Constants.ShooterConstants;
 import org.firstinspires.ftc.teamcode.utils.PerTelem;
+
+import java.util.concurrent.TimeUnit;
+
 @Config
 public class Robot {
 
@@ -26,6 +30,8 @@ public class Robot {
     public ShooterCMD shooter;
     public Intake intake;
     public Blocker blocker;
+
+    private static ElapsedTime timer;
 
     public TurretCMD turret;
 
@@ -60,6 +66,8 @@ public class Robot {
     }
 
     public Robot(HardwareMap hardwareMap ){
+        timer = new ElapsedTime();
+        timer.reset();
         shooterMotor =  hardwareMap.get(DcMotorEx.class, "shooter");
         shooterMotor2 =  hardwareMap.get(DcMotorEx.class, "shooter2");
         blockerServo = hardwareMap.get(Servo.class, "blocker");
@@ -147,10 +155,18 @@ public class Robot {
         ));
     }
 
+    public static double getMagnitude(){
+        return Math.hypot(robotVel.linearVel.x, robotVel.linearVel.y);
+    }
+
     public double calculateHeadingToGoal(Vector2d robotPos, Vector2d goalPos) {
         Vector2d toGoal = goalPos.minus(robotPos);
         double angleToGoalDeg = Math.toDegrees(Math.atan2(toGoal.y, toGoal.x));
         return angleToGoalDeg;
+    }
+
+    public static long getTime(){
+        return timer.time(TimeUnit.MILLISECONDS);
     }
 
     public static void updateCompensatedDistance() {
