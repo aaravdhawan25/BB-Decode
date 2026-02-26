@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.subsystem.New;
 
+import static org.firstinspires.ftc.teamcode.utils.Constants.ShooterConstants.HOOD_SERVO_MAX;
 import static org.firstinspires.ftc.teamcode.utils.Constants.ShooterConstants.crTargetRPM;
 import static org.firstinspires.ftc.teamcode.utils.Constants.ShooterConstants.targetRPM;
 
@@ -8,6 +9,7 @@ import com.acmerobotics.roadrunner.Vector2d;
 import com.arcrobotics.ftclib.command.Subsystem;
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.arcrobotics.ftclib.controller.PIDFController;
+import com.pedropathing.math.MathFunctions;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;

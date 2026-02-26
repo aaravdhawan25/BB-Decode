@@ -62,34 +62,18 @@ public class TeleRed extends LinearOpMode {
         );
         gp2.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(
                 new ParallelCommandGroup(
-                        new TurretCommand(robot, TurretCMD.TurretState.MATH),
                         new ShooterCommand(robot, ShooterCMD.ShooterState.MATH)
                 )
         );
         gp2.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenReleased(
                 new ParallelCommandGroup(
-                        new TurretCommand(robot, TurretCMD.TurretState.FORWARD),
                         new ShooterCommand(robot, ShooterCMD.ShooterState.STOP)
                 )
         );
 
-        gp2.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(
-                new ParallelCommandGroup(
-                        new TurretCommand(robot, TurretCMD.TurretState.WHILE_MOVING_TURRET),
-                        new ShooterCommand(robot, ShooterCMD.ShooterState.WHILE_MOVING)
-                )
-        );
-
-        gp2.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenReleased(
-                new ParallelCommandGroup(
-                        new TurretCommand(robot, TurretCMD.TurretState.FORWARD),
-                        new ShooterCommand(robot, ShooterCMD.ShooterState.STOP)
-                )
-        );
 
         CommandScheduler.getInstance().schedule(new ParallelCommandGroup(
-                new BlockerCommand(robot, Blocker.BlockerState.BLOCKED),
-                new TurretCommand(robot, TurretCMD.TurretState.FORWARD)
+                new BlockerCommand(robot, Blocker.BlockerState.BLOCKED)
         ));
         waitForStart();
 

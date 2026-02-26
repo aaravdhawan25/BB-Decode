@@ -33,7 +33,6 @@ public class Robot {
 
     private static ElapsedTime timer;
 
-    public TurretCMD turret;
 
     public static double compensatedDistance = 0;
 
@@ -44,7 +43,7 @@ public class Robot {
     public static double xyP = 0.23;
     public static double headingP = 0.23;
 
-    public Servo blockerServo, turretServo1, turretServo2, hoodServo;
+    public Servo blockerServo, hoodServo;
 
     public MecanumDrive follower;
 
@@ -73,21 +72,16 @@ public class Robot {
         blockerServo = hardwareMap.get(Servo.class, "blocker");
         intakeMotor = hardwareMap.get(DcMotorEx.class, "intake");
         transferMotor = hardwareMap.get(DcMotorEx.class, "transfer");
-        turretServo1 = hardwareMap.get(Servo.class, "turretLeft");
-        turretServo2 = hardwareMap.get(Servo.class, "turretRight");
         hoodServo = hardwareMap.get(Servo.class, "hoodServo");
         shooter = new ShooterCMD(shooterMotor,shooterMotor2, hoodServo);
         blocker = new Blocker(blockerServo);
-        turret = new TurretCMD(turretServo1, turretServo2);
         intake = new Intake(intakeMotor,transferMotor);
         shooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         shooterMotor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         shooterMotor2.setDirection(DcMotorSimple.Direction.REVERSE);
-        turretServo1.setDirection(Servo.Direction.REVERSE);
-        turretServo2.setDirection(Servo.Direction.REVERSE);
         follower = new MecanumDrive(hardwareMap, getStartPose());
         CommandScheduler.getInstance().reset();
-        CommandScheduler.getInstance().registerSubsystem(intake,shooter,blocker, turret);
+        CommandScheduler.getInstance().registerSubsystem(intake,shooter,blocker);
 
     }
 
