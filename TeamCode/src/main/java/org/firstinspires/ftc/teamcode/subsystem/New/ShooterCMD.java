@@ -18,6 +18,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.utils.Constants.ShooterConstants;
 import org.firstinspires.ftc.teamcode.utils.PerTelem;
+import org.opencv.core.Mat;
 
 @Config
 public class ShooterCMD implements Subsystem {
@@ -46,6 +47,7 @@ public class ShooterCMD implements Subsystem {
         switch (state){
             case CLOSE:
                 targetRPM = ShooterConstants.CLOSE_SHOOTER_RPM;
+                break;
             case FAR:
                 targetRPM = ShooterConstants.FAR_SHOOTER_RPM;
                 break;
@@ -67,6 +69,21 @@ public class ShooterCMD implements Subsystem {
 
     public double ticksPerSecToRPM(double tps){
         return tps * 60.0 / ShooterConstants.TICKS_PER_REV;
+    }
+
+    public void setBangBangPower(double targetRPM){
+        if (getShooterRPM() < targetRPM){
+            shooterMotor.setPower(1);
+            shooterMotor2.setPower(1);
+        }
+
+        if (getShooterRPM() > targetRPM){
+            shooterMotor.setPower(0);
+            shooterMotor2.setPower(0);
+        }
+
+        PerTelem.addData("Shooter Current RPM", getShooterRPM());
+        PerTelem.addData("Shooter Target RPM", targetRPM);
     }
 
     public void setShooterPIDPower(double targetRPM){
@@ -155,7 +172,7 @@ public class ShooterCMD implements Subsystem {
 
 
 
-    public boolean atTargetSpeed() {
+    public boolean atTargetSpeed(){
         return pidController.getPositionError() <= 100;
     }
 
@@ -164,7 +181,6 @@ public class ShooterCMD implements Subsystem {
         setState(state);
         pidController.setPID(ShooterConstants.KP, ShooterConstants.KI, ShooterConstants.KD);
         setShooterPIDPower(targetRPM);
-
     }
 
 

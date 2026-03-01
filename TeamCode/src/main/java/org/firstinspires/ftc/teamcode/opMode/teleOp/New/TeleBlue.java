@@ -14,14 +14,10 @@ import org.firstinspires.ftc.teamcode.robot.commands.IntakeCommand;
 import org.firstinspires.ftc.teamcode.robot.commands.ShooterCommand;
 import org.firstinspires.ftc.teamcode.robot.commands.TransferCancelCommand;
 import org.firstinspires.ftc.teamcode.robot.commands.TransferCommand;
-import org.firstinspires.ftc.teamcode.robot.commands.TurretCommand;
 import org.firstinspires.ftc.teamcode.subsystem.Drivetrain;
 import org.firstinspires.ftc.teamcode.subsystem.New.Blocker;
 import org.firstinspires.ftc.teamcode.subsystem.New.Intake;
-import org.firstinspires.ftc.teamcode.subsystem.New.Shooter;
 import org.firstinspires.ftc.teamcode.subsystem.New.ShooterCMD;
-import org.firstinspires.ftc.teamcode.subsystem.New.Turret;
-import org.firstinspires.ftc.teamcode.subsystem.New.TurretCMD;
 import org.firstinspires.ftc.teamcode.utils.PerTelem;
 
 @TeleOp(name = "TeleOp Blue")

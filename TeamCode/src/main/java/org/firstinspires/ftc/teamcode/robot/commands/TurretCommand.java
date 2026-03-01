@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.utils.Constants.TurretConstants;
 public class TurretCommand extends SequentialCommandGroup {
     public TurretCommand(Robot robot, TurretCMD.TurretState state){
         addCommands(
-                new InstantCommand(()-> robot.turret.setState(state))
+//                new InstantCommand(()-> robot.turret.setState(state))
         );
     }
 }

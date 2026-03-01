@@ -1,9 +1,10 @@
 package org.firstinspires.ftc.teamcode.subsystem.New;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.controller.PIDFController;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -60,7 +61,7 @@ public class Shooter implements Subsystem {
     Telemetry telemetry;
 
     private DcMotorEx shooterMotor;
-    private DcMotorEx counterRoller;
+    private DcMotorEx shooterMotor2;
 
     private Servo blocker;
 
@@ -103,18 +104,18 @@ public class Shooter implements Subsystem {
         pidfController = new PIDFController(KP,KI,KD,KF);
         CRpidfController = new PIDFController(CR_KP, CR_KI,CR_KD, CR_KF);
         shooterMotor = hardwareMap.get(DcMotorEx.class, "shooter");
-        counterRoller = hardwareMap.get(DcMotorEx.class, "CR");
+        shooterMotor2 = hardwareMap.get(DcMotorEx.class, "CR");
         blocker = hardwareMap.get(Servo.class, "blocker");
 
     }
 
     @Override
     public void init() {
-        shooterMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        counterRoller.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        shooterMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        shooterMotor2.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        shooterMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         blockerClose();
         telemetry.addData("Shooter", "Initialized");
-        telemetry.addData("Counter Roller", "Initialized");
         telemetry.addData("Blocker", "Initialized");
         telemetry.update();
         lastTime = System.nanoTime();
@@ -153,16 +154,9 @@ public class Shooter implements Subsystem {
         return (velocity * 60.0) / TICKS_PER_REV;
     }
 
-    public double getCounterRollerRPM() {
-        double velocity = counterRoller.getVelocity();
-        return (velocity * 60.0) / CR_TICKS_PER_REV;
-    }
-
     public boolean atTargetSpeed() {
         double shooterRPM = getShooterRPM();
-        double crRPM = getCounterRollerRPM();
-        return Math.abs(targetRPM - shooterRPM) < RPM_TOLERANCE &&
-                Math.abs(crTargetRPM - crRPM) < RPM_TOLERANCE;
+        return Math.abs(targetRPM - shooterRPM) < RPM_TOLERANCE;
     }
 
     public void setDistanceToGoal(double distance) {
@@ -179,11 +173,7 @@ public class Shooter implements Subsystem {
         return ShooterError;
     }
 
-    public double CalculateCRError(){
-        double CRError = crTargetRPM-getCounterRollerRPM();
 
-        return CRError;
-    }
     public void kickBallOff(){
         setState(ShooterState.OPEN_BLOCKER);
     }
@@ -223,7 +213,6 @@ public class Shooter implements Subsystem {
         switch (state) {
             case IDLE:
                 targetRPM = IDLE_SHOOTER;
-                crTargetRPM = 0;
                 blockerClose();
 //                resetPID();
                 break;
@@ -280,32 +269,27 @@ public class Shooter implements Subsystem {
                 break;
             case READY_DISTANCE:
                 targetRPM = calculateShooterRPM(getDistanceToGoal());
-                crTargetRPM = targetRPM*CR_RATIO;
                 blockerOpen();
                 break;
             case STOPPING:
                 targetRPM = IDLE_SHOOTER;
-                crTargetRPM = 0;
                 blockerClose();
-                if (getShooterRPM() < 100 && getCounterRollerRPM() < 100) {
+                if (getShooterRPM() < 100 ) {
                     setState(ShooterState.IDLE);
                 }
                 break;
         }
 
         updateShooterMotor(dt);
-        updateCounterRollerMotor(dt);
 
         telemetry.addData("State", state);
         telemetry.addData("Shooter Current RPM", getShooterRPM());
         telemetry.addData("Shooter Target RPM", targetRPM);
-        telemetry.addData("Counter Roller Current RPM", Math.abs(getCounterRollerRPM()));
         telemetry.addData("Counter Roller Target RPM", crTargetRPM);
         telemetry.addData("At Speed", atTargetSpeed());
         telemetry.addData("ShooterPower", shooterMotor.getPower());
-        telemetry.addData("CR Power", counterRoller.getPower());
+        telemetry.addData("CR Power", shooterMotor2.getPower());
         telemetry.addData("Shooter Error", calculateError());
-        telemetry.addData("CR Error", CalculateCRError());
     }
 
     private void resetPID() {
@@ -325,15 +309,6 @@ public class Shooter implements Subsystem {
         shooterMotor.setPower(power);
     }
 
-    private void updateCounterRollerMotor(double dt) {
-        double currentRPMCR = getCounterRollerRPM();
-        double error = crTargetRPM + currentRPMCR;
-        CRpidfController.setPIDF(CR_KP,CR_KI,CR_KD, CR_KF);
-        double CRpower = CRpidfController.calculate(-currentRPMCR, crTargetRPM);
-        CRpower = Range.clip(CRpower, 0, 1);
-
-        counterRoller.setPower(CRpower);
-    }
 
     @Override
     public void updateCtrls(Gamepad gp1, Gamepad gp2) {

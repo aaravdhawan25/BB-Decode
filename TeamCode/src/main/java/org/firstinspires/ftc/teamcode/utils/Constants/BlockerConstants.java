@@ -4,7 +4,7 @@ import com.acmerobotics.dashboard.config.Config;
 
 @Config
 public class BlockerConstants {
-    public static double BlockerOpen = 0.55;
+    public static double BlockerOpen = 1;
 
-    public static double BlockerClosed = 1;
+    public static double BlockerClosed = 0.5;
 }

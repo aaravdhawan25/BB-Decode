@@ -78,7 +78,7 @@ public class Robot {
         intake = new Intake(intakeMotor,transferMotor);
         shooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         shooterMotor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        shooterMotor2.setDirection(DcMotorSimple.Direction.REVERSE);
+        shooterMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         follower = new MecanumDrive(hardwareMap, getStartPose());
         CommandScheduler.getInstance().reset();
         CommandScheduler.getInstance().registerSubsystem(intake,shooter,blocker);
