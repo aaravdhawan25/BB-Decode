@@ -1,6 +1,9 @@
 package org.firstinspires.ftc.teamcode.subsystem.New;
 
 import static org.firstinspires.ftc.teamcode.utils.Constants.ShooterConstants.HOOD_SERVO_MAX;
+import static org.firstinspires.ftc.teamcode.utils.Constants.ShooterConstants.HOOD_SERVO_MIN;
+import static org.firstinspires.ftc.teamcode.utils.Constants.ShooterConstants.IDLE_SHOOTER;
+import static org.firstinspires.ftc.teamcode.utils.Constants.ShooterConstants.TESTING_HOOD_POS;
 import static org.firstinspires.ftc.teamcode.utils.Constants.ShooterConstants.crTargetRPM;
 import static org.firstinspires.ftc.teamcode.utils.Constants.ShooterConstants.targetRPM;
 
@@ -27,10 +30,14 @@ public class ShooterCMD implements Subsystem {
     public DcMotorEx shooterMotor,shooterMotor2;
 
     Servo hoodServo;
+
+    double HOOD_SERVO_POS;
     private double distanceToGoal = 0;
     public PIDController pidController;
 
     public ShooterState state = ShooterState.STOP;
+
+    public static double error = 100;
 
     public long lastTime = 0;
 
@@ -47,6 +54,7 @@ public class ShooterCMD implements Subsystem {
         switch (state){
             case CLOSE:
                 targetRPM = ShooterConstants.CLOSE_SHOOTER_RPM;
+                HOOD_SERVO_POS = HOOD_SERVO_MAX;
                 break;
             case FAR:
                 targetRPM = ShooterConstants.FAR_SHOOTER_RPM;
@@ -56,9 +64,11 @@ public class ShooterCMD implements Subsystem {
                 break;
             case STOP:
                 targetRPM = ShooterConstants.IDLE_SHOOTER;
+                HOOD_SERVO_POS = HOOD_SERVO_MIN;
                 break;
             case TESTING:
                 targetRPM = ShooterConstants.tuningRPM;
+                HOOD_SERVO_POS = TESTING_HOOD_POS;
                 break;
 
             case WHILE_MOVING:
@@ -72,12 +82,10 @@ public class ShooterCMD implements Subsystem {
     }
 
     public void setBangBangPower(double targetRPM){
-        if (getShooterRPM() < targetRPM){
+        if (getShooterRPM() <= targetRPM){
             shooterMotor.setPower(1);
             shooterMotor2.setPower(1);
-        }
-
-        if (getShooterRPM() > targetRPM){
+        } else if (getShooterRPM() > targetRPM){
             shooterMotor.setPower(0);
             shooterMotor2.setPower(0);
         }
@@ -114,6 +122,10 @@ public class ShooterCMD implements Subsystem {
     public void setDistanceToGoal(double distance) {
         this.distanceToGoal = distance;
 
+    }
+
+    public void setHood(double hoodPos){
+        hoodServo.setPosition(hoodPos);
     }
 
     public double calculateShooterRPM(double x) {
@@ -173,14 +185,15 @@ public class ShooterCMD implements Subsystem {
 
 
     public boolean atTargetSpeed(){
-        return pidController.getPositionError() <= 100;
+        return Math.abs(targetRPM - getShooterRPM()) < error && getState() != ShooterState.STOP;
     }
 
     @Override
     public void periodic(){
         setState(state);
-        pidController.setPID(ShooterConstants.KP, ShooterConstants.KI, ShooterConstants.KD);
-        setShooterPIDPower(targetRPM);
+//        pidController.setPID(ShooterConstants.KP, ShooterConstants.KI, ShooterConstants.KD);
+        setBangBangPower(targetRPM);
+        setHood(HOOD_SERVO_POS);
     }
 
 

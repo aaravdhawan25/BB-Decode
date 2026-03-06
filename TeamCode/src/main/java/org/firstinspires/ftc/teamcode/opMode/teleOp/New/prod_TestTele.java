@@ -15,6 +15,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.RoadRunner.MecanumDrive;
+import org.firstinspires.ftc.teamcode.robot.commands.TurretCommand;
 import org.firstinspires.ftc.teamcode.subsystem.Drivetrain;
 import org.firstinspires.ftc.teamcode.subsystem.New.DistanceToGoal;
 import org.firstinspires.ftc.teamcode.subsystem.New.Intaker;
@@ -34,7 +35,6 @@ public class prod_TestTele extends LinearOpMode {
 
     Drivetrain drivetrain;
 
-    kickStand kickstand;
     Intaker intaker;
     Shooter shooter;
 
@@ -95,7 +95,6 @@ public class prod_TestTele extends LinearOpMode {
         intaker = new Intaker(hardwareMap, telemetry);
         shooter = new Shooter(hardwareMap, telemetry);
         follower = new MecanumDrive(hardwareMap, START_POSE);
-        kickstand = new kickStand(hardwareMap, telemetry);
         distanceToGoal = new DistanceToGoal(telemetry);
         drivetrain.init();
         intaker.init();
@@ -108,7 +107,6 @@ public class prod_TestTele extends LinearOpMode {
             runtime.reset();
             commandTime.reset();
             FarShoot.reset();
-            kickstand.init();
 
 
         }
@@ -147,9 +145,7 @@ public class prod_TestTele extends LinearOpMode {
 
             intaker.updateCtrls(gamepad1, gamepad2);
             shooter.updateCtrls(gamepad1, gamepad2);
-            kickstand.updateCtrls(gamepad1, gamepad2);
-            kickstand.update();
-            if (!gamepad1.right_bumper && !gamepad1.b && !gamepad1.left_bumper && shooter.getState() == Shooter.ShooterState.READY_DISTANCE && distance <= 100 && !gamepad1.dpad_right){
+            if (!gamepad1.right_bumper && !gamepad1.b && !gamepad1.left_bumper && shooter.atTargetSpeed() && shooter.getState() != Shooter.ShooterState.STOPPING && shooter.getState() != Shooter.ShooterState.IDLE && !gamepad1.dpad_right){
                 if (!set){
                     commandTime.reset();
                     set = true;
@@ -165,42 +161,29 @@ public class prod_TestTele extends LinearOpMode {
             if (!gamepad1.right_bumper && !gamepad1.b && !gamepad1.left_bumper && shooter.getState() == Shooter.ShooterState.STOPPING){
                 intaker.IntakeIdle();
             }
-            if (!gamepad1.right_bumper && !gamepad1.b && !gamepad1.left_bumper && shooter.getState() == Shooter.ShooterState.READY_CLOSE && !gamepad1.dpad_right){
-                if (!set2){
-                    commandTime.reset();
-                    set2 = true;
-                }
-                if (commandTime.seconds() >= 0.2){
-                    intaker.Intake();
-                }
-            } else {
-                set2 = false;
+
+            TrajectoryActionBuilder waypoint = follower.actionBuilder(currPos)
+                    .turnTo(Math.toRadians(turnAngle));
+
+            if (gamepad1.squareWasPressed()){
+                waypointing = waypoint.build();
+                isWaypointing = true;
+            }
+
+            if (!(gamepad1.left_stick_y == 0 && gamepad1.right_stick_x == 0 && gamepad1.left_stick_x == 0 && gamepad1.right_stick_y == 0)) {
+                isWaypointing = false;
 
             }
 
+            if (isWaypointing && waypointing != null) {
+                if(!waypointing.run(packet)){
+                    isWaypointing = false;
+                }
 
-//            TrajectoryActionBuilder waypoint = follower.actionBuilder(currPos)
-//                    .turnTo(Math.toRadians(turnAngle));
-//
-//            if (gamepad1.triangleWasPressed()){
-//                waypointing = waypoint.build();
-//                isWaypointing = true;
-//            }
-//
-////            if (!(gamepad1.left_stick_y == 0 && gamepad1.right_stick_x == 0 && gamepad1.left_stick_x == 0 && gamepad1.right_stick_y == 0)) {
-////                isWaypointing = false;
-////
-////            }
-//
-//            if (isWaypointing && waypointing != null) {
-//                if(!waypointing.run(packet)){
-//                    isWaypointing = false;
-//                }
-//
-//            } else {
-//                drivetrain.update();
-//                drivetrain.updateCtrls(gamepad1, gamepad2);
-//            }
+            } else {
+                drivetrain.update();
+                drivetrain.updateCtrls(gamepad1, gamepad2);
+            }
 
             if (gamepad1.triangleWasPressed()) {
                 // Capture position once on press

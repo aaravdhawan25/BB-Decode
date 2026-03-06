@@ -37,10 +37,10 @@ public class Constants {
             .rightRearMotorName("RBM")
             .leftRearMotorName("LBM")
             .leftFrontMotorName("LFM")
-            .leftFrontMotorDirection(DcMotorSimple.Direction.REVERSE)
-            .leftRearMotorDirection(DcMotorSimple.Direction.REVERSE)
+            .leftFrontMotorDirection(DcMotorSimple.Direction.FORWARD)
+            .leftRearMotorDirection(DcMotorSimple.Direction.FORWARD)
             .rightFrontMotorDirection(DcMotorSimple.Direction.REVERSE)
-            .rightRearMotorDirection(DcMotorSimple.Direction.FORWARD)
+            .rightRearMotorDirection(DcMotorSimple.Direction.REVERSE)
             .xVelocity(72.89583754490232)
             .yVelocity(54.46623098652117);
 
@@ -64,8 +64,8 @@ public class Constants {
             .IMU_HardwareMapName("imu")
             .IMU_Orientation(
                     new RevHubOrientationOnRobot(
-                            RevHubOrientationOnRobot.LogoFacingDirection.RIGHT,
-                            RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD
+                            RevHubOrientationOnRobot.LogoFacingDirection.UP,
+                            RevHubOrientationOnRobot.UsbFacingDirection.LEFT
                     )
             );
 

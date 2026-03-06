@@ -1,7 +1,14 @@
 package org.firstinspires.ftc.teamcode.subsystem.New;
 
+import static org.firstinspires.ftc.teamcode.utils.Constants.ShooterConstants.HOOD_SERVO_MAX;
+import static org.firstinspires.ftc.teamcode.utils.Constants.ShooterConstants.HOOD_SERVO_MID;
+import static org.firstinspires.ftc.teamcode.utils.Constants.ShooterConstants.HOOD_SERVO_MIN;
+import static org.firstinspires.ftc.teamcode.utils.Constants.ShooterConstants.PASS_THROUGH_POINT_RADIUS;
+import static org.firstinspires.ftc.teamcode.utils.Constants.ShooterConstants.hoodServoPosition;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.controller.PIDFController;
+import com.pedropathing.math.MathFunctions;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -11,7 +18,10 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.subsystem.Subsystem;
+import org.firstinspires.ftc.teamcode.utils.Constants.ShooterConstants;
+import org.firstinspires.ftc.teamcode.utils.PerTelem;
 
 @Config
 public class Shooter implements Subsystem {
@@ -27,18 +37,18 @@ public class Shooter implements Subsystem {
     public static double CR_KD = 0.000000001;
     public static double CR_KF = 0.0001;
 
-    public static double IDLE_SHOOTER = 1000;
+    public static double IDLE_SHOOTER = 2500;
 
     public static double TICKS_PER_REV = 28.0;
     public static double CR_TICKS_PER_REV = 28.0;
-    public static double CLOSE_SHOOTER_RPM = 3450;
+    public static double CLOSE_SHOOTER_RPM = 3000;
 
-    public static double AUTO_SHOOTER_RPM = 3450;
+    public static double AUTO_SHOOTER_RPM = 2750;
     public static double AUTO_CR_RPM = 2650;
     public static double CLOSE_CR_RPM = 2700;
-    public static double FAR_SHOOTER_RPM = 5100;
+    public static double FAR_SHOOTER_RPM = 4000;
     public static double FAR_CR_RPM = 2150;
-    public static double RPM_TOLERANCE = 50;
+    public static double RPM_TOLERANCE = 100;
 
     public static double G = 386.1;
     public static double TARGET_Y = 25.5;
@@ -54,9 +64,9 @@ public class Shooter implements Subsystem {
 
     private double distanceToGoal = 0;
 
-    public static double BlockerOpen = 0.55;
+    public static double BlockerOpen = 1;
 
-    public static double BlockerClosed = 1;
+    public static double BlockerClosed = 0.8;
 
     Telemetry telemetry;
 
@@ -66,7 +76,7 @@ public class Shooter implements Subsystem {
     private Servo blocker;
 
 
-    private double targetRPM = 0;
+    public static double targetRPM = 0;
     private double crTargetRPM = 0;
 
     private double integral = 0;
@@ -81,6 +91,8 @@ public class Shooter implements Subsystem {
     public PIDFController CRpidfController;
 
     private ShooterState state = ShooterState.IDLE;
+
+    Servo hoodServo;
 
 
 
@@ -101,10 +113,9 @@ public class Shooter implements Subsystem {
 
     public Shooter(HardwareMap hardwareMap, Telemetry telemetry) {
         this.telemetry = telemetry;
-        pidfController = new PIDFController(KP,KI,KD,KF);
-        CRpidfController = new PIDFController(CR_KP, CR_KI,CR_KD, CR_KF);
         shooterMotor = hardwareMap.get(DcMotorEx.class, "shooter");
-        shooterMotor2 = hardwareMap.get(DcMotorEx.class, "CR");
+        shooterMotor2 = hardwareMap.get(DcMotorEx.class, "shooter2");
+        hoodServo = hardwareMap.get(Servo.class, "hoodServo");
         blocker = hardwareMap.get(Servo.class, "blocker");
 
     }
@@ -191,10 +202,72 @@ public class Shooter implements Subsystem {
         );
 
         double theoreticalRPM = (v0 * 60) / (2 * Math.PI * FLYWHEEL_RADIUS);
-
         return (theoreticalRPM * VELOCITY_TO_RPM_RATIO) + RPM_BASE;
     }
 
+    public double setHood(double angleRad) {
+
+        double minAngle = ShooterConstants.HOOD_MIN_ANGLE; //0.2
+        double maxAngle = ShooterConstants.HOOD_MAX_ANGLE; //0.3
+        double servoHigh = 0.3;
+        double servoLow = 0.2;
+        double loA = Math.min(minAngle, maxAngle);
+        double hiA = Math.max(minAngle, maxAngle);
+        angleRad = MathFunctions.clamp(angleRad, loA, hiA);
+        hoodServoPosition= servoLow + (angleRad - loA) * (servoHigh - servoLow) / (hiA - loA);
+        return hoodServoPosition;
+    }
+
+    public double getHood(){
+        double hoodAngle = Math.atan(2.0 * TARGET_Y / (getDistanceToGoal()-PASS_THROUGH_POINT_RADIUS) - Math.tan(IMPACT_ANGLE_THETA));
+        telemetry.addData("HOOD ANGLE RAW (no vel comp)", hoodAngle);
+        hoodAngle = MathFunctions.clamp(hoodAngle,
+                ShooterConstants.HOOD_MIN_ANGLE,
+                ShooterConstants.HOOD_MAX_ANGLE);
+
+
+        return hoodAngle;
+    }
+    private boolean isFinite(double v) {
+        return !Double.isNaN(v) && !Double.isInfinite(v);
+    }
+
+    private static double[] lastGood = new double[]{
+            ShooterConstants.HOOD_MIN_ANGLE,
+            0.0                            // flywheel speed
+    };
+
+
+
+
+
+
+
+
+
+
+
+    public double getFlywheelSpeed(){
+        double term = (getDistanceToGoal() - PASS_THROUGH_POINT_RADIUS) * Math.tan(getHood()) - TARGET_Y;
+        double cos = Math.cos(getHood());
+        double denom1 = 2 * cos * cos * term;
+        double flyWheelSpeed = Math.sqrt(G * (getDistanceToGoal()-PASS_THROUGH_POINT_RADIUS) * (getDistanceToGoal()-PASS_THROUGH_POINT_RADIUS) / denom1);
+
+        return flyWheelSpeed;
+
+
+    }
+
+    public double getRPM(double velocity, double hood){
+        telemetry.addData("VELOCITY", velocity);
+        double hoodMultiplier = 2.79242 * hood * hood - 2.05502 * hood + 1.29534;
+        double baseRPM = 11.38452 * velocity + 1155.54738;
+
+        // constant  = 1155.54738
+        telemetry.addData("HOOD MULTIPLIER", hoodMultiplier);
+        telemetry.addData("BASE RPM", baseRPM);
+        return baseRPM * hoodMultiplier;
+    }
 
     public void spinUpAuto() {
         setState(ShooterState.SPINNING_UP_AUTO);
@@ -213,12 +286,13 @@ public class Shooter implements Subsystem {
         switch (state) {
             case IDLE:
                 targetRPM = IDLE_SHOOTER;
+                hoodServoPosition = HOOD_SERVO_MIN;
                 blockerClose();
 //                resetPID();
                 break;
             case SPINNING_UP_CLOSE:
                 targetRPM = CLOSE_SHOOTER_RPM;
-                crTargetRPM = CLOSE_CR_RPM;
+                hoodServoPosition = HOOD_SERVO_MAX;
                 blockerClose();
 
                 if (atTargetSpeed()) {
@@ -227,7 +301,7 @@ public class Shooter implements Subsystem {
                 break;
             case SPINNING_UP_FAR:
                 targetRPM = FAR_SHOOTER_RPM;
-                crTargetRPM = FAR_CR_RPM;
+                hoodServoPosition = HOOD_SERVO_MID;
                 blockerClose();
                 if (atTargetSpeed()) {
                     setState(ShooterState.READY_FAR);
@@ -235,17 +309,17 @@ public class Shooter implements Subsystem {
                 break;
             case READY_CLOSE:
                 targetRPM = CLOSE_SHOOTER_RPM;
-                crTargetRPM = CLOSE_CR_RPM;
+                hoodServoPosition = HOOD_SERVO_MAX;
                 blockerOpen();
                 break;
             case READY_FAR:
                 targetRPM = FAR_SHOOTER_RPM;
-                crTargetRPM = FAR_CR_RPM;
+                hoodServoPosition = HOOD_SERVO_MID;
                 blockerOpen();
                 break;
             case SPINNING_UP_AUTO:
                 targetRPM = AUTO_SHOOTER_RPM;
-                crTargetRPM = AUTO_CR_RPM;
+                hoodServoPosition = HOOD_SERVO_MID;
                 blockerClose();
                 if (atTargetSpeed()) {
                     setState(ShooterState.READY_AUTO);
@@ -253,26 +327,37 @@ public class Shooter implements Subsystem {
                 break;
             case READY_AUTO:
                 targetRPM = AUTO_SHOOTER_RPM;
-                crTargetRPM = AUTO_CR_RPM;
+                hoodServoPosition = HOOD_SERVO_MID;
                 blockerOpen();
                 break;
             case OPEN_BLOCKER:
                 blockerOpen();
                 break;
             case SPINNING_UP_DISTANCE:
-                targetRPM = calculateShooterRPM(getDistanceToGoal());
-                crTargetRPM = targetRPM*CR_RATIO;
-                blockerClose();
+                double hoodAngle = getHood();
+                double hoodPos = setHood(hoodAngle);
+                double rpm = getRPM(getFlywheelSpeed(), hoodPos);
+                hoodServoPosition = setHood(hoodAngle);
+                targetRPM = rpm;
+                telemetry.addData("HOOD ANGLE", hoodAngle);
+                telemetry.addData("HOOD POSITION", hoodServoPosition);
+                telemetry.addData("RPM", rpm);
                 if (atTargetSpeed()){
                     setState(ShooterState.READY_DISTANCE);
                 }
+
+//                targetRPM = calculateShooterRPM(getDistanceToGoal());
+//                hoodServoPosition = setHood(getHood());
                 break;
+
             case READY_DISTANCE:
-                targetRPM = calculateShooterRPM(getDistanceToGoal());
+                targetRPM = getRPM(getFlywheelSpeed(), setHood(getHood()));
+                hoodServoPosition = setHood(getHood());
                 blockerOpen();
                 break;
             case STOPPING:
                 targetRPM = IDLE_SHOOTER;
+                hoodServoPosition = HOOD_SERVO_MIN;
                 blockerClose();
                 if (getShooterRPM() < 100 ) {
                     setState(ShooterState.IDLE);
@@ -280,7 +365,9 @@ public class Shooter implements Subsystem {
                 break;
         }
 
-        updateShooterMotor(dt);
+        updateShooterMotor();
+
+        hoodServo.setPosition(hoodServoPosition);
 
         telemetry.addData("State", state);
         telemetry.addData("Shooter Current RPM", getShooterRPM());
@@ -299,14 +386,22 @@ public class Shooter implements Subsystem {
         crLastError = 0;
     }
 
-    private void updateShooterMotor(double dt) {
-        double currentRPM = getShooterRPM();
-        double error = targetRPM - currentRPM;
-        pidfController.setPIDF(KP,KI,KD,KF);
-        double power = pidfController.calculate(currentRPM,targetRPM);
-        power = Range.clip(power, 0, 1);
+    public void setBangBangPower(double targetRPM){
+        if (getShooterRPM() <= targetRPM){
+            shooterMotor.setPower(1);
+            shooterMotor2.setPower(1);
+        } else if (getShooterRPM() > targetRPM){
+            shooterMotor.setPower(0);
+            shooterMotor2.setPower(0);
+        }
 
-        shooterMotor.setPower(power);
+        telemetry.addData("Shooter Current RPM", getShooterRPM());
+        telemetry.addData("Shooter Target RPM", targetRPM);
+    }
+
+    private void updateShooterMotor() {
+        setBangBangPower(targetRPM);
+
     }
 
 

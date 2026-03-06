@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.opMode.teleOp.New;
 
+import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.ParallelRaceGroup;
@@ -24,7 +25,7 @@ import org.firstinspires.ftc.teamcode.utils.PerTelem;
 public class TeleBlue extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
-        Robot robot = new Robot(hardwareMap, "RED");
+        Robot robot = new Robot(hardwareMap, "BLUE");
         Drivetrain drive = new Drivetrain(hardwareMap,telemetry);
         GamepadEx gp1 = new GamepadEx(gamepad1);
         GamepadEx gp2 = new GamepadEx(gamepad2);

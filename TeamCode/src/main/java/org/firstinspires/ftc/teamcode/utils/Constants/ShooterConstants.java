@@ -48,13 +48,19 @@ public class ShooterConstants {
 
 
     public static double PASS_THROUGH_POINT_RADIUS = -5;
-    public static double HOOD_MIN_ANGLE = Math.toRadians(20);
+    public static double HOOD_MIN_ANGLE = Math.toRadians(25.213);
 
-    public static double HOOD_MAX_ANGLE = Math.toRadians(45);
+    public static double HOOD_MAX_ANGLE = Math.toRadians(34.213);
 
     public static double HOOD_SERVO_MIN = 0.2;
 
-    public static double HOOD_SERVO_MAX = 0.4;
+    public static double HOOD_SERVO_MID = 0.26;
+
+    public static double HOOD_SERVO_MAX = 0.3;
+
+    public static double TESTING_HOOD_POS = 0.1;
+
+    public static double hoodServoPosition = 0;
     
 
 
