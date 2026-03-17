@@ -10,15 +10,21 @@ import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Rotation2d;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.RoadRunner.MecanumDrive;
+import org.firstinspires.ftc.teamcode.robot.commands.TurretCommand;
 import org.firstinspires.ftc.teamcode.subsystem.Drivetrain;
 import org.firstinspires.ftc.teamcode.subsystem.New.DistanceToGoal;
 import org.firstinspires.ftc.teamcode.subsystem.New.Intaker;
+import org.firstinspires.ftc.teamcode.subsystem.New.LLCam;
 import org.firstinspires.ftc.teamcode.subsystem.New.Shooter;
+import org.firstinspires.ftc.teamcode.subsystem.New.kickStand;
+
+import java.util.concurrent.TimeUnit;
 
 @Config
 @TeleOp(name = "TeleOp Red Bad", group = "ABC")
@@ -28,9 +34,13 @@ public class prod_TestTele_Red extends LinearOpMode {
 
     boolean isWaypointing = false;
 
+    Action waypointing;
 
 
     Drivetrain drivetrain;
+
+    ElapsedTime timer = new ElapsedTime();
+
     Intaker intaker;
     Shooter shooter;
 
@@ -40,28 +50,24 @@ public class prod_TestTele_Red extends LinearOpMode {
 
     boolean isEndgame = false;
 
+    public double xyP = 0.23;
 
-    public static Vector2d goalPos = new Vector2d(-70,70);
+    public double headingP = 0.23;
+
+
+    public static Vector2d goalPos = new Vector2d(-70,-70);
 
     Pose2d currPos = new Pose2d(0,0,Math.toRadians(0));
 
     Vector2d robotPos = new Vector2d(0,0);
 
-    Action waypointing;
-
 
     TelemetryPacket packet;
+
     double robotHeading = 0;
     public static double FarShootDelay1 = 0.6;
 
     double turnAngle;
-
-    public static double xyP = 0.23;
-    public static double headingP = 0.23;
-
-    public boolean isActive = false;
-
-    public Pose2d lockTarget = null;
 
     public static double FarShootDelayDelay = 1.6;
 
@@ -76,8 +82,17 @@ public class prod_TestTele_Red extends LinearOpMode {
 
     boolean set2 = false;
 
+    public boolean isActive = false;
+
+    public Pose2d lockTarget = null;
+
 
     MecanumDrive follower;
+
+    LLCam cam;
+
+    Limelight3A limelight3A;
+
     ElapsedTime runtime = new ElapsedTime();
 
     ElapsedTime FarShoot = new ElapsedTime();
@@ -85,12 +100,14 @@ public class prod_TestTele_Red extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+        limelight3A = hardwareMap.get(Limelight3A.class, "limelight");
         packet = new TelemetryPacket();
         drivetrain = new Drivetrain(hardwareMap,telemetry);
         intaker = new Intaker(hardwareMap, telemetry);
         shooter = new Shooter(hardwareMap, telemetry);
         follower = new MecanumDrive(hardwareMap, START_POSE);
         distanceToGoal = new DistanceToGoal(telemetry);
+        cam = new LLCam(limelight3A, "RED", telemetry);
         drivetrain.init();
         intaker.init();
         shooter.init();
@@ -102,12 +119,22 @@ public class prod_TestTele_Red extends LinearOpMode {
             runtime.reset();
             commandTime.reset();
             FarShoot.reset();
+            timer.reset();
+            cam.init();
+
 
         }
 
         waitForStart();
 
         while (opModeIsActive()){
+            PoseVelocity2d velocity = follower.updatePoseEstimate();
+            double yVel = velocity.linearVel.y;
+            double xVel = velocity.linearVel.x;
+            double angVel = velocity.angVel;
+            cam.update();
+            cam.updateCtrls(gamepad1, gamepad2);
+            cam.updateTime(timer.time(TimeUnit.MILLISECONDS));
             runtime.startTime();
             commandTime.startTime();
             FarShoot.startTime();
@@ -115,11 +142,15 @@ public class prod_TestTele_Red extends LinearOpMode {
             currPos = follower.localizer.getPose();
             follower.updatePoseEstimate();
             distance = distanceToGoal.calculateDistanceToGoal(robotPos,goalPos);
-            turnAngle = distanceToGoal.calculateHeadingToGoalRED(robotPos, goalPos);
+            turnAngle = distanceToGoal.calculateHeadingToGoal(robotPos, goalPos);
 
             telemetry.addData("Position", robotPos);
             telemetry.addData("Distance To Goal", distance);
-            telemetry.addData("Turn Heading", turnAngle);
+            telemetry.addData("Turn Angle", turnAngle);
+            telemetry.addData("X Vel", xVel);
+            telemetry.addData("Y Vel", yVel);
+            telemetry.addData("Angle Vel", angVel);
+
 
 
             intaker.update();
@@ -128,31 +159,20 @@ public class prod_TestTele_Red extends LinearOpMode {
             shooter.setDistanceToGoal(distance);
 
 
+
+
             intaker.updateCtrls(gamepad1, gamepad2);
             shooter.updateCtrls(gamepad1, gamepad2);
-            if (!gamepad1.right_bumper && !gamepad1.b && !gamepad1.left_bumper && shooter.getState() == Shooter.ShooterState.READY_DISTANCE && distance <= 100 && !gamepad1.dpad_right){
+            if (!gamepad1.right_bumper && !gamepad1.b && !gamepad1.left_bumper && shooter.atTargetSpeed() && shooter.getState() != Shooter.ShooterState.STOPPING && shooter.getState() != Shooter.ShooterState.IDLE && !gamepad1.dpad_right){
                 if (!set){
                     commandTime.reset();
                     set = true;
                 }
-                if (commandTime.seconds() >= 0.2){
+                if (commandTime.seconds() >= 0.1){
                     intaker.Intake();
                 }
             } else {
                 set = false;
-
-            }
-
-            if (!gamepad1.right_bumper && !gamepad1.b && !gamepad1.left_bumper && shooter.getState() == Shooter.ShooterState.READY_CLOSE && !gamepad1.dpad_right){
-                if (!set2){
-                    commandTime.reset();
-                    set2 = true;
-                }
-                if (commandTime.seconds() >= 0.2){
-                    intaker.Intake();
-                }
-            } else {
-                set2 = false;
 
             }
 
@@ -161,23 +181,16 @@ public class prod_TestTele_Red extends LinearOpMode {
             }
 
 
-//            TrajectoryActionBuilder waypoint = follower.actionBuilder(currPos)
-//                    .turnTo(Math.toRadians(turnAngle));
+            if (!(gamepad1.left_stick_y == 0 && gamepad1.right_stick_x == 0 && gamepad1.left_stick_x == 0 && gamepad1.right_stick_y == 0)) {
+                isWaypointing = false;
 
-//            if (gamepad1.triangleWasPressed()){
-//                waypointing = waypoint.build();
-//                isWaypointing = true;
-//            }
-//
-//            if (isWaypointing && waypointing != null) {
-//                if(!waypointing.run(packet)){
-//                    isWaypointing = false;
-//                }
-//
-//            } else {
-//                drivetrain.updateCtrls(gamepad1, gamepad2);
-//                drivetrain.update();
-//            }
+            }
+
+            if (!gamepad1.x && isWaypointing == false && isActive == false){
+                drivetrain.update();
+                drivetrain.updateCtrls(gamepad1, gamepad2);
+
+            }
 
             if (gamepad1.triangleWasPressed()) {
                 // Capture position once on press
@@ -193,14 +206,7 @@ public class prod_TestTele_Red extends LinearOpMode {
                 isActive = false;
             }
 
-            if (isActive == false){
-//                // Normal driving when not holding triangle
-//                double y = -gamepad1.left_stick_y;
-//                double x = gamepad1.left_stick_x;
-//                double rx = gamepad1.right_stick_x;
-//                follower.setDrivePowers(new PoseVelocity2d(
-//                        new Vector2d(x, y),
-//                        rx));
+            if (isActive == false && isWaypointing == false){
                 drivetrain.update();
                 drivetrain.updateCtrls(gamepad1,gamepad2);
             }
@@ -221,7 +227,6 @@ public class prod_TestTele_Red extends LinearOpMode {
             telemetry.addData("Time Period", isEndgame ? "TeleOp" : "Go Park");
 
             telemetry.update();
-
 
         }
     }
@@ -249,6 +254,7 @@ public class prod_TestTele_Red extends LinearOpMode {
                 heading * headingP
         ));
     }
+
 
 
 }

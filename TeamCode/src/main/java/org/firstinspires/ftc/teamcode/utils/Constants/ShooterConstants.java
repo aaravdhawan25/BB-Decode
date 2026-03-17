@@ -15,7 +15,7 @@ public class ShooterConstants {
     public static double CR_KI = 0.0;
     public static double CR_KD = 0.000000001;
     public static double CR_KF = 0.0001;
-    public static double IDLE_SHOOTER = 1000;
+    public static double IDLE_SHOOTER = 2300;
     public static double TICKS_PER_REV = 28.0;
     public static double CR_TICKS_PER_REV = 28.0;
     public static double CLOSE_SHOOTER_RPM = 3450;

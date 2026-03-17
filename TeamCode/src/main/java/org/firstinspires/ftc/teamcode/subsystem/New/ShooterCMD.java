@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.subsystem.New;
 
 import static org.firstinspires.ftc.teamcode.utils.Constants.ShooterConstants.HOOD_SERVO_MAX;
+import static org.firstinspires.ftc.teamcode.utils.Constants.ShooterConstants.HOOD_SERVO_MID;
 import static org.firstinspires.ftc.teamcode.utils.Constants.ShooterConstants.HOOD_SERVO_MIN;
 import static org.firstinspires.ftc.teamcode.utils.Constants.ShooterConstants.IDLE_SHOOTER;
 import static org.firstinspires.ftc.teamcode.utils.Constants.ShooterConstants.TESTING_HOOD_POS;
@@ -32,10 +33,10 @@ public class ShooterCMD implements Subsystem {
     Servo hoodServo;
 
     double HOOD_SERVO_POS;
-    private double distanceToGoal = 0;
+    public static double distanceToGoal = 0;
     public PIDController pidController;
 
-    public ShooterState state = ShooterState.STOP;
+    public ShooterState state = ShooterState.MATH;
 
     public static double error = 100;
 
@@ -45,8 +46,6 @@ public class ShooterCMD implements Subsystem {
         this.shooterMotor = shooterMotor;
         this.shooterMotor2 = shooterMotor2;
         this.hoodServo = hoodServo;
-        pidController = new PIDController(ShooterConstants.KP, ShooterConstants.KI, ShooterConstants.KD);
-        pidController.setTolerance(10);
     }
     
     public void setState(ShooterState state){
@@ -58,8 +57,10 @@ public class ShooterCMD implements Subsystem {
                 break;
             case FAR:
                 targetRPM = ShooterConstants.FAR_SHOOTER_RPM;
+                HOOD_SERVO_POS = HOOD_SERVO_MID;
                 break;
             case MATH:
+                HOOD_SERVO_POS = getDistanceToGoal() >= 100 ? HOOD_SERVO_MID : HOOD_SERVO_MAX;
                 targetRPM = calculateShooterRPM(getDistanceToGoal());
                 break;
             case STOP:
@@ -119,29 +120,12 @@ public class ShooterCMD implements Subsystem {
         return distanceToGoal;
     }
 
-    public void setDistanceToGoal(double distance) {
-        this.distanceToGoal = distance;
-
-    }
-
     public void setHood(double hoodPos){
         hoodServo.setPosition(hoodPos);
     }
 
     public double calculateShooterRPM(double x) {
-        if (x < 1.0) x = 1.0 ;
-
-        double alpha = Math.atan((2 * ShooterConstants.TARGET_Y / x) - Math.tan(ShooterConstants.IMPACT_ANGLE_THETA));
-
-        double cosAlpha = Math.cos(alpha);
-        double v0 = Math.sqrt(
-                (ShooterConstants.G * Math.pow(x, 2)) /
-                        (2 * Math.pow(cosAlpha, 2) * (x * Math.tan(alpha) - ShooterConstants.TARGET_Y))
-        );
-
-        double theoreticalRPM = (v0 * 60) / (2 * Math.PI * ShooterConstants.FLYWHEEL_RADIUS);
-
-        return (theoreticalRPM * ShooterConstants.VELOCITY_TO_RPM_RATIO) + ShooterConstants.RPM_BASE;
+       return 1500;
     }
 
     public double getShooterRPM() {

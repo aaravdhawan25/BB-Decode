@@ -19,7 +19,6 @@ import org.firstinspires.ftc.teamcode.subsystem.New.Blocker;
 import org.firstinspires.ftc.teamcode.subsystem.New.Intake;
 import org.firstinspires.ftc.teamcode.subsystem.New.Shooter;
 import org.firstinspires.ftc.teamcode.subsystem.New.ShooterCMD;
-import org.firstinspires.ftc.teamcode.subsystem.New.Turret;
 import org.firstinspires.ftc.teamcode.subsystem.New.TurretCMD;
 import org.firstinspires.ftc.teamcode.utils.PerTelem;
 
@@ -56,6 +55,7 @@ public class TeleRed extends LinearOpMode {
         );
         gp2.getGamepadButton(GamepadKeys.Button.X).whenReleased(
                 new ParallelCommandGroup(
+                        new ShooterCommand(robot, ShooterCMD.ShooterState.STOP),
                         new TransferCancelCommand(robot)
                 )
         );

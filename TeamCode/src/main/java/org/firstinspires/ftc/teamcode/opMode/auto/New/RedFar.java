@@ -29,12 +29,10 @@ public class RedFar extends LinearOpMode {
     Shooter shooter;
     Intaker intaker;
 
-    DistanceToGoal distanceToGoal;
 
     Vector2d robotPos = new Vector2d(0,0);
     Vector2d goalPos = new Vector2d(-70,70);
 
-    public double distance = 0;
 
 
     Telemetry telemetry;
@@ -62,7 +60,6 @@ public class RedFar extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         telemetry = new MultipleTelemetry(super.telemetry, FtcDashboard.getInstance().getTelemetry());
         follower = new MecanumDrive(hardwareMap, initialPose);
-        distanceToGoal = new DistanceToGoal(telemetry);
         shooter = new Shooter(hardwareMap, telemetry);
         intaker = new Intaker(hardwareMap, telemetry);
 
@@ -86,8 +83,6 @@ public class RedFar extends LinearOpMode {
             follower.updatePoseEstimate();
             Pose2d currentPose = follower.localizer.getPose();
             robotPos = follower.localizer.getPose().position;
-            distance = distanceToGoal.calculateDistanceToGoal(robotPos,goalPos);
-            shooter.setDistanceToGoal(distance);
             shooter.update();
             intaker.update();
 
@@ -141,7 +136,7 @@ public class RedFar extends LinearOpMode {
                 .splineToSplineHeading(new Pose2d(26.5 ,20,Math.toRadians(360-270)), Math.toRadians(360-330),
                         new TranslationalVelConstraint(40)
                 )
-                .splineToLinearHeading(new Pose2d(36, 50,Math.toRadians(360-270)), Math.toRadians(360-270),
+                .splineToLinearHeading(new Pose2d(36, 44,Math.toRadians(360-270)), Math.toRadians(360-270),
                         new TranslationalVelConstraint(40));
         TrajectoryActionBuilder shootPos3 = intakeSpike3.fresh()
                 .strafeToLinearHeading(new Vector2d(36,46),Math.toRadians(360-270))
@@ -197,9 +192,9 @@ public class RedFar extends LinearOpMode {
                 currentAction = shoot1.run(packet);
                 intaker.IntakeIdle();
                 if (time.seconds() >= 1.4 && time.seconds()<=2){
-                    shooter.spinUpDistance();
+                    shooter.spinUpClose();
                 }
-                if (shooter.getState() == Shooter.ShooterState.READY_DISTANCE){
+                if (shooter.getState() == Shooter.ShooterState.READY_CLOSE){
                     intaker.Intake();
                 }
 
@@ -224,10 +219,10 @@ public class RedFar extends LinearOpMode {
                 currentAction = shoot2.run(packet);
                 intaker.IntakeIdle();
                 if (time.seconds() >= 1.84 && time.seconds() <= 2.1){
-                    shooter.spinUpDistance();
+                    shooter.spinUpClose();
                 }
 
-                if (shooter.getState() == Shooter.ShooterState.READY_DISTANCE){
+                if (shooter.getState() == Shooter.ShooterState.READY_CLOSE){
                     intaker.Intake();
                 }
 
@@ -254,9 +249,9 @@ public class RedFar extends LinearOpMode {
                 currentAction = shoot3.run(packet);
                 intaker.IntakeIdle();
                 if (time.seconds() >= 2.12 && time.seconds() <= 2.4){
-                    shooter.spinUpDistance();
+                    shooter.spinUpClose();
                 }
-                if (shooter.getState() == Shooter.ShooterState.READY_DISTANCE){
+                if (shooter.getState() == Shooter.ShooterState.READY_CLOSE){
                     intaker.Intake();
                 }
 

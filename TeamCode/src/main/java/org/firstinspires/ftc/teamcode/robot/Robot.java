@@ -1,11 +1,15 @@
 package org.firstinspires.ftc.teamcode.robot;
 
+import static org.firstinspires.ftc.teamcode.utils.Constants.CameraConstants.cameraYaw;
+
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Rotation2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.arcrobotics.ftclib.command.CommandScheduler;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -13,11 +17,13 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.RoadRunner.MecanumDrive;
 import org.firstinspires.ftc.teamcode.subsystem.New.Blocker;
 import org.firstinspires.ftc.teamcode.subsystem.New.Intake;
+import org.firstinspires.ftc.teamcode.subsystem.New.LLCam;
 import org.firstinspires.ftc.teamcode.subsystem.New.ShooterCMD;
-import org.firstinspires.ftc.teamcode.subsystem.New.TurretCMD;
+import org.firstinspires.ftc.teamcode.utils.Constants.CameraConstants;
 import org.firstinspires.ftc.teamcode.utils.Constants.ShooterConstants;
 import org.firstinspires.ftc.teamcode.utils.PerTelem;
 
@@ -31,7 +37,16 @@ public class Robot {
     public Intake intake;
     public Blocker blocker;
 
+    Telemetry telemetry;
+
+
+    public static TelemetryPacket packet;
+
+    public static DcMotorEx lfMotor, lbMotor, rfMotor, rbMotor;
+
     private static ElapsedTime timer;
+
+    public Limelight3A limelight;
 
 
     public static double compensatedDistance = 0;
@@ -43,11 +58,15 @@ public class Robot {
     public static double xyP = 0.23;
     public static double headingP = 0.23;
 
+    String color;
+
     public Servo blockerServo, hoodServo;
 
-    public MecanumDrive follower;
+    public static MecanumDrive follower;
 
     public static boolean blue;
+
+    public static LLCam limelightCamera;
 
     public static Vector2d goalPos = new Vector2d(-70,-70);
 
@@ -61,18 +80,35 @@ public class Robot {
 
     public Robot(HardwareMap hardwareMap, String color){
         this(hardwareMap);
+        this.color = color;
         blue = color.equals("BLUE");
     }
+
 
     public Robot(HardwareMap hardwareMap ){
         timer = new ElapsedTime();
         timer.reset();
+        packet = new TelemetryPacket();
         shooterMotor =  hardwareMap.get(DcMotorEx.class, "shooter");
         shooterMotor2 =  hardwareMap.get(DcMotorEx.class, "shooter2");
         blockerServo = hardwareMap.get(Servo.class, "blocker");
         intakeMotor = hardwareMap.get(DcMotorEx.class, "intake");
         transferMotor = hardwareMap.get(DcMotorEx.class, "transfer");
         hoodServo = hardwareMap.get(Servo.class, "hoodServo");
+        limelight = hardwareMap.get(Limelight3A.class, "limelight");
+        lfMotor = hardwareMap.get(DcMotorEx.class, "LFM");
+        lbMotor = hardwareMap.get(DcMotorEx.class, "LBM");
+        rfMotor = hardwareMap.get(DcMotorEx.class, "RFM");
+        rbMotor = hardwareMap.get(DcMotorEx.class, "RBM");
+        lfMotor.setDirection(DcMotor.Direction.FORWARD);
+        lbMotor.setDirection(DcMotor.Direction.FORWARD);
+        rfMotor.setDirection(DcMotor.Direction.REVERSE);
+        rbMotor.setDirection(DcMotor.Direction.REVERSE);
+
+        lfMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        lbMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rfMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rbMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         shooter = new ShooterCMD(shooterMotor,shooterMotor2, hoodServo);
         blocker = new Blocker(blockerServo);
         intake = new Intake(intakeMotor,transferMotor);
@@ -91,6 +127,35 @@ public class Robot {
         return Math.sqrt(toGoal.x * toGoal.x + toGoal.y * toGoal.y);
 
     }
+
+    public static double updateDistanceToGoalLL(LLCam.TagTarget target){
+        double totalPitchDeg = target.tY + cameraYaw;
+        if (totalPitchDeg == 90 || totalPitchDeg == 270) {
+            return 0;
+        }
+        double tan = Math.tan(Math.toRadians(totalPitchDeg));
+        if (tan == 0) {
+            return 0;
+        }
+        return (CameraConstants.goalDY / tan);
+    }
+
+    public static LLCam.TagTarget getTargetTag(){
+        return limelightCamera.getTargetTag();
+    }
+
+    public static int getTag(){
+
+        int tagID;
+        if (blue){
+            tagID = 20;
+        }
+        else {
+            tagID = 24;
+        }
+        return tagID;
+    }
+
 
     public static double getDistanceFromGoal(){
         return getDistanceFromGoal(Robot.robotPos);
@@ -218,10 +283,9 @@ public class Robot {
         updateCompensatedDistance();
         robotVel = follower.updatePoseEstimate();
         currPos = follower.localizer.getPose();
-        shooter.setDistanceToGoal(getDistanceFromGoal());
+//        shooter.setDistanceToGoal(getDistanceFromGoal());
         calculateHeadingToGoal(robotPos, goalPos);
         shooter.periodic();
-
         PerTelem.addData("Distance To Goal", getDistanceFromGoal());
         PerTelem.addData("Shooter State", shooter.getState());
         PerTelem.addData("Intake State", intake.getState());

@@ -198,7 +198,7 @@ public class CloseAuto extends OpMode {
     private CommandGroupBase shootThree() {
         return new SequentialCommandGroup(
                 new TransferCommand(robot),
-                new TransferCancelCommand(robot, ShooterCMD.ShooterState.MATH),
+                new TransferCancelCommand(robot),
                 new IntakeCommand(robot, Intake.IntakeState.ON)
         );
     }

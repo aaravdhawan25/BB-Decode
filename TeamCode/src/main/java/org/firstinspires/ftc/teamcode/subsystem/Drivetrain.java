@@ -5,20 +5,24 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.robot.Robot;
+import org.firstinspires.ftc.teamcode.subsystem.New.LLCam;
+
 @Config
 public class Drivetrain implements Subsystem {
-
-    public DcMotor lfMotor, lbMotor, rfMotor, rbMotor;
 
     Telemetry telemetry;
 
     double y = 0, x = 0, rx = 0, denominator = 0;
-    public double lfPower = 0, lbPower = 0, rfPower = 0, rbPower = 0;
+    public static double lfPower = 0, lbPower = 0, rfPower = 0, rbPower = 0;
+
+    public static DcMotorEx lbMotor, lfMotor, rfMotor, rbMotor;
 
     public boolean bumpToggle = false;
 
@@ -35,26 +39,28 @@ public class Drivetrain implements Subsystem {
     public static double rbStrafe = -1;
     public Drivetrain(HardwareMap map, Telemetry telemetry) {
         this.telemetry = telemetry;
-        lfMotor = map.get(DcMotor.class, "LFM");
-        lbMotor = map.get(DcMotor.class, "LBM");
-        rfMotor = map.get(DcMotor.class, "RFM");
-        rbMotor = map.get(DcMotor.class, "RBM");
+        lfMotor = map.get(DcMotorEx.class, "LFM");
+        lbMotor = map.get(DcMotorEx.class, "LBM");
+        rfMotor = map.get(DcMotorEx.class, "RFM");
+        rbMotor = map.get(DcMotorEx.class, "RBM");
 
-        lfMotor.setDirection(DcMotor.Direction.FORWARD);
-        lbMotor.setDirection(DcMotor.Direction.FORWARD);
-        rfMotor.setDirection(DcMotor.Direction.REVERSE);
-        rbMotor.setDirection(DcMotor.Direction.REVERSE);
 
-        lfMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        lbMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rfMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rbMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
     @Override
     public void init() {
+        lbMotor.setDirection(DcMotorEx.Direction.FORWARD);
+        rfMotor.setDirection(DcMotorEx.Direction.REVERSE);
+        rbMotor.setDirection(DcMotorEx.Direction.REVERSE);
+
+        lfMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        lbMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        rfMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        rbMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         telemetry.addData("Drivetrain", "Initialized");
         telemetry.update();
+        lfMotor.setDirection(DcMotor.Direction.FORWARD);
+
     }
 
     public void setDriveVectors(double y, double x, double rx) {
@@ -70,11 +76,17 @@ public class Drivetrain implements Subsystem {
         lbPower = (y - x + rx) / denominator;
         rfPower = (y - x - rx) / denominator;
         rbPower = (y + x - rx) / denominator;
-
-        lfMotor.setPower(lfPower);
-        lbMotor.setPower(lbPower);
-        rfMotor.setPower(rfPower);
-        rbMotor.setPower(rbPower);
+        if (LLCam.getState() == LLCam.alignState.MATH_CAMERA) {
+            lfMotor.setPower(-LLCam.rotationalPower);
+            lbMotor.setPower(-LLCam.rotationalPower);
+            rfMotor.setPower(LLCam.rotationalPower);
+            rbMotor.setPower(LLCam.rotationalPower);
+        } else if (LLCam.getState() == LLCam.alignState.STOP){
+            lfMotor.setPower(lfPower);
+            lbMotor.setPower(lbPower);
+            rfMotor.setPower(rfPower);
+            rbMotor.setPower(rbPower);
+        }
     }
 
     @Override

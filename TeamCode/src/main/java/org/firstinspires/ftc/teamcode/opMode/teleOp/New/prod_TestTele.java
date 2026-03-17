@@ -10,6 +10,7 @@ import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Rotation2d;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -19,8 +20,11 @@ import org.firstinspires.ftc.teamcode.robot.commands.TurretCommand;
 import org.firstinspires.ftc.teamcode.subsystem.Drivetrain;
 import org.firstinspires.ftc.teamcode.subsystem.New.DistanceToGoal;
 import org.firstinspires.ftc.teamcode.subsystem.New.Intaker;
+import org.firstinspires.ftc.teamcode.subsystem.New.LLCam;
 import org.firstinspires.ftc.teamcode.subsystem.New.Shooter;
 import org.firstinspires.ftc.teamcode.subsystem.New.kickStand;
+
+import java.util.concurrent.TimeUnit;
 
 @Config
 @TeleOp(name = "TeleOp Blue Bad", group = "ABC")
@@ -34,6 +38,8 @@ public class prod_TestTele extends LinearOpMode {
 
 
     Drivetrain drivetrain;
+
+    ElapsedTime timer = new ElapsedTime();
 
     Intaker intaker;
     Shooter shooter;
@@ -83,6 +89,10 @@ public class prod_TestTele extends LinearOpMode {
 
     MecanumDrive follower;
 
+    LLCam cam;
+
+    Limelight3A limelight3A;
+
     ElapsedTime runtime = new ElapsedTime();
 
     ElapsedTime FarShoot = new ElapsedTime();
@@ -90,12 +100,14 @@ public class prod_TestTele extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+        limelight3A = hardwareMap.get(Limelight3A.class, "limelight");
         packet = new TelemetryPacket();
         drivetrain = new Drivetrain(hardwareMap,telemetry);
         intaker = new Intaker(hardwareMap, telemetry);
         shooter = new Shooter(hardwareMap, telemetry);
         follower = new MecanumDrive(hardwareMap, START_POSE);
         distanceToGoal = new DistanceToGoal(telemetry);
+        cam = new LLCam(limelight3A, "BLUE", telemetry);
         drivetrain.init();
         intaker.init();
         shooter.init();
@@ -107,6 +119,8 @@ public class prod_TestTele extends LinearOpMode {
             runtime.reset();
             commandTime.reset();
             FarShoot.reset();
+            timer.reset();
+            cam.init();
 
 
         }
@@ -118,6 +132,9 @@ public class prod_TestTele extends LinearOpMode {
             double yVel = velocity.linearVel.y;
             double xVel = velocity.linearVel.x;
             double angVel = velocity.angVel;
+            cam.update();
+            cam.updateCtrls(gamepad1, gamepad2);
+            cam.updateTime(timer.time(TimeUnit.MILLISECONDS));
             runtime.startTime();
             commandTime.startTime();
             FarShoot.startTime();
@@ -143,6 +160,7 @@ public class prod_TestTele extends LinearOpMode {
 
 
 
+
             intaker.updateCtrls(gamepad1, gamepad2);
             shooter.updateCtrls(gamepad1, gamepad2);
             if (!gamepad1.right_bumper && !gamepad1.b && !gamepad1.left_bumper && shooter.atTargetSpeed() && shooter.getState() != Shooter.ShooterState.STOPPING && shooter.getState() != Shooter.ShooterState.IDLE && !gamepad1.dpad_right){
@@ -150,7 +168,7 @@ public class prod_TestTele extends LinearOpMode {
                     commandTime.reset();
                     set = true;
                 }
-                if (commandTime.seconds() >= 0.2){
+                if (commandTime.seconds() >= 0.1){
                     intaker.Intake();
                 }
             } else {
@@ -162,27 +180,16 @@ public class prod_TestTele extends LinearOpMode {
                 intaker.IntakeIdle();
             }
 
-            TrajectoryActionBuilder waypoint = follower.actionBuilder(currPos)
-                    .turnTo(Math.toRadians(turnAngle));
-
-            if (gamepad1.squareWasPressed()){
-                waypointing = waypoint.build();
-                isWaypointing = true;
-            }
 
             if (!(gamepad1.left_stick_y == 0 && gamepad1.right_stick_x == 0 && gamepad1.left_stick_x == 0 && gamepad1.right_stick_y == 0)) {
                 isWaypointing = false;
 
             }
 
-            if (isWaypointing && waypointing != null) {
-                if(!waypointing.run(packet)){
-                    isWaypointing = false;
-                }
-
-            } else {
+            if (!gamepad1.x && isWaypointing == false && isActive == false){
                 drivetrain.update();
                 drivetrain.updateCtrls(gamepad1, gamepad2);
+
             }
 
             if (gamepad1.triangleWasPressed()) {
@@ -199,14 +206,7 @@ public class prod_TestTele extends LinearOpMode {
                 isActive = false;
             }
 
-            if (isActive == false){
-//                // Normal driving when not holding triangle
-//                double y = -gamepad1.left_stick_y;
-//                double x = gamepad1.left_stick_x;
-//                double rx = gamepad1.right_stick_x;
-//                follower.setDrivePowers(new PoseVelocity2d(
-//                        new Vector2d(x, y),
-//                        rx));
+            if (isActive == false && isWaypointing == false){
                 drivetrain.update();
                 drivetrain.updateCtrls(gamepad1,gamepad2);
             }
@@ -227,7 +227,6 @@ public class prod_TestTele extends LinearOpMode {
             telemetry.addData("Time Period", isEndgame ? "TeleOp" : "Go Park");
 
             telemetry.update();
-
 
         }
     }
@@ -255,6 +254,7 @@ public class prod_TestTele extends LinearOpMode {
                 heading * headingP
         ));
     }
+
 
 
 }

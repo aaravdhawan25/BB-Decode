@@ -6,6 +6,8 @@ import static org.firstinspires.ftc.teamcode.utils.Constants.ShooterConstants.HO
 import static org.firstinspires.ftc.teamcode.utils.Constants.ShooterConstants.PASS_THROUGH_POINT_RADIUS;
 import static org.firstinspires.ftc.teamcode.utils.Constants.ShooterConstants.hoodServoPosition;
 
+import android.graphics.Camera;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.controller.PIDFController;
 import com.pedropathing.math.MathFunctions;
@@ -20,6 +22,7 @@ import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.subsystem.Subsystem;
+import org.firstinspires.ftc.teamcode.utils.Constants.CameraConstants;
 import org.firstinspires.ftc.teamcode.utils.Constants.ShooterConstants;
 import org.firstinspires.ftc.teamcode.utils.PerTelem;
 
@@ -62,11 +65,11 @@ public class Shooter implements Subsystem {
 
 
 
-    private double distanceToGoal = 0;
+    public static double distanceToGoal = 0;
 
     public static double BlockerOpen = 1;
 
-    public static double BlockerClosed = 0.8;
+    public static double BlockerClosed = 0.83;
 
     Telemetry telemetry;
 
@@ -104,6 +107,8 @@ public class Shooter implements Subsystem {
         READY_FAR,
         SPINNING_UP_DISTANCE,
         READY_DISTANCE,
+
+        OFF,
 
         SPINNING_UP_AUTO,
         READY_AUTO,
@@ -237,36 +242,33 @@ public class Shooter implements Subsystem {
             0.0                            // flywheel speed
     };
 
-
-
-
-
-
-
-
-
-
-
     public double getFlywheelSpeed(){
         double term = (getDistanceToGoal() - PASS_THROUGH_POINT_RADIUS) * Math.tan(getHood()) - TARGET_Y;
         double cos = Math.cos(getHood());
         double denom1 = 2 * cos * cos * term;
         double flyWheelSpeed = Math.sqrt(G * (getDistanceToGoal()-PASS_THROUGH_POINT_RADIUS) * (getDistanceToGoal()-PASS_THROUGH_POINT_RADIUS) / denom1);
-
         return flyWheelSpeed;
-
-
     }
 
-    public double getRPM(double velocity, double hood){
-        telemetry.addData("VELOCITY", velocity);
-        double hoodMultiplier = 2.79242 * hood * hood - 2.05502 * hood + 1.29534;
-        double baseRPM = 11.38452 * velocity + 1155.54738;
+    public double getRPM(double distanceToGoal){
+        return -0.105746 * distanceToGoal*distanceToGoal +32.33112*distanceToGoal +1558.21332;
+    }
 
-        // constant  = 1155.54738
-        telemetry.addData("HOOD MULTIPLIER", hoodMultiplier);
-        telemetry.addData("BASE RPM", baseRPM);
-        return baseRPM * hoodMultiplier;
+    public double getHoodPos(double distanceToGoal){
+        double hoodPos = HOOD_SERVO_MIN;
+        if (distanceToGoal >= 100){
+            hoodPos = HOOD_SERVO_MID;
+        } else {
+            hoodPos = HOOD_SERVO_MAX;
+        }
+
+        if (LLCam.target == null) {
+            hoodPos = hoodServo.getPosition();
+        } else if(!LLCam.target.hasTarget){
+            hoodPos = hoodServo.getPosition();
+        }
+
+        return hoodPos;
     }
 
     public void spinUpAuto() {
@@ -282,7 +284,6 @@ public class Shooter implements Subsystem {
         long currentTime = System.nanoTime();
         double dt = (currentTime - lastTime) / 1e9;
         lastTime = currentTime;
-
         switch (state) {
             case IDLE:
                 targetRPM = IDLE_SHOOTER;
@@ -334,12 +335,9 @@ public class Shooter implements Subsystem {
                 blockerOpen();
                 break;
             case SPINNING_UP_DISTANCE:
-                double hoodAngle = getHood();
-                double hoodPos = setHood(hoodAngle);
-                double rpm = getRPM(getFlywheelSpeed(), hoodPos);
-                hoodServoPosition = setHood(hoodAngle);
+                double rpm = getRPM(CameraConstants.distanceToGoalLL);
+                hoodServoPosition = getHoodPos(CameraConstants.distanceToGoalLL);
                 targetRPM = rpm;
-                telemetry.addData("HOOD ANGLE", hoodAngle);
                 telemetry.addData("HOOD POSITION", hoodServoPosition);
                 telemetry.addData("RPM", rpm);
                 if (atTargetSpeed()){
@@ -349,10 +347,9 @@ public class Shooter implements Subsystem {
 //                targetRPM = calculateShooterRPM(getDistanceToGoal());
 //                hoodServoPosition = setHood(getHood());
                 break;
-
             case READY_DISTANCE:
-                targetRPM = getRPM(getFlywheelSpeed(), setHood(getHood()));
-                hoodServoPosition = setHood(getHood());
+                targetRPM = getRPM(CameraConstants.distanceToGoalLL);
+                hoodServoPosition = getHoodPos(CameraConstants.distanceToGoalLL);
                 blockerOpen();
                 break;
             case STOPPING:
