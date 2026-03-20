@@ -9,6 +9,7 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.arcrobotics.ftclib.command.Subsystem;
+import com.pedropathing.localization.Pose;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
@@ -37,11 +38,11 @@ public class TurretCMD implements Subsystem {
                 setServoPos(TurretConstants.turretForwardPosition);
                 break;
             case MATH:
-                pointToGoalPinPoint(Robot.currPos);
+                pointToGoalPinPoint(Robot.robotPos);
                 break;
 
             case WHILE_MOVING_TURRET:
-                pointToGoalVelocityCompensated(Robot.currPos);
+                pointToGoalVelocityCompensated(Robot.robotPos);
 
         }
     }
@@ -69,12 +70,12 @@ public class TurretCMD implements Subsystem {
 //        PerTelem.addData("Math Camera", true);
 //    }
 
-    private void pointToGoalPinPoint(Pose2d robotPos) {
+    private void pointToGoalPinPoint(Pose robotPos) {
         Vector2d goal = Robot.getGoalPos();
-        double robotHeadingRad = Math.toRadians(robotPos.heading.toDouble());
+        double robotHeadingRad = Math.toRadians(robotPos.getHeading());
         Vector2d turretPos = new Vector2d(
-                robotPos.position.x + TurretConstants.turretOffsetInchesx * Math.cos(robotHeadingRad) - TurretConstants.turretOffsetInchesy * Math.sin(robotHeadingRad),
-                robotPos.position.y + TurretConstants.turretOffsetInchesx * Math.sin(robotHeadingRad) + TurretConstants.turretOffsetInchesy * Math.cos(robotHeadingRad)
+                robotPos.getX() + TurretConstants.turretOffsetInchesx * Math.cos(robotHeadingRad) - TurretConstants.turretOffsetInchesy * Math.sin(robotHeadingRad),
+                robotPos.getY() + TurretConstants.turretOffsetInchesx * Math.sin(robotHeadingRad) + TurretConstants.turretOffsetInchesy * Math.cos(robotHeadingRad)
         );
         Vector2d toGoal = goal.minus(turretPos);
         double fieldAngle = Math.atan2(
@@ -139,16 +140,16 @@ public class TurretCMD implements Subsystem {
 //        PerTelem.addData("Vel Comp Offset (deg)", Math.toDegrees(turretVelCompOffset));
 //    }
 
-    private void pointToGoalVelocityCompensated(Pose2d robotPos) {
+    private void pointToGoalVelocityCompensated(Pose robotPos) {
         Vector2d goal = Robot.getGoalPos();
 
         // robotPos.heading.toDouble() returns degrees in RoadRunner, must convert
         // double robotHeadingRad = robotPos.heading.toDouble(); // OLD - wrong, degrees not radians
-        double robotHeadingRad = Math.toRadians(robotPos.heading.toDouble());
+        double robotHeadingRad = Math.toRadians(robotPos.getHeading());
 
         Vector2d turretPos = new Vector2d(
-                robotPos.position.x + TurretConstants.turretOffsetInchesx * Math.cos(robotHeadingRad) - TurretConstants.turretOffsetInchesy * Math.sin(robotHeadingRad),
-                robotPos.position.y + TurretConstants.turretOffsetInchesx * Math.sin(robotHeadingRad) + TurretConstants.turretOffsetInchesy * Math.cos(robotHeadingRad)
+                robotPos.getX() + TurretConstants.turretOffsetInchesx * Math.cos(robotHeadingRad) - TurretConstants.turretOffsetInchesy * Math.sin(robotHeadingRad),
+                robotPos.getY() + TurretConstants.turretOffsetInchesx * Math.sin(robotHeadingRad) + TurretConstants.turretOffsetInchesy * Math.cos(robotHeadingRad)
         );
 
         Vector2d toGoal = goal.minus(turretPos);
