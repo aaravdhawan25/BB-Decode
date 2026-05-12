@@ -169,7 +169,7 @@ public class prod_TestTele_Red extends LinearOpMode {
                     set = true;
                 }
                 if (commandTime.seconds() >= 0.1){
-                    intaker.Intake();
+                    intaker.Transfer();
                 }
             } else {
                 set = false;
@@ -186,23 +186,23 @@ public class prod_TestTele_Red extends LinearOpMode {
 
             }
 
-            if (!gamepad1.x && isWaypointing == false && isActive == false){
+            if (!gamepad1.left_stick_button && isWaypointing == false && isActive == false){
                 drivetrain.update();
                 drivetrain.updateCtrls(gamepad1, gamepad2);
 
             }
 
-            if (gamepad1.triangleWasPressed()) {
+            if (gamepad1.leftStickButtonWasPressed()) {
                 // Capture position once on press
                 lockTarget = follower.localizer.getPose();
                 isActive = true;
             }
 
-            if (gamepad1.triangle) {  // While held (not wasPressed)
+            if (gamepad1.left_stick_button) {  // While held (not wasPressed)
                 // Keep running lockTo every loop
                 lockTo(lockTarget);
                 isActive = true;
-            } if(gamepad1.triangleWasReleased()) {
+            } if(gamepad1.leftStickButtonWasReleased()) {
                 isActive = false;
             }
 

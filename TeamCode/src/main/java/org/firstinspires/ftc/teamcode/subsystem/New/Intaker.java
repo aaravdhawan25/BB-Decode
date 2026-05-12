@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.teamcode.subsystem.New;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.subsystem.Subsystem;
 
 @Config
@@ -13,6 +15,8 @@ public class Intaker implements Subsystem {
     public DcMotor intake, transfer;
     Telemetry telemetry;
     public double intakePower;
+
+    RevColorSensorV3 disColor;
 
 
     public static double intakeUp = 0;
@@ -33,6 +37,12 @@ public class Intaker implements Subsystem {
 
     public enum IntakeStates{
         INTAKING,
+
+        INTAKE_ONLY,
+
+        CHECK,
+
+        MANUALIN,
         TRANSFER,
 
         REVERSE,
@@ -48,6 +58,7 @@ public class Intaker implements Subsystem {
         this.telemetry = telemetry;
         intake = hardwareMap.get(DcMotor.class, "intake");
         transfer = hardwareMap.get(DcMotor.class, "transfer");
+        disColor = hardwareMap.get(RevColorSensorV3.class, "distSensor");
     }
 
 
@@ -87,6 +98,14 @@ public class Intaker implements Subsystem {
 
     }
 
+    public void check(){
+        setState(IntakeStates.CHECK);
+    }
+
+    public double getDist(){
+        return disColor.getDistance(DistanceUnit.CM);
+    }
+
     public void Intake(){
         setState(IntakeStates.INTAKING);
 
@@ -95,6 +114,10 @@ public class Intaker implements Subsystem {
     public void Transfer(){
         setState(IntakeStates.TRANSFER);
 
+    }
+
+    public IntakeStates getState(){
+        return state;
     }
 
     public void Reverse(){
@@ -108,6 +131,10 @@ public class Intaker implements Subsystem {
         setState(IntakeStates.TRANSFER_SHOOTER);
     }
 
+    public void manualIn(){
+        setState(IntakeStates.MANUALIN);
+    }
+
     @Override
     public void update(){
         switch (state){
@@ -115,14 +142,30 @@ public class Intaker implements Subsystem {
                 transfer.setPower(transferPowerOFF);
                 intake.setPower(intakeOff);
                 break;
-
-            case INTAKING:
+            case MANUALIN:
                 intake.setPower(intakeIntake);
                 transfer.setPower(transferPowerON);
                 break;
 
+            case INTAKING:
+                if (getDist() < 3){
+                    setState(IntakeStates.INTAKE_ONLY);
+                }
+                intake.setPower(intakeIntake);
+                transfer.setPower(transferPowerON);
+
+                break;
+            case INTAKE_ONLY:
+                if (getDist() > 5){
+                    setState(IntakeStates.INTAKING);
+                }
+                intake.setPower(intakeIntake);
+                transfer.setPower(transferPowerOFF);
+
+                break;
+
             case TRANSFER:
-                intake.setPower(intakeTransfer);
+                intake.setPower(intakeIntake);
                 transfer.setPower(transferPowerON);
                 break;
             case REVERSE:
@@ -141,6 +184,7 @@ public class Intaker implements Subsystem {
         }
 
         telemetry.addData("Intake State", state);
+        telemetry.addData("Distance Sensor Dist", getDist());
 
     }
 
@@ -158,6 +202,11 @@ public class Intaker implements Subsystem {
         if (gp1.rightBumperWasPressed()){
             Intake();
         }
+
+        if (gp1.right_bumper){
+            setState(getState());
+        }
+
         if (gp1.rightBumperWasReleased()){
             IntakeIdle();
         }

@@ -43,6 +43,10 @@ public class FConstants {
         FollowerConstants.zeroPowerAccelerationMultiplier = 4;
         FollowerConstants.centripetalScaling = 0.0005;
 
+        FollowerConstants.useBrakeModeInTeleOp = true;
+        FollowerConstants.useVoltageCompensationInAuto = false;
+        FollowerConstants.nominalVoltage = 12;
+
         FollowerConstants.pathEndTimeoutConstraint = 500;
         FollowerConstants.pathEndTValueConstraint = 0.995;
         FollowerConstants.pathEndVelocityConstraint = 0.1;

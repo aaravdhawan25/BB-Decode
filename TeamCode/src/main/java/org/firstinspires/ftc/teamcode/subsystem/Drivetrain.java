@@ -92,7 +92,7 @@ public class Drivetrain implements Subsystem {
     @Override
     public void updateCtrls(Gamepad gp1, Gamepad gp2) {
 
-        if (gp1.leftStickButtonWasPressed()) {
+        if (gp1.touchpadWasPressed()) {
             bumpToggle = !bumpToggle;
         }
 

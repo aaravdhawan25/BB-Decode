@@ -412,12 +412,6 @@ public class Shooter implements Subsystem {
 
         if (isOneMan) {
 
-            if (gp1.xWasPressed()) {
-                spinUpClose();
-            }
-            if (gp1.xWasReleased()) {
-                stop();
-            }
             if (gp1.dpadDownWasPressed()) {
                 kickBallOff();
             }
@@ -434,6 +428,14 @@ public class Shooter implements Subsystem {
                 spinUpFar();
             }
             if (gp1.dpadUpWasReleased()){
+                stop();
+            }
+
+            if (gp1.right_trigger >= 0.1){
+                spinUpClose();
+            }
+
+            if (gp1.right_trigger < 0.1){
                 stop();
             }
         } else {
