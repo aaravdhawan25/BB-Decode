@@ -8,6 +8,9 @@ public class AutoConstants {
     public static double leverHitHeading = -200;
     public static double finalShootHeading = 145;
 
+    public static double finalShootX = 63.253;
+    public static double finalShootY =  100.482;
+
     public static double startShootMoveHeading = 143;
 
     public static double endShootMoveHeading = 136;
