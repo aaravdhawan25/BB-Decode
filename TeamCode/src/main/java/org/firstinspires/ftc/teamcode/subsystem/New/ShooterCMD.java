@@ -35,7 +35,7 @@ public class ShooterCMD implements Subsystem {
     public static double distanceToGoal = 0;
     public PIDController pidController;
 
-    public ShooterState state = ShooterState.MATH;
+    public ShooterState state = ShooterState.STOP;
 
     public static double error = 100;
 

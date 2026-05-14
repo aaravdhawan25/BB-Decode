@@ -18,9 +18,6 @@ public class Intaker implements Subsystem {
 
     RevColorSensorV3 disColor;
 
-
-    public static double intakeUp = 0;
-    public static double intakeDown = 0;
     public static double intakeOff = 0;
 
     public static double intakeIntake = -1;
