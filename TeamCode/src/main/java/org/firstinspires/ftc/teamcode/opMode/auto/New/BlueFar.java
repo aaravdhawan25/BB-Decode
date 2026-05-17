@@ -201,9 +201,9 @@ public class BlueFar extends LinearOpMode {
                 currentAction = shoot1.run(packet);
                 intaker.IntakeIdle();
                 if (time.seconds() >= 1.4 && time.seconds()<=2){
-                    shooter.spinUpClose();
+                    shooter.spinUpDistance();
                 }
-                if (shooter.getState() == Shooter.ShooterState.READY_CLOSE){
+                if (shooter.getState() == Shooter.ShooterState.READY_DISTANCE){
                     intaker.Intake();
                 }
 
@@ -228,10 +228,10 @@ public class BlueFar extends LinearOpMode {
                 currentAction = shoot2.run(packet);
                 intaker.IntakeIdle();
                 if (time.seconds() >= 1.84 && time.seconds() <= 2.1){
-                    shooter.spinUpClose();
+                    shooter.spinUpDistance();
                 }
 
-                if (shooter.getState() == Shooter.ShooterState.READY_CLOSE){
+                if (shooter.getState() == Shooter.ShooterState.READY_DISTANCE){
                     intaker.Intake();
                 }
 
@@ -258,9 +258,9 @@ public class BlueFar extends LinearOpMode {
                 currentAction = shoot3.run(packet);
                 intaker.IntakeIdle();
                 if (time.seconds() >= 2.12 && time.seconds() <= 2.4){
-                    shooter.spinUpClose();
+                    shooter.spinUpDistance();
                 }
-                if (shooter.getState() == Shooter.ShooterState.READY_CLOSE){
+                if (shooter.getState() == Shooter.ShooterState.READY_DISTANCE){
                     intaker.Intake();
                 }
 
