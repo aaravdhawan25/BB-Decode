@@ -17,6 +17,7 @@ import android.graphics.Color;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
+import com.pedropathing.math.MathFunctions;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
@@ -68,7 +69,7 @@ public class LLCam implements Subsystem {
         setState(state);
         publishTelem();
         updateDistanceToGoalLL(target);
-        ShooterCMD.distanceToGoal = updateDistanceToGoalLL(target);
+
     }
 
     @Override

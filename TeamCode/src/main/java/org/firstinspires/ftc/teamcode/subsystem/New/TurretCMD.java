@@ -9,7 +9,11 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.arcrobotics.ftclib.command.Subsystem;
+<<<<<<< HEAD
 import com.pedropathing.localization.Pose;
+=======
+import com.pedropathing.geometry.Pose;
+>>>>>>> parent of 62ec207 (bye)
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 

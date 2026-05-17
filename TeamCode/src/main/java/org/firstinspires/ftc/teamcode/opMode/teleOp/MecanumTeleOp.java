@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.opMode.teleOp;
 
 import android.text.TextUtils;
 
+import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
