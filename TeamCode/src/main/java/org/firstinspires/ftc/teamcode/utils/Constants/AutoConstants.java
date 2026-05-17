@@ -13,7 +13,7 @@ public class AutoConstants {
     public static double startShootMoveHeading = 143;
 
     public static double endShootMoveHeading = 136;
-    public static double startHeading = 322.78;
+    public static double startHeading = 143;
     public static double leverHeading = -230;
     public static double secondIntakeY = 59.831;
     public static double shootingX = 59.277;
