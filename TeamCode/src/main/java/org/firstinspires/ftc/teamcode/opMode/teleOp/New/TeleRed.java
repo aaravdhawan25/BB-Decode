@@ -19,7 +19,6 @@ import org.firstinspires.ftc.teamcode.subsystem.New.Blocker;
 import org.firstinspires.ftc.teamcode.subsystem.New.Intake;
 import org.firstinspires.ftc.teamcode.subsystem.New.Shooter;
 import org.firstinspires.ftc.teamcode.subsystem.New.ShooterCMD;
-import org.firstinspires.ftc.teamcode.subsystem.New.TurretCMD;
 import org.firstinspires.ftc.teamcode.utils.PerTelem;
 
 @TeleOp(name = "TeleOp Red")

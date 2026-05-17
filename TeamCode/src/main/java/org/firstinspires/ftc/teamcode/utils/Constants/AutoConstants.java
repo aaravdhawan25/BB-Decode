@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.utils.Constants;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.pedropathing.localization.Pose;
 
 @Config
 public class AutoConstants {

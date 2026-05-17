@@ -8,10 +8,9 @@ import static org.firstinspires.ftc.teamcode.utils.Constants.ShooterConstants.ho
 
 import android.graphics.Camera;
 
-import androidx.core.math.MathUtils;
-
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.controller.PIDFController;
+import com.pedropathing.math.MathFunctions;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -219,7 +218,7 @@ public class Shooter implements Subsystem {
         double servoLow = 0.2;
         double loA = Math.min(minAngle, maxAngle);
         double hiA = Math.max(minAngle, maxAngle);
-        angleRad = MathUtils.clamp(angleRad, loA, hiA);
+        angleRad = MathFunctions.clamp(angleRad, loA, hiA);
         hoodServoPosition= servoLow + (angleRad - loA) * (servoHigh - servoLow) / (hiA - loA);
         return hoodServoPosition;
     }
@@ -227,7 +226,7 @@ public class Shooter implements Subsystem {
     public double getHood(){
         double hoodAngle = Math.atan(2.0 * TARGET_Y / (getDistanceToGoal()-PASS_THROUGH_POINT_RADIUS) - Math.tan(IMPACT_ANGLE_THETA));
         telemetry.addData("HOOD ANGLE RAW (no vel comp)", hoodAngle);
-        hoodAngle = MathUtils.clamp(hoodAngle,
+        hoodAngle = MathFunctions.clamp(hoodAngle,
                 ShooterConstants.HOOD_MIN_ANGLE,
                 ShooterConstants.HOOD_MAX_ANGLE);
 

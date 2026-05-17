@@ -68,7 +68,7 @@ public class LLCam implements Subsystem {
         setState(state);
         publishTelem();
         updateDistanceToGoalLL(target);
-        ShooterCMD.distanceToGoal = updateDistanceToGoalLL(target);
+
     }
 
     @Override

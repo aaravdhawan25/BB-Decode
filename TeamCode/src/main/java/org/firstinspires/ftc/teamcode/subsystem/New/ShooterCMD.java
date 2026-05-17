@@ -13,6 +13,7 @@ import com.acmerobotics.roadrunner.Vector2d;
 import com.arcrobotics.ftclib.command.Subsystem;
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.arcrobotics.ftclib.controller.PIDFController;
+import com.pedropathing.math.MathFunctions;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
@@ -59,8 +60,8 @@ public class ShooterCMD implements Subsystem {
                 HOOD_SERVO_POS = HOOD_SERVO_MID;
                 break;
             case MATH:
-                HOOD_SERVO_POS = getDistanceToGoal() >= 100 ? HOOD_SERVO_MAX : HOOD_SERVO_MID;
-                targetRPM = getRPM(getDistanceToGoal());
+                HOOD_SERVO_POS = getDistanceToGoal() >= 100 ? HOOD_SERVO_MID : HOOD_SERVO_MAX;
+                targetRPM = calculateShooterRPM(getDistanceToGoal());
                 break;
             case STOP:
                 targetRPM = ShooterConstants.IDLE_SHOOTER;
@@ -92,10 +93,6 @@ public class ShooterCMD implements Subsystem {
 
         PerTelem.addData("Shooter Current RPM", getShooterRPM());
         PerTelem.addData("Shooter Target RPM", targetRPM);
-    }
-
-    public double getRPM(double distanceToGoal){
-        return -0.105746 * distanceToGoal*distanceToGoal +32.33112*distanceToGoal +1558.21332;
     }
 
     public void setShooterPIDPower(double targetRPM){

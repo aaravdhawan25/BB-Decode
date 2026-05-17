@@ -9,8 +9,6 @@ import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Rotation2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.arcrobotics.ftclib.command.CommandScheduler;
-import com.pedropathing.follower.Follower;
-import com.pedropathing.localization.Pose;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -21,8 +19,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.RoadRunner.MecanumDrive;
-import org.firstinspires.ftc.teamcode.pedroPathing.constants.FConstants;
-import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants;
 import org.firstinspires.ftc.teamcode.subsystem.New.Blocker;
 import org.firstinspires.ftc.teamcode.subsystem.New.Intake;
 import org.firstinspires.ftc.teamcode.subsystem.New.LLCam;
@@ -66,7 +62,7 @@ public class Robot {
 
     public Servo blockerServo, hoodServo;
 
-    public static Follower follower;
+    public static MecanumDrive follower;
 
     public static boolean blue;
 
@@ -76,8 +72,9 @@ public class Robot {
 
     public static Pose2d START_POSE = new Pose2d(-40.4,-20, Math.toRadians(245));
 
+    public static Pose2d currPos = new Pose2d(0,0,Math.toRadians(0));
 
-    public static Pose robotPos = new Pose(0,0);
+    public static Vector2d robotPos = new Vector2d(0,0);
 
 
 
@@ -118,7 +115,7 @@ public class Robot {
         shooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         shooterMotor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         shooterMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        follower = new Follower(hardwareMap, FConstants.class, LConstants.class);
+        follower = new MecanumDrive(hardwareMap, getStartPose());
         CommandScheduler.getInstance().reset();
         CommandScheduler.getInstance().registerSubsystem(intake,shooter,blocker);
 
@@ -160,6 +157,9 @@ public class Robot {
     }
 
 
+    public static double getDistanceFromGoal(){
+        return getDistanceFromGoal(Robot.robotPos);
+    }
 
     public static Vector2d getGoalPos(){
         if (blue){
@@ -181,33 +181,38 @@ public class Robot {
         return START_POSE;
     }
 
+    public Pose2d getCurrPos(){
+        return currPos;
 
+    }
 
+    public void setLockTarget(){
+        lockTarget = getCurrPos();
+    }
 
+    public void lockTo(Pose2d targetPos) {
+        Pose2d currPos = follower.localizer.getPose();
 
+        Vector2d difference = targetPos.position.minus(currPos.position);
 
-//    public void lockTo(Pose targetPos) {
-//        Pose currPos = follower.getPose();
-//
-//        Pose difference = targetPos - currPos);
-//        // Manually rotate the difference vector by -currPos.heading
-//        double angle = -currPos.heading.toDouble();
-//        double cos = Math.cos(angle);
-//        double sin = Math.sin(angle);
-//        Vector2d xy = new Vector2d(
-//                difference.x * cos - difference.y * sin,
-//                difference.x * sin + difference.y * cos
-//        );
-//
-//        double heading = targetPos.heading.toDouble() - currPos.heading.toDouble();
-//        // Normalize heading to [-PI, PI]
-//        heading = Rotation2d.exp(heading).toDouble();
-//
-//        follower.s(new PoseVelocity2d(
-//                xy.times(xyP),
-//                heading * headingP
-//        ));
-//    }
+        // Manually rotate the difference vector by -currPos.heading
+        double angle = -currPos.heading.toDouble();
+        double cos = Math.cos(angle);
+        double sin = Math.sin(angle);
+        Vector2d xy = new Vector2d(
+                difference.x * cos - difference.y * sin,
+                difference.x * sin + difference.y * cos
+        );
+
+        double heading = targetPos.heading.toDouble() - currPos.heading.toDouble();
+        // Normalize heading to [-PI, PI]
+        heading = Rotation2d.exp(heading).toDouble();
+
+        follower.setDrivePowers(new PoseVelocity2d(
+                xy.times(xyP),
+                heading * headingP
+        ));
+    }
 
     public static double getMagnitude(){
         return Math.hypot(robotVel.linearVel.x, robotVel.linearVel.y);
@@ -223,66 +228,69 @@ public class Robot {
         return timer.time(TimeUnit.MILLISECONDS);
     }
 
-//    public static void updateCompensatedDistance() {
-//        if (robotVel == null) return;
-//
-//        Vector2d toGoal = getGoalPos().minus(robotPos);
-//        double x = Math.max(toGoal.norm() - ShooterConstants.PASS_THROUGH_POINT_RADIUS, 1.0);
-//        double y = ShooterConstants.TARGET_Y;
-//        double a = ShooterConstants.IMPACT_ANGLE_THETA;
-//        double g = ShooterConstants.G;
-//
-//        // initial flywheel speed assuming stationary
-//        double hoodAngle = Math.atan(2 * y / x - Math.tan(a));
-//        double flywheelSpeed = Math.sqrt(
-//                g * x * x /
-//                        (2 * Math.pow(Math.cos(hoodAngle), 2) * (x * Math.tan(hoodAngle) - y))
-//        );
-//
-//        // get velocity components
-//        double velMagnitude = Math.hypot(robotVel.linearVel.x, robotVel.linearVel.y);
-//
-//        // if barely moving just use real distance, no compensation needed
-//        if (velMagnitude < 0.5) {
-//            compensatedDistance = x;
-//            return;
-//        }
-//
-//        double fieldAngle = Math.atan2(toGoal.y, toGoal.x);
-//        double velocityTheta = Math.atan2(robotVel.linearVel.y, robotVel.linearVel.x);
-//
-//        // decompose velocity into parallel and perpendicular to goal direction
-//        double coordinateTheta = velocityTheta - fieldAngle;
-//        double parallelComponent = -Math.cos(coordinateTheta) * velMagnitude;
-//        double perpendicularComponent = Math.sin(coordinateTheta) * velMagnitude;
-//
-//        // time of flight using stationary flywheel speed
-//        double time = x / (flywheelSpeed * Math.cos(hoodAngle));
-//
-//        // ivr = required radial speed accounting for robot moving toward/away
-//        double ivr = x / time + parallelComponent;
-//
-//        // nvr = total horizontal speed needed combining radial and sideways
-//        double nvr = Math.sqrt(ivr * ivr + perpendicularComponent * perpendicularComponent);
-//
-//        // ndr = virtual distance the ball needs to travel
-//        double ndr = nvr * time;
-//
-//        compensatedDistance = ndr;
-//    }
+    public static void updateCompensatedDistance() {
+        if (robotVel == null) return;
+
+        Vector2d toGoal = getGoalPos().minus(robotPos);
+        double x = Math.max(toGoal.norm() - ShooterConstants.PASS_THROUGH_POINT_RADIUS, 1.0);
+        double y = ShooterConstants.TARGET_Y;
+        double a = ShooterConstants.IMPACT_ANGLE_THETA;
+        double g = ShooterConstants.G;
+
+        // initial flywheel speed assuming stationary
+        double hoodAngle = Math.atan(2 * y / x - Math.tan(a));
+        double flywheelSpeed = Math.sqrt(
+                g * x * x /
+                        (2 * Math.pow(Math.cos(hoodAngle), 2) * (x * Math.tan(hoodAngle) - y))
+        );
+
+        // get velocity components
+        double velMagnitude = Math.hypot(robotVel.linearVel.x, robotVel.linearVel.y);
+
+        // if barely moving just use real distance, no compensation needed
+        if (velMagnitude < 0.5) {
+            compensatedDistance = x;
+            return;
+        }
+
+        double fieldAngle = Math.atan2(toGoal.y, toGoal.x);
+        double velocityTheta = Math.atan2(robotVel.linearVel.y, robotVel.linearVel.x);
+
+        // decompose velocity into parallel and perpendicular to goal direction
+        double coordinateTheta = velocityTheta - fieldAngle;
+        double parallelComponent = -Math.cos(coordinateTheta) * velMagnitude;
+        double perpendicularComponent = Math.sin(coordinateTheta) * velMagnitude;
+
+        // time of flight using stationary flywheel speed
+        double time = x / (flywheelSpeed * Math.cos(hoodAngle));
+
+        // ivr = required radial speed accounting for robot moving toward/away
+        double ivr = x / time + parallelComponent;
+
+        // nvr = total horizontal speed needed combining radial and sideways
+        double nvr = Math.sqrt(ivr * ivr + perpendicularComponent * perpendicularComponent);
+
+        // ndr = virtual distance the ball needs to travel
+        double ndr = nvr * time;
+
+        compensatedDistance = ndr;
+    }
 
     public void update(){
         CommandScheduler.getInstance().run();
-        follower.update();
-        robotPos = follower.getPose();
-//        updateCompensatedDistance();
+        follower.updatePoseEstimate();
+        robotPos = follower.localizer.getPose().position;
+        updateCompensatedDistance();
+        robotVel = follower.updatePoseEstimate();
+        currPos = follower.localizer.getPose();
 //        shooter.setDistanceToGoal(getDistanceFromGoal());
-
+        calculateHeadingToGoal(robotPos, goalPos);
         shooter.periodic();
+        PerTelem.addData("Distance To Goal", getDistanceFromGoal());
         PerTelem.addData("Shooter State", shooter.getState());
         PerTelem.addData("Intake State", intake.getState());
         PerTelem.addData("Blocker State", blocker.getState());
-        PerTelem.addData("Cur Pose", follower.getPose());
+        PerTelem.addData("Cur Pose", follower.localizer.getPose());
         PerTelem.update();
     }
 
