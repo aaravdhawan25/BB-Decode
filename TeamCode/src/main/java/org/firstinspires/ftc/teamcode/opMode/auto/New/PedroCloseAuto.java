@@ -121,7 +121,7 @@ public class PedroCloseAuto extends OpMode {
                 }
                 if (!follower.isBusy()) {
                     intaker.IntakeIdle();
-                    prepareShoot(AutoState.GO_TO_GATE);
+                    prepareShoot(AutoState.INTAKE_SPIKE_1);
                 }
                 break;
 
@@ -138,25 +138,19 @@ public class PedroCloseAuto extends OpMode {
                 break;
 
             case WAIT_GATE_INTAKE:
-                if (stateTimer.milliseconds() > 200) {
+                if (stateTimer.milliseconds() > 50) {
                     setPathState(AutoState.RETURN_GATE);
                 }
                 break;
 
             case RETURN_GATE:
                 if (!follower.isBusy()) {
-                    prepareShoot(AutoState.INTAKE_SPIKE_1);
+                    prepareShoot(AutoState.INTAKE_SPIKE_3);
                 }
                 break;
 
             case INTAKE_SPIKE_1:
                 if (!follower.isBusy()) {
-                    setPathState(AutoState.WAIT_INTAKE_1);
-                }
-                break;
-
-            case WAIT_INTAKE_1:
-                if (stateTimer.milliseconds() > 100) {
                     setPathState(AutoState.RETURN_SPIKE_1);
                 }
                 break;
@@ -166,18 +160,12 @@ public class PedroCloseAuto extends OpMode {
                     intaker.IntakeIdle();
                 }
                 if (!follower.isBusy()) {
-                    prepareShoot(AutoState.INTAKE_SPIKE_3);
+                    prepareShoot(AutoState.GO_TO_GATE);
                 }
                 break;
 
             case INTAKE_SPIKE_3:
                 if (!follower.isBusy()) {
-                    setPathState(AutoState.WAIT_INTAKE_3);
-                }
-                break;
-
-            case WAIT_INTAKE_3:
-                if (stateTimer.milliseconds() > 100) {
                     setPathState(AutoState.RETURN_SPIKE_3);
                 }
                 break;
