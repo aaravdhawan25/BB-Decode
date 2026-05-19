@@ -1,14 +1,4 @@
 package org.firstinspires.ftc.teamcode.opMode.auto.New;
-//
-//import com.pedropathing.follower.Follower;
-//import com.pedropathing.localization.Pose;
-//import com.pedropathing.pathgen.BezierCurve;
-//import com.pedropathing.pathgen.BezierLine;
-//import com.pedropathing.pathgen.PathChain;
-//import com.pedropathing.util.DashboardPoseTracker;
-//import com.pedropathing.util.Drawing;
-//import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-//import com.qualcomm.robotcore.util.ElapsedTime;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.localization.Pose;
@@ -25,7 +15,6 @@ import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants;
 import org.firstinspires.ftc.teamcode.subsystem.New.Intaker;
 import org.firstinspires.ftc.teamcode.subsystem.New.Shooter;
 import org.firstinspires.ftc.teamcode.pedroPathing.constants.FConstants;
-//import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants;
 import org.firstinspires.ftc.teamcode.utils.Constants.AutoConstants;
 
 public class PedroCloseAuto extends OpMode {
@@ -82,8 +71,9 @@ public class PedroCloseAuto extends OpMode {
         intaker = new Intaker(hardwareMap, telemetry);
         intaker.init();
         intaker.IntakeIdle();
-        Drawing.drawRobot(follower.poseUpdater.getPose(), "#4CAF50"); // New, remove if necessary
-
+        Drawing.drawRobot(CloseAutoPoseData.mirror(CloseAutoPoseData.START_POSE, color), "#4CAF50");
+        Drawing.sendPacket();
+        dashboardPoseTracker.update();
     }
 
     @Override
@@ -92,10 +82,17 @@ public class PedroCloseAuto extends OpMode {
         timer.startTime();
         stateTimer.reset();
         stateTimer.startTime();
+
+        // You missed this line! This forces the starting pose to register before drawing.
+        follower.update();
+
         setPathState(AutoState.REVERSE_OUT);
 
+        dashboardPoseTracker.update();
+        Drawing.drawPoseHistory(dashboardPoseTracker, "#4CAF50");
         Drawing.drawRobot(follower.poseUpdater.getPose(), "#4CAF50");
         Drawing.sendPacket();
+        dashboardPoseTracker.update();
     }
 
     @Override
@@ -119,6 +116,9 @@ public class PedroCloseAuto extends OpMode {
                 break;
 
             case RETURN_SPIKE_2:
+                if (follower.isBusy()){
+                    intaker.IntakeIdle();
+                }
                 if (!follower.isBusy()) {
                     intaker.IntakeIdle();
                     prepareShoot(AutoState.GO_TO_GATE);
@@ -138,7 +138,7 @@ public class PedroCloseAuto extends OpMode {
                 break;
 
             case WAIT_GATE_INTAKE:
-                if (stateTimer.milliseconds() > 700) {
+                if (stateTimer.milliseconds() > 200) {
                     setPathState(AutoState.RETURN_GATE);
                 }
                 break;
@@ -162,6 +162,9 @@ public class PedroCloseAuto extends OpMode {
                 break;
 
             case RETURN_SPIKE_1:
+                if (follower.isBusy()){
+                    intaker.IntakeIdle();
+                }
                 if (!follower.isBusy()) {
                     prepareShoot(AutoState.INTAKE_SPIKE_3);
                 }
@@ -180,25 +183,29 @@ public class PedroCloseAuto extends OpMode {
                 break;
 
             case RETURN_SPIKE_3:
+                if (follower.isBusy()){
+                    intaker.IntakeIdle();
+                }
                 if (!follower.isBusy()) {
                     prepareShoot(AutoState.DONE);
                 }
                 break;
 
             case SHOOTING_SPINUP:
-                if (shooter.getState() == Shooter.ShooterState.READY_DISTANCE) {
+                if (shooter.getState() == Shooter.ShooterState.READY_CLOSE) {
                     stateTimer.reset();
                     currentState = AutoState.SHOOTING_TRANSFER;
                 }
                 break;
 
             case SHOOTING_TRANSFER:
-                if (stateTimer.milliseconds() > 100 && stateTimer.milliseconds() < 1000) {
+                if (stateTimer.milliseconds() < 100) {
+
+                } else if (stateTimer.milliseconds() < 1000) {
                     intaker.TransferShootSub();
                 } else {
                     intaker.IntakeIdle();
                     shooter.stop();
-
                     setPathState(nextStateAfterShoot);
                 }
                 break;
@@ -267,12 +274,8 @@ public class PedroCloseAuto extends OpMode {
 
     private void prepareShoot(AutoState nextState) {
         nextStateAfterShoot = nextState;
-
         intaker.IntakeIdle();
-        if (stateTimer.seconds() >= 0 && stateTimer.seconds()<=1){
-            shooter.spinUpDistance();
-        }
-
+        shooter.spinUpClose();
         currentState = AutoState.SHOOTING_SPINUP;
     }
 
@@ -308,51 +311,62 @@ public class PedroCloseAuto extends OpMode {
             ReverseOut = follower.pathBuilder()
                     .addPath(new BezierLine(startPose, shootingPose))
                     .setLinearHeadingInterpolation(Math.toRadians(whileMovingStartHeading), Math.toRadians(shootHeading))
+                    .setZeroPowerAccelerationMultiplier(AutoConstants.decelMultiplier)
                     .build();
 
             IntakeSpike2 = follower.pathBuilder()
                     .addPath(new BezierCurve(shootingPose, mid2Curve, secondIntake))
                     .setTangentHeadingInterpolation()
+                    .setZeroPowerAccelerationMultiplier(AutoConstants.decelMultiplier)
                     .build();
 
             ReturnSpike2 = follower.pathBuilder()
                     .addPath(new BezierLine(secondIntake, shootingPose))
                     .setLinearHeadingInterpolation(Math.toRadians(heading180), Math.toRadians(shootHeading))
+                    .setZeroPowerAccelerationMultiplier(AutoConstants.decelMultiplier)
                     .build();
 
             Gate = follower.pathBuilder()
                     .addPath(new BezierLine(shootingPose, leverPose))
                     .setLinearHeadingInterpolation(Math.toRadians(shootHeading), Math.toRadians(leverHitHeading))
+                    .setZeroPowerAccelerationMultiplier(AutoConstants.decelMultiplier)
                     .build();
 
             GateIntake = follower.pathBuilder()
                     .addPath(new BezierCurve(leverPose, leverCont, leverIntakePose))
                     .setLinearHeadingInterpolation(Math.toRadians(leverHitHeading), Math.toRadians(leverHeading))
+                    .setZeroPowerAccelerationMultiplier(AutoConstants.decelMultiplier)
+
                     .build();
 
             ReturnGate = follower.pathBuilder()
                     .addPath(new BezierCurve(leverIntakePose, leverRetCont, shootingPose))
                     .setLinearHeadingInterpolation(Math.toRadians(leverHeading), Math.toRadians(shootHeading))
+                    .setZeroPowerAccelerationMultiplier(AutoConstants.decelMultiplier)
                     .build();
 
             IntakeSpike1 = follower.pathBuilder()
                     .addPath(new BezierLine(shootingPose, firstIntake))
                     .setTangentHeadingInterpolation()
+                    .setZeroPowerAccelerationMultiplier(AutoConstants.decelMultiplier)
                     .build();
 
             ReturnSpike1 = follower.pathBuilder()
                     .addPath(new BezierLine(firstIntake, shootingPose))
                     .setLinearHeadingInterpolation(Math.toRadians(heading180), Math.toRadians(shootHeading))
+                    .setZeroPowerAccelerationMultiplier(AutoConstants.decelMultiplier)
                     .build();
 
             IntakeSpike3 = follower.pathBuilder()
                     .addPath(new BezierCurve(shootingPose, intake3Cont, finalIntake))
                     .setTangentHeadingInterpolation()
+                    .setZeroPowerAccelerationMultiplier(AutoConstants.decelMultiplier)
                     .build();
 
             ReturnSpike3 = follower.pathBuilder()
                     .addPath(new BezierCurve(finalIntake, finalShootCont, finalShootingPose))
                     .setLinearHeadingInterpolation(Math.toRadians(heading180), Math.toRadians(finalShootHeading))
+                    .setZeroPowerAccelerationMultiplier(AutoConstants.decelMultiplier)
                     .build();
         }
     }

@@ -4,11 +4,13 @@ import com.acmerobotics.dashboard.config.Config;
 
 @Config
 public class AutoConstants {
-    public static double leverHitHeading = -200;
-    public static double finalShootHeading = 145;
 
-    public static double finalShootX = 63.253;
-    public static double finalShootY =  100.482;
+    public static double decelMultiplier = 5;
+    public static double leverHitHeading = -200;
+    public static double finalShootHeading = 135;
+
+    public static double finalShootX = 50;
+    public static double finalShootY =  105;
 
     public static double startShootMoveHeading = 143;
 
@@ -16,8 +18,8 @@ public class AutoConstants {
     public static double startHeading = 143;
     public static double leverHeading = -230;
     public static double secondIntakeY = 59.831;
-    public static double shootingX = 59.277;
-    public static double shootingY =  84.386;
+    public static double shootingX = 53;
+    public static double shootingY =  83;
 
     public static double MID_2x =  64.849;
 
@@ -40,17 +42,17 @@ public class AutoConstants {
     public static double leverWait = 100;
     public static double startX = 20.048;
     public static double startY = 122.024;
-    public static double leverX = 13.301;
-    public static double leverY = 64.000;
+    public static double leverX = 18;
+    public static double leverY = 65;
 
     public static double intakeSpike3ContX = 55.916;
 
     public static double intakeSpike3X = 12.639;
-    public static double intakeSpike3Y = 35.711;
+    public static double intakeSpike3Y = 40;
 
-    public static double intakeSpike3ContY =  30.235;
+    public static double intakeSpike3ContY =  36;
 
-    public static double intakeSpike1X = 17.145;
+    public static double intakeSpike1X = 23;
 
     public static double intakeSpike1Y = 83.807;
 
