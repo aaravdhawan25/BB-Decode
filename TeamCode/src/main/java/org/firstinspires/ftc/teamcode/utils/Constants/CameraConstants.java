@@ -8,7 +8,7 @@ public class CameraConstants {
     public static double poseUpdateVelocity = 40;
     public static double poseUpdateIntervalMS = 1000;
     public static double goalDY = 17.25;
-    public static double kP = -0.028;
+    public static double kP = -0.024;
     public static double kPOdo = 0;
 
     public static double maxPower = 1;

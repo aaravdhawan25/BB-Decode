@@ -189,7 +189,7 @@ public class PedroCloseAuto extends OpMode {
             case SHOOTING_TRANSFER:
                 if (stateTimer.milliseconds() < 100) {
 
-                } else if (stateTimer.milliseconds() < 1000) {
+                } else if (stateTimer.milliseconds() < 800) {
                     intaker.TransferShootSub();
                 } else {
                     intaker.IntakeIdle();
