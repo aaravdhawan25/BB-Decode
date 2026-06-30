@@ -3,7 +3,6 @@ import com.pedropathing.localization.*;
 import com.pedropathing.localization.constants.*;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 
-import org.firstinspires.ftc.teamcode.RoadRunner.TwoDeadWheelLocalizer;
 
 public class LConstants {
     static {

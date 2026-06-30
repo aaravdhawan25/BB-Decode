@@ -5,12 +5,13 @@ import com.acmerobotics.dashboard.config.Config;
 @Config
 public class AutoConstants {
 
-    public static double decelMultiplier = 3;
+    public static double decelMultiplier = 1.7;
+    public static double decelMultiplierGate = 0.9;
     public static double leverHitHeading = -200;
     public static double finalShootHeading = 145;
 
-    public static double finalShootX = 53;
-    public static double finalShootY =  94;
+    public static double finalShootX = 55;
+    public static double finalShootY =  95;
 
     public static double startShootMoveHeading = 143;
 
@@ -30,7 +31,7 @@ public class AutoConstants {
 
     public static double MID_2y = 56.006;
     public static double firstIntakeX = 22;
-    public static double secondIntakeX = 15.446;
+        public static double secondIntakeX = 12;
     public static double leverYNew = 63.25;
 
     public static double gateReturnXC = 67.163;

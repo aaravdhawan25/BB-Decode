@@ -138,7 +138,7 @@ public class PedroCloseAuto extends OpMode {
                 break;
 
             case WAIT_GATE_INTAKE:
-                if (stateTimer.milliseconds() > 50) {
+                if (stateTimer.seconds() > 0.6) {
                     setPathState(AutoState.RETURN_GATE);
                 }
                 break;
@@ -330,7 +330,7 @@ public class PedroCloseAuto extends OpMode {
             ReturnGate = follower.pathBuilder()
                     .addPath(new BezierCurve(leverIntakePose, leverRetCont, shootingPose))
                     .setLinearHeadingInterpolation(Math.toRadians(leverHeading), Math.toRadians(shootHeading))
-                    .setZeroPowerAccelerationMultiplier(AutoConstants.decelMultiplier)
+                    .setZeroPowerAccelerationMultiplier(AutoConstants.decelMultiplierGate)
                     .build();
 
             IntakeSpike1 = follower.pathBuilder()
