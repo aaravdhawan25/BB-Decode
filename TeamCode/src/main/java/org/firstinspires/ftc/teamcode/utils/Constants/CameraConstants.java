@@ -16,7 +16,7 @@ public class CameraConstants {
 
 
 
-    public static double angleTolerance = 0.2;
+    public static double angleTolerance = 0.5;
 
 }
 
