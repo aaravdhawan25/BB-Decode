@@ -204,6 +204,7 @@ public class PedroCloseAuto extends OpMode {
                 break;
         }
 
+        Drawing.drawPath(follower.getCurrentPath(), "#2027AB");
         Drawing.drawPoseHistory(dashboardPoseTracker, "#4CAF50");
         Drawing.drawRobot(follower.poseUpdater.getPose(), "#4CAF50");
         Drawing.sendPacket();
